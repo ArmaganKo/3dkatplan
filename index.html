@@ -83,6 +83,12 @@ li.on{font-weight:500}
 .views{display:grid;gap:16px}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .cap{font-size:13px;color:var(--soft);margin:0 0 6px}
+.tips{border:1px solid var(--line);border-radius:var(--r);background:var(--card);
+  padding:16px 18px;font-size:14px;line-height:1.6}
+.tips h3{margin:0 0 8px;font-size:14px;font-weight:600}
+.tips p{margin:0 0 10px;color:#33312D}
+.tips p:last-child{margin-bottom:0}
+.tips b{font-weight:600}
 .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--soft)}
 .chk input{width:auto}
 
@@ -208,6 +214,14 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
     <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
     <input type="file" id="fileIn" accept=".json" hidden>
     <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
+  </div>
+
+  <div class="tips">
+    <h3>Sahada ölçüm</h3>
+    <p><b>Çerçeveden başla.</b> Önce dairenin içten içe toplam enini ve boyunu ölç, sonra oda oda in. Planın oturacağı sınır bu.</p>
+    <p><b>Toplamı kontrol et.</b> Bir hat üzerindeki oda enleri artı duvar kalınlıkları, dairenin toplam enini vermeli. Vermiyorsa bir ölçüm hatalı.</p>
+    <p><b>Duvar kalınlığını ölçemezsen</b> iç duvarlar için 10, dış duvarlar için 20 santimetre varsay. Türkiye'deki konut stokunun çoğunda bu değerler tutar.</p>
+    <p><b>Kapı yönü önemli.</b> Kapıyı koyduktan sonra döndürerek açılım yayını doğru tarafa çevir; plan o zaman mimari çizim gibi okunur.</p>
   </div>
 </section>
 </div>
@@ -371,19 +385,8 @@ function draw2d(){
     g2.fillStyle=TYPES[rm.t].h;g2.fill();
     g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
     g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
-    var cs=W2S(centroid(rm.p));
-    g2.textAlign="center";g2.font="500 13px "+FONT_UI;
-    var tw=g2.measureText(rm.n).width;
-    var showA=area(rm.p)*V.s*V.s>1500;
-    g2.fillStyle="rgba(251,250,247,0.88)";
-    g2.fillRect(cs.x-tw/2-6,cs.y-15,tw+12,showA?32:18);
-    g2.fillStyle="#1B1A17";
-    g2.fillText(rm.n,cs.x,cs.y-2);
-    if(showA){
-      g2.fillStyle="#5C5952";g2.font="400 12px "+FONT_MONO;
-      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+12);}
-    if(mode==="edit")rm.p.forEach(function(q){var s=W2S(q);
-      g2.beginPath();g2.arc(s.x,s.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
+    if(mode==="edit")rm.p.forEach(function(q){var s2=W2S(q);
+      g2.beginPath();g2.arc(s2.x,s2.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
       g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
   });
   I().forEach(function(it,i){
@@ -396,6 +399,28 @@ function draw2d(){
     g2.strokeRect(-cat.w*V.s/2,-cat.d*V.s/2,cat.w*V.s,cat.d*V.s);
     g2.restore();
   });
+  R().forEach(function(rm){
+    var bx0=Infinity,bx1=-Infinity;
+    rm.p.forEach(function(q){var sx=W2S(q).x;bx0=Math.min(bx0,sx);bx1=Math.max(bx1,sx);});
+    var avail=bx1-bx0-10;
+    if(avail<26)return;
+    var cs=W2S(centroid(rm.p));
+    var fs=13;
+    g2.textAlign="center";
+    do{ g2.font="500 "+fs+"px "+FONT_UI; if(g2.measureText(rm.n).width<=avail)break; fs--; }while(fs>=9);
+    if(g2.measureText(rm.n).width>avail)return;
+    var showA=area(rm.p)*V.s*V.s>1500&&fs>=11;
+    var tw=g2.measureText(rm.n).width;
+    g2.save(); polyPath(rm.p); g2.clip();
+    g2.fillStyle="rgba(251,250,247,0.9)";
+    g2.fillRect(cs.x-tw/2-6,cs.y-fs-2,tw+12,showA?fs+20:fs+6);
+    g2.fillStyle="#1B1A17";
+    g2.fillText(rm.n,cs.x,cs.y-2);
+    if(showA){g2.fillStyle="#5C5952";g2.font="400 "+(fs-1)+"px "+FONT_MONO;
+      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+12);}
+    g2.restore();
+  });
+
   if(draft.length){
     polyPath(draft);
     g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.setLineDash([6,4]);g2.stroke();g2.setLineDash([]);
@@ -625,8 +650,7 @@ function build3d(){
 
 function renderLegend(){
   var el=document.getElementById("legend");if(!el)return;
-  if(!legendData.length){el.innerHTML="";el.style.display="none";return;}
-  el.style.display="block";
+  if(!legendData.length){el.innerHTML="";return;}
   var multi=legendData.some(function(d){return d.f!==legendData[0].f;});
   var h="",last=null;
   legendData.forEach(function(d){
