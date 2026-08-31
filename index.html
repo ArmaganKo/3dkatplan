@@ -148,6 +148,9 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
         <option value="mutfak">Mutfak</option><option value="banyo">Banyo / WC</option>
         <option value="hol">Hol / koridor</option><option value="balkon">Balkon</option>
         <option value="bahce">Bahçe / dış alan</option>
+        <option value="kiler">Kiler / Depo</option>
+        <option value="giyinme">Giyinme odası</option>
+        <option value="calisma">Çalışma odası</option>
       </select></div>
     <div class="bar">
       <button id="finishBtn">Odayı tamamla</button>
@@ -277,7 +280,10 @@ var TYPES={
  salon:{l:"Salon",c:0xB4C2AC,h:"#B4C2AC"}, yatak:{l:"Yatak odası",c:0xD3C4AF,h:"#D3C4AF"},
  mutfak:{l:"Mutfak",c:0xAEBDC6,h:"#AEBDC6"}, banyo:{l:"Banyo",c:0xA8BAB8,h:"#A8BAB8"},
  hol:{l:"Hol",c:0xD9D3C7,h:"#D9D3C7"}, balkon:{l:"Balkon",c:0xC3CDB2,h:"#C3CDB2"},
- bahce:{l:"Bahçe",c:0x9FB98A,h:"#9FB98A"}
+ bahce:{l:"Bahçe",c:0x9FB98A,h:"#9FB98A"},
+ kiler:{l:"Kiler / Depo",c:0xC5BFB2,h:"#C5BFB2"},
+ giyinme:{l:"Giyinme odası",c:0xDCCFC0,h:"#DCCFC0"},
+ calisma:{l:"Çalışma odası",c:0xB9C6BC,h:"#B9C6BC"}
 };
 /* w genişlik, d derinlik, h yükseklik, e zeminden yükseklik (metre) */
 var CATALOG=[
@@ -318,6 +324,9 @@ var AUTO={
  banyo:["klozet","lavabo","dusakabin"],
  balkon:["balkon-masasi","balkon-sandalye"],
  bahce:["agac","agac"],
+ kiler:[],
+ giyinme:["gardirop"],
+ calisma:["calisma-masasi","sandalye"],
  hol:[]
 };
 var FONT_UI="'IBM Plex Sans', system-ui, sans-serif";
@@ -540,7 +549,7 @@ function mkTex(kind){
   tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(0.5,0.5);tx.anisotropy=8;
   TEXCACHE[kind]=tx;return tx;
 }
-var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass"};
+var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass",kiler:"tile",giyinme:"wood",calisma:"wood"};
 
 /* ---------- 3D ---------- */
 var wrap=document.getElementById("wrap3d"),scene,cam,ortho,activeCam,ren,grp;
