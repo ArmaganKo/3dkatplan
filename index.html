@@ -91,8 +91,24 @@ article.info ul.tools{padding-left:20px;margin:0 0 14px}
 article.info ul.tools li{display:list-item;list-style:disc;border:none;padding:6px 0;color:#33312D}
 footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
   color:var(--soft);font-size:14px;text-align:center}
+/* genis ekran: sag sutun sabit kalsin, sol panel altinda bosluk olusmasin */
+@media(min-width:861px){
+ .stage{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;overscroll-behavior:contain}}
+/* tablet: gorseller kisalsin ki sabit sutun ekrana sigsin */
+@media(min-width:861px) and (max-width:1200px){
+ .app{grid-template-columns:270px 1fr}
+ #plan2d{height:230px}#wrap3d{height:290px}
+ .panel{padding:16px 16px}
+ .stage{padding:14px 16px 18px;gap:12px}}
+/* tablet ve alti: logo ve baslik ortalansin, kenar bosluklari kisilsin */
+@media(max-width:1180px){
+ header{padding:16px 20px 14px;text-align:center}
+ .brand img{width:150px}
+ header p{margin-left:auto;margin-right:auto}
+ article.info{padding:32px 20px 56px}}
 @media(max-width:860px){.app{grid-template-columns:1fr}
- .panel{border-right:none;border-bottom:1px solid var(--line)}
+ .panel{border-right:none;border-bottom:1px solid var(--line);min-height:0}
+ .stage{position:static;max-height:none;overflow:visible}
  #plan2d{height:290px}#wrap3d{height:320px}}
 </style>
 
@@ -892,6 +908,9 @@ document.getElementById("pngBtn").onclick=function(){
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();init3d();renderTabs();renderLists();
+if(window.ResizeObserver){var _ro=new ResizeObserver(function(){fit2d();size3d();});
+  _ro.observe(document.querySelector(".stage"));_ro.observe(wrap);}
+window.addEventListener("orientationchange",function(){setTimeout(function(){fit2d();size3d();},300);});
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
                document.fonts.load("500 40px 'IBM Plex Mono'"),
