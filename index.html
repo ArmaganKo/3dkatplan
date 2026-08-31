@@ -21,18 +21,20 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.6}
-header{padding:20px 24px 18px;border-bottom:1px solid var(--line)}
-.brand{display:inline-block;line-height:0;margin-bottom:6px}
-.brand img{width:188px;height:auto;display:block}
+header{padding:16px 24px 14px;border-bottom:1px solid var(--line);text-align:left}
+.head-in{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:block;line-height:0;flex:none}
+.brand img{width:132px;height:auto;display:block}
+.head-txt{min-width:240px;flex:1}
 h1 a{color:inherit;text-decoration:none}
 h1 a:hover{color:var(--accent)}
 h1 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.01em}
-header p{margin:5px 0 0;color:var(--soft);max-width:64ch;font-size:14px}
-.app{display:grid;grid-template-columns:300px 1fr}
+h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;line-height:1.25}
+header p{margin:3px 0 0;color:var(--soft);max-width:72ch;font-size:14px;line-height:1.45}
+.app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;border-right:1px solid var(--line)}
 .panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
-.stage{padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start}
 h2{margin:0 0 10px;font-size:13px;font-weight:600}
 h2.sp{margin-top:22px}
 label{display:block;font-size:13px;color:var(--soft);margin-bottom:4px}
@@ -73,14 +75,15 @@ li.on{font-weight:500}
 #legend div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #legend .no{display:inline-block;min-width:15px;font-weight:600;color:var(--accent)}
 #legend .kf{font-weight:600;margin-top:4px}
-#plan2d{height:330px}
-#wrap3d{height:400px}
+#plan2d{height:420px}
+#wrap3d{height:420px}
+.views{display:grid;gap:16px}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .cap{font-size:13px;color:var(--soft);margin:0 0 6px}
 .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--soft)}
 .chk input{width:auto}
 
-article.info{max-width:760px;margin:0 auto;padding:44px 24px 70px;border-top:1px solid var(--line)}
+article.info{max-width:760px;margin:0 auto;padding:44px 24px 70px;border-top:1px solid var(--line);text-align:left}
 article.info h2{font-size:20px;margin:34px 0 10px;font-weight:600}
 article.info h3{font-size:16px;margin:22px 0 6px;font-weight:600}
 article.info p{margin:0 0 14px;color:#33312D}
@@ -91,33 +94,22 @@ article.info ul.tools{padding-left:20px;margin:0 0 14px}
 article.info ul.tools li{display:list-item;list-style:disc;border:none;padding:6px 0;color:#33312D}
 footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
   color:var(--soft);font-size:14px;text-align:center}
-/* genis ekran: sag sutun sabit kalsin, sol panel altinda bosluk olusmasin */
-@media(min-width:861px){
- .stage{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;overscroll-behavior:contain}}
-/* tablet: gorseller kisalsin ki sabit sutun ekrana sigsin */
-@media(min-width:861px) and (max-width:1200px){
- .app{grid-template-columns:270px 1fr}
- #plan2d{height:230px}#wrap3d{height:290px}
- .panel{padding:16px 16px}
- .stage{padding:14px 16px 18px;gap:12px}}
-/* tablet ve alti: logo ve baslik ortalansin, kenar bosluklari kisilsin */
-@media(max-width:1180px){
- header{padding:16px 20px 14px;text-align:center}
- .brand img{width:150px}
- header p{margin-left:auto;margin-right:auto}
- article.info{padding:32px 20px 56px}}
+@media(min-width:1180px){.views{grid-template-columns:1fr 1fr}}
 @media(max-width:860px){.app{grid-template-columns:1fr}
- .panel{border-right:none;border-bottom:1px solid var(--line);min-height:0}
- .stage{position:static;max-height:none;overflow:visible}
- #plan2d{height:290px}#wrap3d{height:320px}}
+ .panel{border-right:none;border-bottom:1px solid var(--line)}
+ #plan2d{height:300px}#wrap3d{height:320px}}
 </style>
 
 <header>
+ <div class="head-in">
   <a class="brand" href="/" aria-label="3dkatplan.com ana sayfa">
-    <img src="logo.png" alt="3dkatplan.com" width="188" height="123">
+    <img src="logo.png" alt="3dkatplan.com" width="132" height="87">
   </a>
-  <h1><a href="/">3D Kat Planı Çıkarma Aracı</a></h1>
-  <p>Odayı köşe köşe çiz, eşyaları yerleştir, dubleks katları ekle, üç boyutlu kat planını ilan görseli olarak indir. Ücretsiz.</p>
+  <div class="head-txt">
+    <h1><a href="/">3D Kat Planı Çıkarma Aracı</a></h1>
+    <p>Odayı köşe köşe çiz, eşyaları yerleştir, dubleks katları ekle, üç boyutlu kat planını ilan görseli olarak indir. Ücretsiz.</p>
+  </div>
+ </div>
 </header>
 
 <div class="app">
@@ -190,13 +182,15 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
 </section>
 
 <section class="stage">
-  <div>
+  <div class="views">
+   <div>
     <p class="cap">Plan — üstten görünüm, ızgara 1 metre. Alt kat soluk çizgiyle görünür.</p>
     <div class="view" id="plan2d"><canvas id="c2d" tabindex="0"></canvas></div>
-  </div>
-  <div>
+   </div>
+   <div>
     <p class="cap">Üç boyutlu görünüm — sürükleyerek döndür, tekerlekle yakınlaştır</p>
     <div class="view" id="wrap3d"><div id="legend"></div></div>
+   </div>
   </div>
   <div class="bar">
     <button id="pngBtn">İlan görseli indir</button>
@@ -374,11 +368,16 @@ function draw2d(){
     g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
     g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
     var cs=W2S(centroid(rm.p));
-    g2.fillStyle="#1B1A17";g2.textAlign="center";g2.font="500 13px "+FONT_UI;
+    g2.textAlign="center";g2.font="500 13px "+FONT_UI;
+    var tw=g2.measureText(rm.n).width;
+    var showA=area(rm.p)*V.s*V.s>1500;
+    g2.fillStyle="rgba(251,250,247,0.88)";
+    g2.fillRect(cs.x-tw/2-6,cs.y-15,tw+12,showA?32:18);
+    g2.fillStyle="#1B1A17";
     g2.fillText(rm.n,cs.x,cs.y-2);
-    if(area(rm.p)*V.s*V.s>1500){
+    if(showA){
       g2.fillStyle="#5C5952";g2.font="400 12px "+FONT_MONO;
-      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+14);}
+      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+12);}
     if(mode==="edit")rm.p.forEach(function(q){var s=W2S(q);
       g2.beginPath();g2.arc(s.x,s.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
       g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
@@ -908,9 +907,6 @@ document.getElementById("pngBtn").onclick=function(){
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();init3d();renderTabs();renderLists();
-if(window.ResizeObserver){var _ro=new ResizeObserver(function(){fit2d();size3d();});
-  _ro.observe(document.querySelector(".stage"));_ro.observe(wrap);}
-window.addEventListener("orientationchange",function(){setTimeout(function(){fit2d();size3d();},300);});
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
                document.fonts.load("500 40px 'IBM Plex Mono'"),
