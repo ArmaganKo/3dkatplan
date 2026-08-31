@@ -425,21 +425,32 @@ function draw2d(){
   });
   R().forEach(function(rm){
     var spot=labelSpot(rm.p); if(!spot)return;
-    var avail=spot.r*2*V.s-10;
+    var avail=spot.r*2*V.s-12;
     if(avail<28)return;
     var cs=W2S(spot.p), fs=13;
-    g2.textAlign="center";
-    do{ g2.font="500 "+fs+"px "+FONT_UI;
+    g2.textAlign="center"; g2.textBaseline="alphabetic";
+    do{ g2.font="600 "+fs+"px "+FONT_UI;
         if(g2.measureText(rm.n).width<=avail)break; fs--; }while(fs>=9);
     if(g2.measureText(rm.n).width>avail)return;
-    var showA=(spot.r*2*V.s>52)&&fs>=11;
-    var tw=g2.measureText(rm.n).width;
-    g2.fillStyle="rgba(251,250,247,0.9)";
-    g2.fillRect(cs.x-tw/2-6,cs.y-fs-2,tw+12,showA?fs+20:fs+6);
-    g2.fillStyle="#1B1A17";
-    g2.fillText(rm.n,cs.x,cs.y-2);
-    if(showA){g2.fillStyle="#5C5952";g2.font="400 "+(fs-1)+"px "+FONT_MONO;
-      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+12);}
+    var nw=g2.measureText(rm.n).width;
+    var as=fs-1, at=area(rm.p).toFixed(1)+" m²", aw=0;
+    g2.font="400 "+as+"px "+FONT_MONO;
+    var showA=(spot.r*2*V.s>54)&&fs>=11&&g2.measureText(at).width<=avail;
+    if(showA)aw=g2.measureText(at).width;
+
+    var bw=Math.max(nw,aw)+14;
+    var bh=showA?(fs+as+13):(fs+9);
+    var bx=cs.x-bw/2, by=cs.y-bh/2;
+    g2.fillStyle="rgba(251,250,247,0.92)";
+    if(g2.roundRect){g2.beginPath();g2.roundRect(bx,by,bw,bh,4);g2.fill();}
+    else g2.fillRect(bx,by,bw,bh);
+
+    g2.textBaseline="top";
+    g2.fillStyle="#1B1A17"; g2.font="600 "+fs+"px "+FONT_UI;
+    g2.fillText(rm.n,cs.x,by+5);
+    if(showA){g2.fillStyle="#5C5952"; g2.font="400 "+as+"px "+FONT_MONO;
+      g2.fillText(at,cs.x,by+fs+8);}
+    g2.textBaseline="alphabetic";
   });
 
   if(draft.length){
@@ -601,9 +612,19 @@ function fitModel(obj,cat){
   return obj;
 }
 function proxy(cat){
+  var g=new THREE.Group();
+  if(cat.k==="agac"){
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.18,cat.h*0.42,8),
+      new THREE.MeshLambertMaterial({color:0x8A6B4A}));
+    tr.position.y=cat.h*0.21; g.add(tr);
+    var cn=new THREE.Mesh(new THREE.SphereGeometry(cat.w*0.46,14,10),
+      new THREE.MeshLambertMaterial({color:cat.c}));
+    cn.position.y=cat.h*0.66; cn.scale.y=1.15; g.add(cn);
+    return g;
+  }
   var m=new THREE.Mesh(new THREE.BoxGeometry(cat.w,cat.h,cat.d),
     new THREE.MeshLambertMaterial({color:cat.c,transparent:cat.k==="pencere",opacity:cat.k==="pencere"?0.55:1}));
-  m.position.y=cat.h/2;var g=new THREE.Group();g.add(m);return g;
+  m.position.y=cat.h/2; g.add(m); return g;
 }
 function addItem(it,cx,cy,yb){
   var cat=byKey(it.k),holder=new THREE.Group();
