@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3D Kat Planı Çıkarma Aracı: Ücretsiz | KatPlan3D</title>
+<title>3D Kat Planı Çıkarma Aracı: Ücretsiz | 3dkatplan.com</title>
 <meta name="description" content="3D kat planı çıkarma aracı: daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -87,6 +87,8 @@ article.info p{margin:0 0 14px;color:#33312D}
 article.info ol{padding-left:20px;color:#33312D}
 article.info li{display:list-item;border:none;padding:4px 0;font-size:15px}
 article.info a{color:var(--accent)}
+article.info ul.tools{padding-left:20px;margin:0 0 14px}
+article.info ul.tools li{display:list-item;list-style:disc;border:none;padding:6px 0;color:#33312D}
 footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
   color:var(--soft);font-size:14px;text-align:center}
 @media(max-width:860px){.app{grid-template-columns:1fr}
@@ -198,7 +200,7 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
 
 <article class="info">
 <h2>3D Kat Planı Çıkarma Aracı</h2>
-<p>KatPlan3D, gayrimenkul danışmanlarının ve ev sahiplerinin bir dairenin kat planını üç boyutlu olarak çıkarması için hazırlandı. Program indirmeniz, üyelik açmanız ya da ücret ödemeniz gerekmiyor. Çizim tamamen tarayıcınızın içinde gerçekleşir; ölçüleriniz hiçbir sunucuya gönderilmez.</p>
+<p>3dkatplan.com, gayrimenkul danışmanlarının ve ev sahiplerinin bir dairenin kat planını üç boyutlu olarak çıkarması için hazırlandı. Program indirmeniz, üyelik açmanız ya da ücret ödemeniz gerekmiyor. Çizim tamamen tarayıcınızın içinde gerçekleşir; ölçüleriniz hiçbir sunucuya gönderilmez.</p>
 
 <h2>Nasıl Kullanılır</h2>
 <ol>
@@ -224,10 +226,17 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
 
 <h3>Çizdiğim Plan Başkası Tarafından Görülür mü?</h3>
 <p>Hayır. Tüm işlem tarayıcınızda gerçekleşir, kaydettiğiniz proje dosyası kendi bilgisayarınızda kalır.</p>
+
+<h2>Diğer Ücretsiz Araçlarım</h2>
+<p>Gayrimenkul danışmanları için hazırladığım diğer ücretsiz araçlar:</p>
+<ul class="tools">
+<li><a href="https://www.parseltur.com" target="_blank" rel="noopener"><strong>ParselTur</strong></a> — TKGM'den indirdiğiniz parsel dosyasını üç boyutlu drone videosuna çevirir. Arsa ve arazi ilanlarınız için hazır tanıtım videosu üretir.</li>
+<li><a href="https://www.gunesalirmi.com" target="_blank" rel="noopener"><strong>Güneş Alır mı?</strong></a> — Bir dairenin hangi odasının hangi saatlerde güneş aldığını gösterir. Cephe yönünü girersiniz, gün boyu ışık durumunu görürsünüz.</li>
+</ul>
 </article>
 
 <footer class="site">
-KatPlan3D — Armağan Kocabaş, İstanbul lüks konut uzmanı, RE/MAX Eksen<br>
+3dkatplan.com — Armağan Kocabaş, İstanbul lüks konut uzmanı, RE/MAX Eksen<br>
 Üsküdar, Ümraniye, Çekmeköy ve Kadıköy hattındaki mülklerinizle ilgileniyoruz.<br>
 0507 917 33 58 · <a href="https://www.armagankocabas.com">armagankocabas.com</a>
 </footer>
@@ -791,7 +800,7 @@ function slug(t){
   return (t||"").replace(/[çğıİöşüÇĞÖŞÜ]/g,function(m){return map[m];})
     .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,50);
 }
-function fileBase(){var s2=slug(val("projName"));return s2?s2+"-katplan3d":"katplan3d-plan";}
+function fileBase(){var s2=slug(val("projName"));return s2?s2+"-3dkatplan":"3dkatplan-plan";}
 function saveBrand(){
   try{localStorage.setItem("kp_brand",JSON.stringify({
     n:val("bName"),p:val("bPhone"),o:val("bOffice"),l:logoData,
@@ -833,7 +842,7 @@ document.getElementById("pngBtn").onclick=function(){
     g.fillStyle="#1B1A17";g.font="600 52px 'IBM Plex Sans',sans-serif";
     g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
     g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px 'IBM Plex Sans',sans-serif";
-    g.fillText("KatPlan3D",W-PAD,100);g.textAlign="left";
+    g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
 
     var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
     var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
@@ -874,7 +883,7 @@ document.getElementById("pngBtn").onclick=function(){
       }
     }
     g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
-    g.fillText("KatPlan3D · armagankocabas.com",PAD,1318);
+    g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
 
     var a=document.createElement("a");a.download=fileBase()+".png";a.href=c.toDataURL("image/png");a.click();
   };
