@@ -1,0 +1,874 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Kat Planı Çıkarma Aracı: Ücretsiz | KatPlan3D</title>
+<meta name="description" content="3D kat planı çıkarma aracı: daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F4F2ED;--card:#FBFAF7;--ink:#1B1A17;--soft:#5C5952;--line:#DCD7CD;
+  --accent:#1F4E5F;--accent-soft:#E3EBED;--r:6px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.6}
+header{padding:24px 24px 18px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:23px;font-weight:600;letter-spacing:-0.01em}
+header p{margin:5px 0 0;color:var(--soft);max-width:64ch;font-size:14px}
+.app{display:grid;grid-template-columns:300px 1fr}
+.panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
+.stage{padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+h2{margin:0 0 10px;font-size:13px;font-weight:600}
+h2.sp{margin-top:22px}
+label{display:block;font-size:13px;color:var(--soft);margin-bottom:4px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);
+  background:#fff;font-family:inherit;font-size:14px;color:var(--ink)}
+input:focus,select:focus,canvas:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field{margin-bottom:10px}
+button{font-family:inherit;font-size:14px;font-weight:500;border-radius:var(--r);cursor:pointer;
+  padding:8px 13px;border:1px solid var(--accent);background:var(--accent);color:#fff}
+button:hover{background:#183D4B}
+button.ghost{background:transparent;color:var(--accent)}
+button.ghost:hover{background:var(--accent-soft)}
+button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.modes button{padding:8px 4px;font-size:13px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.tabs button{padding:6px 12px;font-size:13px}
+.err{color:#8C2B22;font-size:13px;margin:8px 0 0}
+.hint{color:var(--soft);font-size:13px;margin:0}
+ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line)}
+li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+li .sw{width:11px;height:11px;border-radius:3px;flex:none}
+li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li .dm{color:var(--soft);font-size:13px;font-family:"IBM Plex Mono",monospace}
+li button{padding:1px 6px;border:none;background:transparent;color:var(--soft);font-size:17px;line-height:1}
+li button:hover{background:transparent;color:#8C2B22}
+li.on{font-weight:500}
+.empty{padding:26px 10px;text-align:center;color:var(--soft);font-size:13px;display:block}
+.total{margin-top:14px;padding-top:12px;border-top:2px solid var(--ink);display:flex;
+  justify-content:space-between;align-items:baseline}
+.total b{font-size:21px;font-weight:600;font-family:"IBM Plex Mono",monospace}
+.sub{display:flex;justify-content:space-between;font-size:13px;color:var(--soft);margin-top:4px}
+.view{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#F4F2ED;position:relative}
+#legend{position:absolute;top:10px;left:10px;background:rgba(251,250,247,0.93);
+  border:1px solid var(--line);border-radius:var(--r);padding:8px 11px;max-width:52%;
+  font-size:12px;line-height:1.5;pointer-events:none}
+#legend div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#legend .no{display:inline-block;min-width:15px;font-weight:600;color:var(--accent)}
+#legend .kf{font-weight:600;margin-top:4px}
+#plan2d{height:330px}
+#wrap3d{height:400px}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.cap{font-size:13px;color:var(--soft);margin:0 0 6px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--soft)}
+.chk input{width:auto}
+
+article.info{max-width:760px;margin:0 auto;padding:44px 24px 70px;border-top:1px solid var(--line)}
+article.info h2{font-size:20px;margin:34px 0 10px;font-weight:600}
+article.info h3{font-size:16px;margin:22px 0 6px;font-weight:600}
+article.info p{margin:0 0 14px;color:#33312D}
+article.info ol{padding-left:20px;color:#33312D}
+article.info li{display:list-item;border:none;padding:4px 0;font-size:15px}
+article.info a{color:var(--accent)}
+footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
+  color:var(--soft);font-size:14px;text-align:center}
+@media(max-width:860px){.app{grid-template-columns:1fr}
+ .panel{border-right:none;border-bottom:1px solid var(--line)}
+ #plan2d{height:290px}#wrap3d{height:320px}}
+</style>
+
+<header>
+  <h1>KatPlan3D</h1>
+  <p>Odayı köşe köşe çiz, eşyaları yerleştir, dubleks katları ekle, üç boyutlu kat planını ilan görseli olarak indir. Ücretsiz.</p>
+</header>
+
+<div class="app">
+<section class="panel">
+  <div class="field"><label for="projName">Portföy adı</label>
+    <input id="projName" placeholder="Ataşehir 3+1 bahçe katı"></div>
+
+  <h2>Kat</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="bar" style="margin-bottom:16px">
+    <button class="ghost" id="addFloor">Kat ekle</button>
+    <button class="ghost" id="delFloor">Katı sil</button>
+  </div>
+
+  <div class="modes">
+    <button class="ghost" id="mDraw" aria-pressed="true">Oda çiz</button>
+    <button class="ghost" id="mEdit" aria-pressed="false">Düzenle</button>
+    <button class="ghost" id="mFurn" aria-pressed="false">Eşya</button>
+  </div>
+
+  <div id="paneDraw">
+    <div class="field"><label for="rname">Oda adı</label><input id="rname" placeholder="Salon"></div>
+    <div class="field"><label for="rtype">Oda tipi</label>
+      <select id="rtype">
+        <option value="salon">Salon</option><option value="yatak">Yatak odası</option>
+        <option value="mutfak">Mutfak</option><option value="banyo">Banyo / WC</option>
+        <option value="hol">Hol / koridor</option><option value="balkon">Balkon</option>
+        <option value="bahce">Bahçe / dış alan</option>
+      </select></div>
+    <div class="bar">
+      <button id="finishBtn">Odayı tamamla</button>
+      <button class="ghost" id="undoBtn">Son köşeyi sil</button>
+    </div>
+    <p class="hint" style="margin-top:8px">Plan üzerine tıklayarak köşeleri koy. En az üç köşe gerekli.</p>
+  </div>
+
+  <div id="paneFurn" hidden>
+    <div class="field"><label for="fsel">Eşya</label><select id="fsel"></select></div>
+    <div class="bar">
+      <button class="ghost" id="rotBtn">45° döndür</button>
+      <button class="ghost" id="autoBtn">Seçili odayı döşe</button>
+    </div>
+    <p class="hint" style="margin-top:8px">Plana tıklayarak yerleştir, sürükleyerek taşı. Kapı ve pencereyi duvarın üstüne koy.</p>
+  </div>
+
+  <div id="paneEdit" hidden>
+    <p class="hint">Köşeleri sürükleyerek odayı düzelt. Odaya tıklayınca seçilir, eşyalar da sürüklenebilir.</p>
+  </div>
+
+  <p class="err" id="err"></p>
+
+  <h2 class="sp">Odalar — <span id="floorName"></span></h2>
+  <ul id="rlist"></ul>
+  <div class="total"><span>Bu kat net</span><b id="total">0 m²</b></div>
+  <div class="sub"><span>Tüm katlar toplam</span><span id="grand">0 m²</span></div>
+
+  <h2 class="sp">Eşyalar</h2>
+  <ul id="flist"></ul>
+
+  <h2 class="sp">Görsel künyesi</h2>
+  <label class="chk" style="margin-bottom:10px"><input type="checkbox" id="brandOn" checked> Bilgilerimi görsele bas</label>
+  <div id="brandFields">
+    <div class="field"><label for="bName">Ad soyad</label><input id="bName" placeholder="Adınız Soyadınız"></div>
+    <div class="field"><label for="bPhone">Telefon</label><input id="bPhone" placeholder="0500 000 00 00"></div>
+    <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
+    <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
+    <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
+    <p class="hint" style="margin-top:8px">Bilgiler bu tarayıcıda saklanır, her seferinde yazmana gerek kalmaz.</p>
+  </div>
+</section>
+
+<section class="stage">
+  <div>
+    <p class="cap">Plan — üstten görünüm, ızgara 1 metre. Alt kat soluk çizgiyle görünür.</p>
+    <div class="view" id="plan2d"><canvas id="c2d" tabindex="0"></canvas></div>
+  </div>
+  <div>
+    <p class="cap">Üç boyutlu görünüm — sürükleyerek döndür, tekerlekle yakınlaştır</p>
+    <div class="view" id="wrap3d"><div id="legend"></div></div>
+  </div>
+  <div class="bar">
+    <button id="pngBtn">İlan görseli indir</button>
+    <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
+    <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
+    <button class="ghost" id="saveBtn">Projeyi kaydet</button>
+    <button class="ghost" id="loadBtn">Proje aç</button>
+    <button class="ghost" id="sampleBtn">Örnek dubleks</button>
+    <button class="ghost" id="clearBtn">Temizle</button>
+    <button class="ghost" id="modelBtn">Model klasörünü seç</button>
+    <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
+    <input type="file" id="fileIn" accept=".json" hidden>
+    <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
+  </div>
+</section>
+</div>
+
+<article class="info">
+<h2>3D kat planı çıkarma aracı</h2>
+<p>KatPlan3D, gayrimenkul danışmanlarının ve ev sahiplerinin bir dairenin kat planını üç boyutlu olarak çıkarması için hazırlandı. Program indirmeniz, üyelik açmanız ya da ücret ödemeniz gerekmiyor. Çizim tamamen tarayıcınızın içinde gerçekleşir; ölçüleriniz hiçbir sunucuya gönderilmez.</p>
+
+<h2>Nasıl kullanılır</h2>
+<ol>
+<li>Portföy adını yazın. İndireceğiniz dosyalar bu adı taşır.</li>
+<li>"Oda çiz" modunda plan alanına tıklayarak odanın köşelerini koyun. Dikdörtgen olmak zorunda değil; L şeklinde salonlar ve çıkmalar için istediğiniz kadar köşe ekleyebilirsiniz.</li>
+<li>"Düzenle" modunda köşeleri sürükleyerek ölçüyü düzeltin. Metrekare anında güncellenir.</li>
+<li>"Eşya" modunda mobilyaları yerleştirin. Hızlı yol için odayı seçip "Seçili odayı döşe" deyin.</li>
+<li>Dubleks daire çiziyorsanız "Kat ekle" ile üst katı açın. Alt kat soluk çizgiyle rehber olarak görünür.</li>
+<li>"İlan görseli indir" ile 1080x1350 ölçüsünde, ilan ve sosyal medya için hazır görseli alın.</li>
+</ol>
+
+<h2>Ölçüyü nasıl almalısınız</h2>
+<p>Lazermetre kullanın. Önce dairenin içten içe toplam enini ve boyunu ölçün, sonra oda oda inin. Bir hat üzerindeki oda enleri ile duvar kalınlıklarını topladığınızda toplam eni bulmanız gerekir; bulamıyorsanız bir ölçüm hatalıdır. Duvar kalınlığını ölçemezseniz iç duvarlar için 10, dış duvarlar için 20 santimetre varsayabilirsiniz.</p>
+
+<h2>İlanda kullanırken</h2>
+<p>Plandaki metrekareyi ilanın resmi metrekare bilgisi olarak kullanmayın. Brüt ve net değerleri tapu ile projeden alın; plan görselini alıcının yerleşimi anlaması için kullanın.</p>
+
+<h3>Ücretli mi?</h3>
+<p>Hayır. Ürettiğiniz görselleri ilanlarınızda, broşürlerinizde ve sosyal medyada serbestçe kullanabilirsiniz.</p>
+
+<h3>Telefondan kullanabilir miyim?</h3>
+<p>Kullanabilirsiniz, ancak köşe yerleştirme ve eşya taşıma bilgisayar ekranında çok daha rahattır. Sahada ölçüp ofiste çizmeniz önerilir.</p>
+
+<h3>Çizdiğim plan başkası tarafından görülür mü?</h3>
+<p>Hayır. Tüm işlem tarayıcınızda gerçekleşir, kaydettiğiniz proje dosyası kendi bilgisayarınızda kalır.</p>
+</article>
+
+<footer class="site">
+KatPlan3D — Armağan Kocabaş, İstanbul lüks konut uzmanı, RE/MAX Eksen<br>
+Üsküdar, Ümraniye, Çekmeköy ve Kadıköy hattındaki mülklerinizle ilgileniyoruz.<br>
+0507 917 33 58 · <a href="https://www.armagankocabas.com">armagankocabas.com</a>
+</footer>
+
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+var TYPES={
+ salon:{l:"Salon",c:0xB4C2AC,h:"#B4C2AC"}, yatak:{l:"Yatak odası",c:0xD3C4AF,h:"#D3C4AF"},
+ mutfak:{l:"Mutfak",c:0xAEBDC6,h:"#AEBDC6"}, banyo:{l:"Banyo",c:0xA8BAB8,h:"#A8BAB8"},
+ hol:{l:"Hol",c:0xD9D3C7,h:"#D9D3C7"}, balkon:{l:"Balkon",c:0xC3CDB2,h:"#C3CDB2"},
+ bahce:{l:"Bahçe",c:0x9FB98A,h:"#9FB98A"}
+};
+/* w genişlik, d derinlik, h yükseklik, e zeminden yükseklik (metre) */
+var CATALOG=[
+ {k:"kapi",l:"Kapı",w:0.9,d:0.12,h:2.1,e:0,c:0x8A7051},
+ {k:"pencere",l:"Pencere",w:1.4,d:0.12,h:1.2,e:0.9,c:0xBBD3DC},
+ {k:"merdiven",l:"Merdiven",w:1.1,d:3.0,h:2.7,e:0,c:0xAFA79A},
+ {k:"koltuk-takimi",l:"Koltuk takımı",w:2.4,d:1.7,h:0.8,c:0x8C8578},
+ {k:"tekli-koltuk",l:"Tekli koltuk",w:0.9,d:0.9,h:0.8,c:0x8C8578},
+ {k:"sehpa",l:"Sehpa",w:1.1,d:0.6,h:0.45,c:0xA98F6F},
+ {k:"tv-unitesi",l:"TV ünitesi",w:1.8,d:0.4,h:0.5,c:0xA98F6F},
+ {k:"tv",l:"Televizyon",w:1.2,d:0.1,h:0.7,e:0.5,c:0x3A3A38},
+ {k:"cift-yatak",l:"Çift kişilik yatak",w:1.6,d:2.0,h:0.5,c:0xB9AC99},
+ {k:"tek-yatak",l:"Tek kişilik yatak",w:0.9,d:2.0,h:0.5,c:0xB9AC99},
+ {k:"gardirop",l:"Gardırop",w:2.0,d:0.6,h:2.2,c:0xA98F6F},
+ {k:"komodin",l:"Komodin",w:0.5,d:0.4,h:0.55,c:0xA98F6F},
+ {k:"calisma-masasi",l:"Çalışma masası",w:1.4,d:0.7,h:0.75,c:0xA98F6F},
+ {k:"yemek-masasi",l:"Yemek masası",w:1.6,d:0.9,h:0.75,c:0xA98F6F},
+ {k:"sandalye",l:"Sandalye",w:0.45,d:0.45,h:0.9,c:0x9A9384},
+ {k:"mutfak-tezgahi",l:"Mutfak tezgahı",w:2.4,d:0.6,h:0.9,c:0xC2BDB2},
+ {k:"mutfak-adasi",l:"Mutfak adası",w:1.6,d:0.9,h:0.9,c:0xC2BDB2},
+ {k:"buzdolabi",l:"Buzdolabı",w:0.7,d:0.7,h:1.8,c:0xBFC4C6},
+ {k:"ocak",l:"Ocak",w:0.6,d:0.6,h:0.9,c:0xBFC4C6},
+ {k:"klozet",l:"Klozet",w:0.4,d:0.7,h:0.8,c:0xE6E4DF},
+ {k:"lavabo",l:"Lavabo",w:0.6,d:0.5,h:0.85,c:0xE6E4DF},
+ {k:"dusakabin",l:"Duşakabin",w:0.9,d:0.9,h:2.0,c:0xCFD8DA},
+ {k:"kuvet",l:"Küvet",w:1.7,d:0.75,h:0.6,c:0xE6E4DF},
+ {k:"balkon-masasi",l:"Balkon masası",w:0.8,d:0.8,h:0.75,c:0xA98F6F},
+ {k:"balkon-sandalye",l:"Balkon sandalyesi",w:0.45,d:0.45,h:0.85,c:0x9A9384},
+ {k:"sezlong",l:"Şezlong",w:0.7,d:1.9,h:0.4,c:0x9A9384},
+ {k:"agac",l:"Ağaç",w:2.0,d:2.0,h:3.5,c:0x6E8C57},
+ {k:"cit",l:"Çit",w:2.0,d:0.1,h:1.0,c:0x8A7A62},
+ {k:"araba",l:"Araba",w:1.8,d:4.4,h:1.5,c:0x7A8A93}
+];
+var AUTO={
+ salon:["koltuk-takimi","sehpa","tv-unitesi"],
+ yatak:["cift-yatak","gardirop","komodin"],
+ mutfak:["mutfak-tezgahi","buzdolabi","yemek-masasi"],
+ banyo:["klozet","lavabo","dusakabin"],
+ balkon:["balkon-masasi","balkon-sandalye"],
+ bahce:["agac","agac"],
+ hol:[]
+};
+var FONT_UI="'IBM Plex Sans', system-ui, sans-serif";
+var FONT_MONO="'IBM Plex Mono', ui-monospace, monospace";
+var MODEL_DIR="models/", WALL_H=1.05, TH=0.1, SNAP=0.1, FLOOR_H=3.0;
+
+var floors=[{n:"Zemin kat",rooms:[],items:[]}], fi=0;
+var draft=[], mode="draw", sel=null, selKind=null;
+function R(){return floors[fi].rooms;} function I(){return floors[fi].items;}
+
+function area(p){var a=0;for(var i=0;i<p.length;i++){var j=(i+1)%p.length;a+=p[i].x*p[j].y-p[j].x*p[i].y;}return Math.abs(a)/2;}
+function centroid(p){var x=0,y=0;p.forEach(function(q){x+=q.x;y+=q.y;});return{x:x/p.length,y:y/p.length};}
+function snap(v){return Math.round(v/SNAP)*SNAP;}
+function byKey(k){for(var i=0;i<CATALOG.length;i++)if(CATALOG[i].k===k)return CATALOG[i];return CATALOG[0];}
+function netOf(list){return list.filter(function(r){return r.t!=="bahce";}).reduce(function(a,r){return a+area(r.p);},0);}
+function err(m){document.getElementById("err").textContent=m||"";}
+function inPoly(pt,p){var c=false;
+  for(var i=0,j=p.length-1;i<p.length;j=i++){
+    if(((p[i].y>pt.y)!=(p[j].y>pt.y))&&(pt.x<(p[j].x-p[i].x)*(pt.y-p[i].y)/(p[j].y-p[i].y)+p[i].x))c=!c;}
+  return c;}
+function bounds(all){
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity},n=0;
+  var src=all?floors:[floors[fi]];
+  src.forEach(function(f){f.rooms.forEach(function(r){r.p.forEach(function(q){n++;
+    b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});});});
+  draft.forEach(function(q){n++;b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  if(!n)return{x0:0,y0:0,x1:12,y1:10};
+  if(b.x1-b.x0<4)b.x1=b.x0+4; if(b.y1-b.y0<4)b.y1=b.y0+4;
+  return b;
+}
+
+/* ---------- 2D ---------- */
+var c2=document.getElementById("c2d"),g2=c2.getContext("2d"),V={s:30,ox:0,oy:0};
+function fit2d(){
+  var r=c2.parentNode.getBoundingClientRect(),dpr=Math.min(devicePixelRatio,2);
+  c2.width=r.width*dpr;c2.height=r.height*dpr;g2.setTransform(dpr,0,0,dpr,0,0);
+  var b=bounds(true),pad=40;
+  V.s=Math.min((r.width-pad*2)/(b.x1-b.x0),(r.height-pad*2)/(b.y1-b.y0));
+  V.ox=pad-b.x0*V.s+((r.width-pad*2)-(b.x1-b.x0)*V.s)/2;
+  V.oy=pad-b.y0*V.s+((r.height-pad*2)-(b.y1-b.y0)*V.s)/2;
+  draw2d();
+}
+function W2S(p){return{x:p.x*V.s+V.ox,y:p.y*V.s+V.oy};}
+function S2W(x,y){return{x:(x-V.ox)/V.s,y:(y-V.oy)/V.s};}
+function polyPath(p){g2.beginPath();p.forEach(function(q,k){var s=W2S(q);k?g2.lineTo(s.x,s.y):g2.moveTo(s.x,s.y);});g2.closePath();}
+
+function draw2d(){
+  var r=c2.parentNode.getBoundingClientRect();
+  g2.clearRect(0,0,r.width,r.height);
+  var b=bounds(true);
+  g2.strokeStyle="#E4E0D7";g2.lineWidth=1;
+  for(var x=Math.floor(b.x0)-2;x<=Math.ceil(b.x1)+2;x++){
+    var a=W2S({x:x,y:b.y0-2}),c=W2S({x:x,y:b.y1+2});
+    g2.beginPath();g2.moveTo(a.x,a.y);g2.lineTo(c.x,c.y);g2.stroke();}
+  for(var y=Math.floor(b.y0)-2;y<=Math.ceil(b.y1)+2;y++){
+    var a2=W2S({x:b.x0-2,y:y}),c3=W2S({x:b.x1+2,y:y});
+    g2.beginPath();g2.moveTo(a2.x,a2.y);g2.lineTo(c3.x,c3.y);g2.stroke();}
+
+  if(fi>0){
+    g2.strokeStyle="#C8C3B8";g2.lineWidth=1.5;g2.setLineDash([5,5]);
+    floors[fi-1].rooms.forEach(function(rm){polyPath(rm.p);g2.stroke();});
+    g2.setLineDash([]);
+  }
+  R().forEach(function(rm,i){
+    polyPath(rm.p);
+    g2.fillStyle=TYPES[rm.t].h;g2.fill();
+    g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
+    g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
+    var cs=W2S(centroid(rm.p));
+    g2.fillStyle="#1B1A17";g2.textAlign="center";g2.font="500 13px "+FONT_UI;
+    g2.fillText(rm.n,cs.x,cs.y-2);
+    if(area(rm.p)*V.s*V.s>1500){
+      g2.fillStyle="#5C5952";g2.font="400 12px "+FONT_MONO;
+      g2.fillText(area(rm.p).toFixed(1)+" m²",cs.x,cs.y+14);}
+    if(mode==="edit")rm.p.forEach(function(q){var s=W2S(q);
+      g2.beginPath();g2.arc(s.x,s.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
+      g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
+  });
+  I().forEach(function(it,i){
+    var cat=byKey(it.k),s=W2S({x:it.x,y:it.y});
+    g2.save();g2.translate(s.x,s.y);g2.rotate(it.r);
+    g2.fillStyle=(it.k==="kapi"||it.k==="pencere")?"rgba(31,78,95,0.35)":"rgba(60,58,52,0.5)";
+    g2.fillRect(-cat.w*V.s/2,-cat.d*V.s/2,cat.w*V.s,cat.d*V.s);
+    g2.strokeStyle=(selKind==="item"&&sel===i)?"#1F4E5F":"#3C3A34";
+    g2.lineWidth=(selKind==="item"&&sel===i)?3:1.5;
+    g2.strokeRect(-cat.w*V.s/2,-cat.d*V.s/2,cat.w*V.s,cat.d*V.s);
+    g2.restore();
+  });
+  if(draft.length){
+    polyPath(draft);
+    g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.setLineDash([6,4]);g2.stroke();g2.setLineDash([]);
+    draft.forEach(function(q){var s=W2S(q);
+      g2.beginPath();g2.arc(s.x,s.y,4,0,7);g2.fillStyle="#1F4E5F";g2.fill();});
+  }
+}
+
+var dragT=null,dragI=-1,dragV=-1;
+function evPos(e){var r=c2.getBoundingClientRect();return S2W(e.clientX-r.left,e.clientY-r.top);}
+c2.addEventListener("pointerdown",function(e){
+  var w=evPos(e);
+  if(mode==="draw"){draft.push({x:snap(w.x),y:snap(w.y)});err("");fit2d();return;}
+  if(mode==="edit"){
+    var rs=R();
+    for(var i=0;i<rs.length;i++)for(var v=0;v<rs[i].p.length;v++){
+      var q=rs[i].p[v];
+      if(Math.abs(q.x-w.x)*V.s<9&&Math.abs(q.y-w.y)*V.s<9){
+        dragT="vert";dragI=i;dragV=v;sel=i;selKind="room";draw2d();return;}}
+  }
+  var its=I();
+  for(var k=its.length-1;k>=0;k--){
+    var cat=byKey(its[k].k),d=its[k],dx=w.x-d.x,dy=w.y-d.y;
+    var ca=Math.cos(-d.r),sa=Math.sin(-d.r),lx=dx*ca-dy*sa,ly=dx*sa+dy*ca;
+    if(Math.abs(lx)<cat.w/2&&Math.abs(ly)<cat.d/2){
+      sel=k;selKind="item";dragT="item";dragI=k;renderLists();draw2d();return;}}
+  if(mode==="furn"){
+    its.push({k:document.getElementById("fsel").value,x:snap(w.x),y:snap(w.y),r:0});
+    sel=its.length-1;selKind="item";renderLists();build3d();fit2d();return;}
+  var rs2=R();
+  for(var m=rs2.length-1;m>=0;m--)if(inPoly(w,rs2[m].p)){
+    sel=m;selKind="room";renderLists();draw2d();return;}
+  sel=null;selKind=null;renderLists();draw2d();
+});
+c2.addEventListener("pointermove",function(e){
+  if(!dragT)return; var w=evPos(e);
+  if(dragT==="vert")R()[dragI].p[dragV]={x:snap(w.x),y:snap(w.y)};
+  else{I()[dragI].x=snap(w.x);I()[dragI].y=snap(w.y);}
+  draw2d();e.preventDefault();
+},{passive:false});
+window.addEventListener("pointerup",function(){if(dragT){dragT=null;renderLists();build3d();fit2d();}});
+
+/* ---------- zemin dokuları ---------- */
+var TEXCACHE={};
+function mkTex(kind){
+  if(TEXCACHE[kind])return TEXCACHE[kind];
+  var S=512,c=document.createElement("canvas");c.width=S;c.height=S;
+  var g=c.getContext("2d");
+  if(kind==="wood"){
+    g.fillStyle="#C9A87C";g.fillRect(0,0,S,S);
+    var pw=S/4;
+    for(var i=0;i<4;i++){
+      var off=(i%2)*pw/2;
+      for(var j=-1;j<5;j++){
+        var y=j*pw*2+off, hgt=pw*2-3;
+        var v=200+Math.floor(Math.random()*38);
+        g.fillStyle="rgb("+v+","+Math.floor(v*0.82)+","+Math.floor(v*0.60)+")";
+        g.fillRect(i*pw+1.5,y,pw-3,hgt);
+        g.strokeStyle="rgba(120,88,54,0.20)";g.lineWidth=1;
+        for(var k=0;k<5;k++){
+          var gy=y+Math.random()*hgt;
+          g.beginPath();g.moveTo(i*pw+3,gy);
+          g.bezierCurveTo(i*pw+pw*0.3,gy+2,i*pw+pw*0.6,gy-2,i*pw+pw-3,gy);
+          g.stroke();
+        }
+      }
+    }
+  }else if(kind==="tile"){
+    g.fillStyle="#D9D6CE";g.fillRect(0,0,S,S);
+    var t=S/4;
+    for(var a=0;a<4;a++)for(var b=0;b<4;b++){
+      var w=228+Math.floor(Math.random()*18);
+      g.fillStyle="rgb("+w+","+(w-3)+","+(w-10)+")";
+      g.fillRect(a*t+2,b*t+2,t-4,t-4);
+    }
+  }else{
+    g.fillStyle="#8FAE72";g.fillRect(0,0,S,S);
+    for(var n=0;n<2600;n++){
+      var gv=110+Math.floor(Math.random()*70);
+      g.fillStyle="rgba("+Math.floor(gv*0.72)+","+gv+","+Math.floor(gv*0.55)+",0.55)";
+      g.fillRect(Math.random()*S,Math.random()*S,2,4);
+    }
+  }
+  var tx=new THREE.CanvasTexture(c);
+  tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(0.5,0.5);tx.anisotropy=8;
+  TEXCACHE[kind]=tx;return tx;
+}
+var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass"};
+
+/* ---------- 3D ---------- */
+var wrap=document.getElementById("wrap3d"),scene,cam,ortho,activeCam,ren,grp;
+var topView=false,planW=12,planD=10;
+var th=Math.PI*0.25,ph=Math.PI*0.34,rad=22,tgt=new THREE.Vector3(0,0,0);
+var loader=new THREE.GLTFLoader(),cache={},missing={},localModels={};
+function modelURL(k){return localModels[k]||(MODEL_DIR+k+".glb");}
+
+function init3d(){
+  scene=new THREE.Scene();
+  cam=new THREE.PerspectiveCamera(38,1,0.1,600);
+  ortho=new THREE.OrthographicCamera(-10,10,10,-10,0.1,600);
+  activeCam=cam;
+  ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+  ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.setClearColor(0xF4F2ED,1);
+  wrap.appendChild(ren.domElement);
+  scene.add(new THREE.HemisphereLight(0xffffff,0xBFB9AC,0.95));
+  var dl=new THREE.DirectionalLight(0xffffff,0.55);dl.position.set(9,15,7);scene.add(dl);
+  grp=new THREE.Group();scene.add(grp);
+  size3d();loop();
+}
+function size3d(w,h){
+  var r=wrap.getBoundingClientRect();
+  w=w||r.width;h=h||r.height;
+  cam.aspect=w/h;cam.updateProjectionMatrix();
+  var asp=w/h, halfD=Math.max(planD,4)/2*1.12, halfW=Math.max(planW,4)/2*1.12;
+  if(halfW/halfD<asp)halfW=halfD*asp; else halfD=halfW/asp;
+  ortho.left=-halfW;ortho.right=halfW;ortho.top=halfD;ortho.bottom=-halfD;
+  ortho.updateProjectionMatrix();
+  ren.setSize(w,h,false);}
+function loop(){requestAnimationFrame(loop);
+  if(topView){
+    ortho.position.set(tgt.x,tgt.y+60,tgt.z+0.001);
+    ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
+    activeCam=ortho;
+  }else{
+    cam.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));
+    cam.lookAt(tgt);activeCam=cam;
+  }
+  ren.render(scene,activeCam);}
+var d3=false,px=0,py=0;
+wrap.addEventListener("pointerdown",function(e){d3=true;px=e.clientX;py=e.clientY;});
+window.addEventListener("pointermove",function(e){if(!d3)return;
+  th-=(e.clientX-px)*0.008;ph=Math.max(0.15,Math.min(1.45,ph-(e.clientY-py)*0.006));
+  px=e.clientX;py=e.clientY;});
+window.addEventListener("pointerup",function(){d3=false;});
+wrap.addEventListener("wheel",function(e){rad=Math.max(5,Math.min(120,rad+e.deltaY*0.02));e.preventDefault();},{passive:false});
+
+function numberMarker(no){
+  var S=256,c=document.createElement("canvas");c.width=S;c.height=S;
+  var g=c.getContext("2d");
+  g.beginPath();g.arc(S/2,S/2,S/2-8,0,7);
+  g.fillStyle="rgba(248,246,242,0.95)";g.fill();
+  g.strokeStyle="#1F4E5F";g.lineWidth=10;g.stroke();
+  g.fillStyle="#1B1A17";g.textAlign="center";g.textBaseline="middle";
+  g.font="600 "+(no>9?110:130)+"px "+FONT_UI;
+  g.fillText(String(no),S/2,S/2+4);
+  var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(0.95,0.95),
+    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.renderOrder=5;
+  return m;
+}
+function fitModel(obj,cat){
+  var box=new THREE.Box3().setFromObject(obj),sz=new THREE.Vector3();box.getSize(sz);
+  obj.scale.setScalar(Math.min(cat.w/(sz.x||1),cat.h/(sz.y||1),cat.d/(sz.z||1)));
+  var b2=new THREE.Box3().setFromObject(obj),ct=new THREE.Vector3();b2.getCenter(ct);
+  obj.position.x-=ct.x;obj.position.z-=ct.z;obj.position.y-=b2.min.y;
+  return obj;
+}
+function proxy(cat){
+  var m=new THREE.Mesh(new THREE.BoxGeometry(cat.w,cat.h,cat.d),
+    new THREE.MeshLambertMaterial({color:cat.c,transparent:cat.k==="pencere",opacity:cat.k==="pencere"?0.55:1}));
+  m.position.y=cat.h/2;var g=new THREE.Group();g.add(m);return g;
+}
+function addItem(it,cx,cy,yb){
+  var cat=byKey(it.k),holder=new THREE.Group();
+  holder.position.set(it.x-cx,yb+0.08+(cat.e||0),it.y-cy);holder.rotation.y=-it.r;
+  grp.add(holder);
+  if(missing[it.k]||it.k==="kapi"||it.k==="pencere"){holder.add(proxy(cat));return;}
+  if(cache[it.k]){holder.add(fitModel(cache[it.k].clone(true),cat));return;}
+  var ph2=proxy(cat);holder.add(ph2);
+  loader.load(modelURL(it.k),function(gl){
+    cache[it.k]=gl.scene;holder.remove(ph2);holder.add(fitModel(gl.scene.clone(true),cat));
+  },undefined,function(){missing[it.k]=true;});
+}
+var legendData=[];
+function doorArc(it,cx,cy,yb){
+  var w=byKey("kapi").w, pts=[];
+  for(var i=0;i<=18;i++){
+    var a=i/18*Math.PI/2;
+    pts.push(new THREE.Vector3(-w/2+Math.cos(a)*w,0,Math.sin(a)*w));
+  }
+  pts.push(new THREE.Vector3(-w/2,0,0));
+  pts.push(new THREE.Vector3(-w/2+w,0,0));
+  var g=new THREE.BufferGeometry().setFromPoints(pts);
+  var l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6E6A62,transparent:true,opacity:0.75}));
+  l.position.set(it.x-cx,yb+0.11,it.y-cy);l.rotation.y=-it.r;l.renderOrder=4;
+  return l;
+}
+function build3d(){
+  while(grp.children.length)grp.remove(grp.children[0]);
+  legendData=[];var lno=0;
+  var showAll=document.getElementById("allChk").checked;
+  var b=bounds(true),cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2;
+  floors.forEach(function(f,idx){
+    if(!showAll&&idx!==fi)return;
+    var yb=idx*FLOOR_H;
+    f.rooms.forEach(function(rm){
+      var sh=new THREE.Shape();
+      rm.p.forEach(function(q,i){i?sh.lineTo(q.x-cx,q.y-cy):sh.moveTo(q.x-cx,q.y-cy);});
+      var geo=new THREE.ExtrudeGeometry(sh,{depth:0.08,bevelEnabled:false});geo.rotateX(Math.PI/2);
+      var fl=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({
+        map:mkTex(TEXOF[rm.t]||"wood"),color:0xFFFFFF,side:THREE.DoubleSide}));
+      fl.position.y=yb;grp.add(fl);
+      if(rm.t!=="bahce")for(var i=0;i<rm.p.length;i++){
+        var a=rm.p[i],c=rm.p[(i+1)%rm.p.length],dx=c.x-a.x,dy=c.y-a.y;
+        var len=Math.sqrt(dx*dx+dy*dy); if(len<0.05)continue;
+        var wl=new THREE.Mesh(new THREE.BoxGeometry(len+TH,WALL_H,TH),
+          new THREE.MeshLambertMaterial({color:0x97938A}));
+        wl.position.set((a.x+c.x)/2-cx,yb+WALL_H/2,(a.y+c.y)/2-cy);
+        wl.rotation.y=-Math.atan2(dy,dx);grp.add(wl);
+      }
+      lno++;legendData.push({no:lno,n:rm.n,a:area(rm.p),f:f.n,t:rm.t});
+      var ct=centroid(rm.p),sp=numberMarker(lno);
+      sp.position.set(ct.x-cx,yb+0.14,ct.y-cy);grp.add(sp);
+    });
+    f.items.forEach(function(it){
+      addItem(it,cx,cy,yb);
+      if(it.k==="kapi")grp.add(doorArc(it,cx,cy,yb));
+    });
+  });
+  renderLegend();
+  planW=b.x1-b.x0;planD=b.y1-b.y0;size3d();
+  var span=Math.max(b.x1-b.x0,b.y1-b.y0);
+  rad=span*1.8+6+(showAll?floors.length*2.5:0);
+  tgt.y=(showAll?(floors.length-1)*FLOOR_H/2:fi*FLOOR_H);
+}
+
+function renderLegend(){
+  var el=document.getElementById("legend");if(!el)return;
+  if(!legendData.length){el.innerHTML="";el.style.display="none";return;}
+  el.style.display="block";
+  var multi=legendData.some(function(d){return d.f!==legendData[0].f;});
+  var h="",last=null;
+  legendData.forEach(function(d){
+    if(multi&&d.f!==last){h+='<div class="kf">'+d.f+'</div>';last=d.f;}
+    h+='<div><span class="no">'+d.no+'</span> '+d.n+
+       (d.a>=1?' · '+d.a.toFixed(1)+' m²':'')+'</div>';
+  });
+  el.innerHTML=h;
+}
+
+/* ---------- otomatik döşeme ---------- */
+function autoFurnish(rm){
+  var list=AUTO[rm.t]||[];if(!list.length){err("Bu oda tipi için hazır yerleşim yok.");return;}
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};
+  rm.p.forEach(function(q){b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);
+    b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  var placed=[],n=0;
+  list.forEach(function(k){
+    var cat=byKey(k),best=null;
+    for(var gy=b.y0+0.6;gy<b.y1-0.4;gy+=0.4)for(var gx=b.x0+0.6;gx<b.x1-0.4;gx+=0.4){
+      if(!inPoly({x:gx,y:gy},rm.p))continue;
+      var rr=Math.max(cat.w,cat.d)/2+0.15,ok=true;
+      for(var i=0;i<placed.length;i++){
+        var p=placed[i],dd=Math.hypot(p.x-gx,p.y-gy);
+        if(dd<rr+Math.max(byKey(p.k).w,byKey(p.k).d)/2+0.15){ok=false;break;}}
+      if(ok){best={x:snap(gx),y:snap(gy),k:k};break;}
+    }
+    if(best){placed.push(best);I().push({k:k,x:best.x,y:best.y,r:0});n++;}
+  });
+  err(n?"":"Oda bu eşyalar için dar kaldı.");
+  renderLists();build3d();draw2d();
+}
+
+/* ---------- listeler ---------- */
+function renderTabs(){
+  var t=document.getElementById("tabs");t.innerHTML="";
+  floors.forEach(function(f,i){
+    var b=document.createElement("button");b.className="ghost";b.textContent=f.n;
+    b.setAttribute("aria-pressed",String(i===fi));
+    b.onclick=function(){fi=i;sel=null;selKind=null;draft=[];err("");
+      renderTabs();renderLists();build3d();fit2d();};
+    t.appendChild(b);
+  });
+  document.getElementById("floorName").textContent=floors[fi].n;
+}
+function renderLists(){
+  var rl=document.getElementById("rlist");rl.innerHTML="";
+  if(!R().length)rl.innerHTML='<li class="empty">Bu katta henüz oda yok.</li>';
+  R().forEach(function(rm,i){
+    var li=document.createElement("li");if(selKind==="room"&&sel===i)li.className="on";
+    li.innerHTML='<span class="sw" style="background:'+TYPES[rm.t].h+'"></span>'+
+      '<span class="nm">'+rm.n+'</span><span class="dm">'+area(rm.p).toFixed(1)+' m²</span>';
+    var b=document.createElement("button");b.textContent="×";
+    b.setAttribute("aria-label",rm.n+" odasını sil");
+    b.onclick=function(ev){ev.stopPropagation();R().splice(i,1);sel=null;selKind=null;
+      renderLists();build3d();fit2d();};
+    li.appendChild(b);li.onclick=function(){sel=i;selKind="room";renderLists();draw2d();};
+    rl.appendChild(li);
+  });
+  document.getElementById("total").textContent=netOf(R()).toFixed(1)+" m²";
+  document.getElementById("grand").textContent=
+    floors.reduce(function(a,f){return a+netOf(f.rooms);},0).toFixed(1)+" m²";
+
+  var fl=document.getElementById("flist");fl.innerHTML="";
+  if(!I().length)fl.innerHTML='<li class="empty">Bu katta henüz eşya yok.</li>';
+  I().forEach(function(it,i){
+    var cat=byKey(it.k),li=document.createElement("li");
+    if(selKind==="item"&&sel===i)li.className="on";
+    li.innerHTML='<span class="nm">'+cat.l+'</span>'+(missing[it.k]?'<span class="dm">yer tutucu</span>':'');
+    var b=document.createElement("button");b.textContent="×";
+    b.setAttribute("aria-label",cat.l+" eşyasını sil");
+    b.onclick=function(ev){ev.stopPropagation();I().splice(i,1);sel=null;selKind=null;
+      renderLists();build3d();draw2d();};
+    li.appendChild(b);li.onclick=function(){sel=i;selKind="item";renderLists();draw2d();};
+    fl.appendChild(li);
+  });
+}
+
+/* ---------- kontroller ---------- */
+function setMode(m){
+  mode=m;sel=null;selKind=null;
+  [["draw","mDraw","paneDraw"],["edit","mEdit","paneEdit"],["furn","mFurn","paneFurn"]]
+   .forEach(function(x){document.getElementById(x[1]).setAttribute("aria-pressed",String(m===x[0]));
+     document.getElementById(x[2]).hidden=(m!==x[0]);});
+  if(m!=="draw")draft=[];
+  err("");renderLists();draw2d();
+}
+document.getElementById("mDraw").onclick=function(){setMode("draw");};
+document.getElementById("mEdit").onclick=function(){setMode("edit");};
+document.getElementById("mFurn").onclick=function(){setMode("furn");};
+
+document.getElementById("addFloor").onclick=function(){
+  floors.push({n:floors.length+". kat",rooms:[],items:[]});
+  fi=floors.length-1;sel=null;selKind=null;draft=[];err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+document.getElementById("delFloor").onclick=function(){
+  if(floors.length<2){err("Tek kat silinemez.");return;}
+  floors.splice(fi,1);fi=Math.max(0,fi-1);sel=null;selKind=null;draft=[];err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+document.getElementById("finishBtn").onclick=function(){
+  var n=document.getElementById("rname").value.trim();
+  if(draft.length<3){err("En az üç köşe koy.");return;}
+  if(!n){err("Oda adını yaz.");return;}
+  R().push({n:n,t:document.getElementById("rtype").value,p:draft.slice()});
+  draft=[];document.getElementById("rname").value="";err("");
+  renderLists();build3d();fit2d();
+};
+document.getElementById("undoBtn").onclick=function(){draft.pop();err("");fit2d();};
+document.getElementById("rotBtn").onclick=function(){
+  if(selKind!=="item"){err("Önce bir eşya seç.");return;}
+  I()[sel].r+=Math.PI/4;err("");draw2d();build3d();};
+document.getElementById("autoBtn").onclick=function(){
+  if(selKind!=="room"){err("Önce bir oda seç.");return;}
+  autoFurnish(R()[sel]);};
+document.getElementById("allChk").onchange=function(){build3d();};
+document.getElementById("topBtn").onclick=function(){
+  topView=!topView;
+  this.setAttribute("aria-pressed",String(topView));
+  this.textContent=topView?"İzometrik görünüm":"Üstten görünüm";
+  size3d();
+};
+document.getElementById("clearBtn").onclick=function(){
+  floors=[{n:"Zemin kat",rooms:[],items:[]}];fi=0;draft=[];sel=null;selKind=null;err("");
+  renderTabs();renderLists();build3d();fit2d();};
+document.getElementById("rname").addEventListener("input",function(){err("");});
+
+var fs=document.getElementById("fsel");
+CATALOG.forEach(function(it){var o=document.createElement("option");o.value=it.k;o.textContent=it.l;fs.appendChild(o);});
+
+document.getElementById("saveBtn").onclick=function(){
+  var blob=new Blob([JSON.stringify({v:4,name:val("projName"),floors:floors},null,1)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=fileBase()+".json";a.click();};
+document.getElementById("loadBtn").onclick=function(){document.getElementById("fileIn").click();};
+document.getElementById("fileIn").onchange=function(e){
+  var f=e.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var d=JSON.parse(rd.result);
+      if(!d.floors||!d.floors.length)throw 0;
+      floors=d.floors;fi=0;draft=[];sel=null;selKind=null;err("");
+      document.getElementById("projName").value=d.name||"";
+      renderTabs();renderLists();build3d();fit2d();
+    }catch(x){err("Dosya okunamadı. Bu araçtan kaydedilmiş bir proje dosyası seç.");}
+  };
+  rd.readAsText(f);e.target.value="";
+};
+
+document.getElementById("sampleBtn").onclick=function(){
+  floors=[
+   {n:"Zemin kat",rooms:[
+     {n:"Salon",t:"salon",p:[{x:0,y:0},{x:4.2,y:0},{x:4.2,y:3.2},{x:5.8,y:3.2},{x:5.8,y:5.4},{x:0,y:5.4}]},
+     {n:"Mutfak",t:"mutfak",p:[{x:0,y:5.4},{x:4.2,y:5.4},{x:4.2,y:8.4},{x:0,y:8.4}]},
+     {n:"Hol",t:"hol",p:[{x:4.2,y:0},{x:5.8,y:0},{x:5.8,y:3.2},{x:4.2,y:3.2}]},
+     {n:"WC",t:"banyo",p:[{x:5.8,y:0},{x:8.0,y:0},{x:8.0,y:2.0},{x:5.8,y:2.0}]},
+     {n:"Yatak odası",t:"yatak",p:[{x:5.8,y:5.4},{x:10.2,y:5.4},{x:10.2,y:8.4},{x:5.8,y:8.4}]},
+     {n:"Bahçe",t:"bahce",p:[{x:-4.5,y:-1.6},{x:0,y:-1.6},{x:0,y:8.4},{x:-4.5,y:8.4}]},
+     {n:"Balkon",t:"balkon",p:[{x:0,y:-1.6},{x:4.2,y:-1.6},{x:4.2,y:0},{x:0,y:0}]}
+   ],items:[
+     {k:"koltuk-takimi",x:1.6,y:2.2,r:0},{k:"sehpa",x:1.6,y:3.6,r:0},
+     {k:"tv-unitesi",x:1.6,y:4.9,r:0},{k:"yemek-masasi",x:2.1,y:6.8,r:0},
+     {k:"mutfak-tezgahi",x:0.6,y:6.0,r:Math.PI/2},
+     {k:"merdiven",x:6.9,y:3.9,r:0},{k:"kapi",x:5.0,y:0,r:0},
+     {k:"pencere",x:2.1,y:-1.6,r:0},{k:"agac",x:-2.4,y:2.0,r:0},{k:"agac",x:-2.4,y:6.0,r:0}
+   ]},
+   {n:"1. kat",rooms:[
+     {n:"Ebeveyn yatak odası",t:"yatak",p:[{x:0,y:0},{x:5.0,y:0},{x:5.0,y:4.4},{x:0,y:4.4}]},
+     {n:"Çocuk odası",t:"yatak",p:[{x:5.8,y:5.4},{x:10.2,y:5.4},{x:10.2,y:8.4},{x:5.8,y:8.4}]},
+     {n:"Banyo",t:"banyo",p:[{x:0,y:5.4},{x:4.2,y:5.4},{x:4.2,y:8.4},{x:0,y:8.4}]},
+     {n:"Hol",t:"hol",p:[{x:5.0,y:0},{x:8.0,y:0},{x:8.0,y:5.4},{x:0,y:5.4},{x:0,y:4.4},{x:5.0,y:4.4}]}
+   ],items:[
+     {k:"cift-yatak",x:2.4,y:1.8,r:0},{k:"gardirop",x:4.5,y:3.2,r:Math.PI/2},
+     {k:"tek-yatak",x:7.4,y:6.6,r:0},{k:"kuvet",x:1.2,y:6.2,r:0},
+     {k:"klozet",x:3.6,y:7.6,r:0},{k:"merdiven",x:6.9,y:3.9,r:0}
+   ]}
+  ];
+  fi=0;draft=[];sel=null;selKind=null;err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+
+/* ---------- künye ---------- */
+var logoData=null, logoImg=null;
+function val(id){return document.getElementById(id).value.trim();}
+function slug(t){
+  var map={"ç":"c","ğ":"g","ı":"i","İ":"i","ö":"o","ş":"s","ü":"u",
+           "Ç":"c","Ğ":"g","Ö":"o","Ş":"s","Ü":"u"};
+  return (t||"").replace(/[çğıİöşüÇĞÖŞÜ]/g,function(m){return map[m];})
+    .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,50);
+}
+function fileBase(){var s2=slug(val("projName"));return s2?s2+"-katplan3d":"katplan3d-plan";}
+function saveBrand(){
+  try{localStorage.setItem("kp_brand",JSON.stringify({
+    n:val("bName"),p:val("bPhone"),o:val("bOffice"),l:logoData,
+    on:document.getElementById("brandOn").checked}));}catch(e){}
+}
+function loadBrand(){
+  try{
+    var d=JSON.parse(localStorage.getItem("kp_brand")||"null"); if(!d)return;
+    document.getElementById("bName").value=d.n||"";
+    document.getElementById("bPhone").value=d.p||"";
+    document.getElementById("bOffice").value=d.o||"";
+    document.getElementById("brandOn").checked=d.on!==false;
+    if(d.l){logoData=d.l;logoImg=new Image();logoImg.src=d.l;}
+  }catch(e){}
+}
+["bName","bPhone","bOffice"].forEach(function(id){
+  document.getElementById(id).addEventListener("input",saveBrand);});
+document.getElementById("brandOn").onchange=saveBrand;
+document.getElementById("bLogo").onchange=function(e){
+  var f=e.target.files[0]; if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){logoData=rd.result;logoImg=new Image();
+    logoImg.onload=function(){err("");};logoImg.src=logoData;saveBrand();};
+  rd.readAsDataURL(f);
+};
+document.getElementById("logoClr").onclick=function(){
+  logoData=null;logoImg=null;document.getElementById("bLogo").value="";saveBrand();err("");};
+
+document.getElementById("pngBtn").onclick=function(){
+  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  var W=1080,H=1350,IH=770,PAD=70;
+  size3d(W,IH);ren.render(scene,activeCam);
+  var shot=ren.domElement.toDataURL("image/png");size3d();
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,132);
+
+    g.fillStyle="#1B1A17";g.font="600 52px 'IBM Plex Sans',sans-serif";
+    g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
+    g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px 'IBM Plex Sans',sans-serif";
+    g.fillText("KatPlan3D",W-PAD,100);g.textAlign="left";
+
+    var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
+    var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
+
+    g.strokeStyle="#DCD7CD";g.lineWidth=2;
+    g.beginPath();g.moveTo(PAD,1128);g.lineTo(W-PAD,1128);g.stroke();
+
+    g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
+    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1178);
+
+    // lejant
+    var LY=926,cols=legendData.length>6?2:1;
+    var colW=(W-PAD*2)/cols;
+    legendData.forEach(function(d,i){
+      var cxi=i%cols, ryi=Math.floor(i/cols);
+      var x=PAD+cxi*colW, y=LY+ryi*36;
+      g.fillStyle="#1F4E5F";g.font="600 26px "+FONT_UI;
+      g.fillText(String(d.no),x,y);
+      g.fillStyle="#1B1A17";g.font="400 26px "+FONT_UI;
+      g.fillText(d.n,x+34,y);
+      g.fillStyle="#5C5952";g.font="400 24px "+FONT_MONO;
+      g.textAlign="right";g.fillText(d.a.toFixed(1)+" m²",x+colW-40,y);g.textAlign="left";
+    });
+    var on=document.getElementById("brandOn").checked;
+    var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
+    if(on){
+      var y=1232;
+      if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;
+        g.fillText(nm,PAD,y);y+=46;}
+      var l2=[ofs,tel].filter(Boolean).join("  ·  ");
+      if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;
+        g.fillText(l2,PAD,y);}
+      if(logoImg&&logoImg.width){
+        var BW=200,BH=118,bx=W-PAD-BW,by=1170;
+        var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
+        var lw=logoImg.width*sc,lh=logoImg.height*sc;
+        g.drawImage(logoImg,bx+(BW-lw)/2,by+(BH-lh)/2,lw,lh);
+      }
+    }
+    g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
+    g.fillText("KatPlan3D · armagankocabas.com",PAD,1318);
+
+    var a=document.createElement("a");a.download=fileBase()+".png";a.href=c.toDataURL("image/png");a.click();
+  };
+  img.src=shot;
+};
+
+window.addEventListener("resize",function(){fit2d();size3d();});
+loadBrand();init3d();renderTabs();renderLists();
+if(document.fonts&&document.fonts.load){
+  Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
+               document.fonts.load("500 40px 'IBM Plex Mono'"),
+               document.fonts.load("400 32px 'IBM Plex Sans'")])
+    .then(function(){build3d();draw2d();}).catch(function(){});
+}document.getElementById("sampleBtn").click();
+</script>
