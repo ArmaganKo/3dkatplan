@@ -32,7 +32,7 @@ h1 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;line-height:1.25}
 header p{margin:3px 0 0;color:var(--soft);max-width:72ch;font-size:14px;line-height:1.45}
-.app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;border-right:1px solid var(--line)}
+.app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;align-items:start}
 .panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
 .stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start}
 h2{margin:0 0 10px;font-size:13px;font-weight:600}
@@ -55,7 +55,7 @@ button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
 .tabs button{padding:6px 12px;font-size:13px}
 .err{color:#8C2B22;font-size:13px;margin:8px 0 0}
 .hint{color:var(--soft);font-size:13px;margin:0}
-ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line)}
+ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line);max-height:230px;overflow-y:auto}
 li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 li .sw{width:11px;height:11px;border-radius:3px;flex:none}
 li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -69,12 +69,15 @@ li.on{font-weight:500}
 .total b{font-size:21px;font-weight:600;font-family:"IBM Plex Mono",monospace}
 .sub{display:flex;justify-content:space-between;font-size:13px;color:var(--soft);margin-top:4px}
 .view{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#F4F2ED;position:relative}
-#legend{position:absolute;top:10px;left:10px;background:rgba(251,250,247,0.93);
-  border:1px solid var(--line);border-radius:var(--r);padding:8px 11px;max-width:52%;
-  font-size:12px;line-height:1.5;pointer-events:none}
-#legend div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#legend{margin-top:10px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:10px 13px;font-size:13px;line-height:1.55;
+  columns:2;column-gap:22px}
+#legend:empty{display:none}
+#legend div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  break-inside:avoid;-webkit-column-break-inside:avoid}
 #legend .no{display:inline-block;min-width:15px;font-weight:600;color:var(--accent)}
-#legend .kf{font-weight:600;margin-top:4px}
+#legend .kf{font-weight:600;margin-top:6px}
+#legend .kf:first-child{margin-top:0}
 #plan2d{height:420px}
 #wrap3d{height:420px}
 .views{display:grid;gap:16px}
@@ -189,7 +192,8 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
    </div>
    <div>
     <p class="cap">Üç boyutlu görünüm — sürükleyerek döndür, tekerlekle yakınlaştır</p>
-    <div class="view" id="wrap3d"><div id="legend"></div></div>
+    <div class="view" id="wrap3d"></div>
+    <div id="legend"></div>
    </div>
   </div>
   <div class="bar">
