@@ -3,6 +3,15 @@
 <title>3D Kat Planı Çıkarma Aracı: Ücretsiz | KatPlan3D</title>
 <meta name="description" content="3D kat planı çıkarma aracı: daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
 <meta name="robots" content="index, follow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#F4F2ED">
+<meta property="og:type" content="website">
+<meta property="og:title" content="3D Kat Planı Çıkarma Aracı: Ücretsiz">
+<meta property="og:description" content="Daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
+<meta property="og:image" content="https://www.3dkatplan.com/og.png">
+<meta property="og:url" content="https://www.3dkatplan.com/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,8 +21,14 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.6}
-header{padding:24px 24px 18px;border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:23px;font-weight:600;letter-spacing:-0.01em}
+header{padding:20px 24px 18px;border-bottom:1px solid var(--line)}
+.brand{display:inline-block;line-height:0;margin-bottom:6px}
+.brand img{width:188px;height:auto;display:block}
+h1 a{color:inherit;text-decoration:none}
+h1 a:hover{color:var(--accent)}
+h1 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.01em}
 header p{margin:5px 0 0;color:var(--soft);max-width:64ch;font-size:14px}
 .app{display:grid;grid-template-columns:300px 1fr}
 .panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
@@ -80,7 +95,10 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
 </style>
 
 <header>
-  <h1>KatPlan3D</h1>
+  <a class="brand" href="/" aria-label="3dkatplan.com ana sayfa">
+    <img src="logo.png" alt="3dkatplan.com" width="188" height="123">
+  </a>
+  <h1><a href="/">3D Kat Planı Çıkarma Aracı</a></h1>
   <p>Odayı köşe köşe çiz, eşyaları yerleştir, dubleks katları ekle, üç boyutlu kat planını ilan görseli olarak indir. Ücretsiz.</p>
 </header>
 
