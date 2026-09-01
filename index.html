@@ -59,6 +59,12 @@ button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
 .modes button{padding:8px 4px;font-size:13px}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.types button{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:13px;
+  font-weight:400;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.types button:hover{background:var(--accent-soft);border-color:var(--accent)}
+.types button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:500}
+.types .dot{width:11px;height:11px;border-radius:3px;flex:none;border:1px solid rgba(0,0,0,0.12)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .tabs button{padding:6px 12px;font-size:13px}
 .err{color:#8C2B22;font-size:13px;margin:8px 0 0}
@@ -151,16 +157,9 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
   <div id="paneDraw">
     <div class="field"><label for="rname">Oda adı</label><input id="rname" placeholder="Salon"></div>
-    <div class="field"><label for="rtype">Oda tipi</label>
-      <select id="rtype">
-        <option value="salon">Salon</option><option value="yatak">Yatak odası</option>
-        <option value="mutfak">Mutfak</option><option value="banyo">Banyo / WC</option>
-        <option value="hol">Hol / koridor</option><option value="balkon">Balkon</option>
-        <option value="bahce">Bahçe / dış alan</option>
-        <option value="kiler">Kiler / Depo</option>
-        <option value="giyinme">Giyinme odası</option>
-        <option value="calisma">Çalışma odası</option>
-      </select></div>
+    <div class="field"><label>Oda tipi</label>
+      <div class="types" id="typeGrid"></div>
+    </div>
 
     <div class="grid2">
       <div><label for="rw">En (m)</label><input id="rw" class="num" inputmode="decimal" placeholder="4.20"></div>
@@ -318,7 +317,12 @@ var TYPES={
  bahce:{l:"Bahçe",c:0x9FB98A,h:"#9FB98A"},
  kiler:{l:"Kiler / Depo",c:0xC5BFB2,h:"#C5BFB2"},
  giyinme:{l:"Giyinme odası",c:0xDCCFC0,h:"#DCCFC0"},
- calisma:{l:"Çalışma odası",c:0xB9C6BC,h:"#B9C6BC"}
+ calisma:{l:"Çalışma odası",c:0xB9C6BC,h:"#B9C6BC"},
+ ebeveyn:{l:"Ebeveyn odası",c:0xC8B79F,h:"#C8B79F"},
+ cocuk:{l:"Çocuk odası",c:0xE3D0BE,h:"#E3D0BE"},
+ oturma:{l:"Oturma odası",c:0xA8BAA0,h:"#A8BAA0"},
+ teras:{l:"Teras",c:0xBCC9B0,h:"#BCC9B0"},
+ camasir:{l:"Çamaşır odası",c:0xB6C3C6,h:"#B6C3C6"}
 };
 /* w genişlik, d derinlik, h yükseklik, e zeminden yükseklik (metre) */
 var CATALOG=[
@@ -362,12 +366,20 @@ var AUTO={
  kiler:[],
  giyinme:["gardirop"],
  calisma:["calisma-masasi","sandalye"],
+ ebeveyn:["cift-yatak","gardirop","komodin"],
+ cocuk:["tek-yatak","gardirop","calisma-masasi"],
+ oturma:["koltuk-takimi","sehpa","tv-unitesi"],
+ teras:["balkon-masasi","balkon-sandalye"],
+ camasir:[],
  hol:[]
 };
 var FONT_UI="'IBM Plex Sans', system-ui, sans-serif";
 var FONT_MONO="'IBM Plex Mono', ui-monospace, monospace";
 var MODEL_DIR="models/", WALL_H=1.05, TH=0.1, SNAP=0.1, FLOOR_H=3.0;
 
+var TYPE_ORDER=["salon","oturma","yatak","ebeveyn","cocuk","calisma","giyinme",
+  "mutfak","banyo","camasir","hol","kiler","balkon","teras","bahce"];
+var curType="salon";
 var floors=[{n:"Zemin kat",rooms:[],items:[]}], fi=0;
 var draft=[], mode="draw", sel=null, selKind=null;
 function R(){return floors[fi].rooms;} function I(){return floors[fi].items;}
@@ -595,7 +607,7 @@ function mkTex(kind){
   tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(0.5,0.5);tx.anisotropy=8;
   TEXCACHE[kind]=tx;return tx;
 }
-var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass",kiler:"tile",giyinme:"wood",calisma:"wood"};
+var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass",kiler:"tile",giyinme:"wood",calisma:"wood",ebeveyn:"wood",cocuk:"wood",oturma:"wood",teras:"tile",camasir:"tile"};
 
 /* ---------- 3D ---------- */
 var wrap=document.getElementById("wrap3d"),scene,cam,ortho,activeCam,ren,grp;
@@ -896,12 +908,24 @@ document.getElementById("finishBtn").onclick=function(){
   var n=document.getElementById("rname").value.trim();
   if(draft.length<3){err("En az üç köşe koy.");return;}
   if(!n){err("Oda adını yaz.");return;}
-  R().push({n:n,t:document.getElementById("rtype").value,p:draft.slice()});
+  R().push({n:n,t:curType,p:draft.slice()});
   draft=[];document.getElementById("rname").value="";err("");
   renderLists();build3d();fit2d();
 };
 document.getElementById("undoBtn").onclick=function(){draft.pop();err("");fit2d();};
 function numv(id){return parseFloat((document.getElementById(id).value||"").replace(",","."));}
+function renderTypes(){
+  var g=document.getElementById("typeGrid"); if(!g)return;
+  g.innerHTML="";
+  TYPE_ORDER.forEach(function(k){
+    var t=TYPES[k]; if(!t)return;
+    var b=document.createElement("button");
+    b.type="button"; b.setAttribute("aria-pressed",String(k===curType));
+    b.innerHTML='<span class="dot" style="background:'+t.h+'"></span><span>'+t.l+'</span>';
+    b.onclick=function(){curType=k;renderTypes();err("");};
+    g.appendChild(b);
+  });
+}
 document.getElementById("rectBtn").onclick=function(){
   var n=document.getElementById("rname").value.trim();
   var w=numv("rw"), d=numv("rd");
@@ -914,7 +938,7 @@ document.getElementById("rectBtn").onclick=function(){
       mx=Math.max(mx,q.x); my=Math.min(my,q.y);});});
     x0=snap(mx+0.6); y0=snap(my);
   }
-  R().push({n:n,t:document.getElementById("rtype").value,
+  R().push({n:n,t:curType,
     p:[{x:x0,y:y0},{x:snap(x0+w),y:y0},{x:snap(x0+w),y:snap(y0+d)},{x:x0,y:snap(y0+d)}]});
   document.getElementById("rname").value="";
   document.getElementById("rw").value="";document.getElementById("rd").value="";
@@ -1131,7 +1155,7 @@ document.getElementById("pngBtn").onclick=exportIlan;
 document.getElementById("pngBrandBtn").onclick=exportPaylasim;
 
 window.addEventListener("resize",function(){fit2d();size3d();});
-loadBrand();init3d();renderTabs();renderLists();
+loadBrand();renderTypes();init3d();renderTabs();renderLists();
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
                document.fonts.load("500 40px 'IBM Plex Mono'"),
