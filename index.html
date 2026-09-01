@@ -574,7 +574,14 @@ var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balko
 
 /* ---------- 3D ---------- */
 var wrap=document.getElementById("wrap3d"),scene,cam,ortho,activeCam,ren,grp;
-var topView=false,planW=12,planD=10;
+var topView=false,planW=12,planD=10,sceneR=8;
+function fitDist(r,aspect){
+  var fov=38*Math.PI/180;
+  var dV=r/Math.sin(fov/2);
+  var fovH=2*Math.atan(Math.tan(fov/2)*aspect);
+  var dH=r/Math.sin(fovH/2);
+  return Math.max(dV,dH)*1.04;
+}
 var th=Math.PI*0.25,ph=Math.PI*0.34,rad=22,tgt=new THREE.Vector3(0,0,0);
 var loader=new THREE.GLTFLoader(),cache={},missing={},localModels={};
 function modelURL(k){return localModels[k]||(MODEL_DIR+k+".glb");}
@@ -596,8 +603,9 @@ function size3d(w,h){
   var r=wrap.getBoundingClientRect();
   w=w||r.width;h=h||r.height;
   cam.aspect=w/h;cam.updateProjectionMatrix();
-  var asp=w/h, halfD=Math.max(planD,4)/2*1.12, halfW=Math.max(planW,4)/2*1.12;
-  if(halfW/halfD<asp)halfW=halfD*asp; else halfD=halfW/asp;
+  var asp=w/h, halfW, halfD;
+  if(asp>=1){halfD=sceneR*1.04; halfW=halfD*asp;}
+  else{halfW=sceneR*1.04; halfD=halfW/asp;}
   ortho.left=-halfW;ortho.right=halfW;ortho.top=halfD;ortho.bottom=-halfD;
   ortho.updateProjectionMatrix();
   ren.setSize(w,h,false);}
@@ -714,10 +722,16 @@ function build3d(){
     });
   });
   renderLegend();
-  planW=b.x1-b.x0;planD=b.y1-b.y0;size3d();
-  var span=Math.max(b.x1-b.x0,b.y1-b.y0);
-  rad=span*1.8+6+(showAll?floors.length*2.5:0);
-  tgt.y=(showAll?(floors.length-1)*FLOOR_H/2:fi*FLOOR_H);
+  planW=b.x1-b.x0;planD=b.y1-b.y0;
+  var bb=new THREE.Box3().setFromObject(grp);
+  if(isFinite(bb.min.x)){
+    var sph=bb.getBoundingSphere(new THREE.Sphere());
+    sceneR=Math.max(sph.radius,3);
+    tgt.set(sph.center.x,sph.center.y,sph.center.z);
+    var r0=wrap.getBoundingClientRect();
+    rad=fitDist(sceneR,(r0.width||600)/(r0.height||400));
+  }
+  size3d();
 }
 
 function renderLegend(){
@@ -947,10 +961,10 @@ document.getElementById("logoClr").onclick=function(){
 function exportPNG(branded){
   if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
   err("");
-  var W=1080,H=1350,IH=770,PAD=70;
+  var W=1080,H=1350,IH=800,PAD=70;
   size3d(W,IH);
   if(!topView){
-    var r2=rad*0.86;
+    var r2=fitDist(sceneR,W/IH);
     cam.position.set(tgt.x+r2*Math.sin(ph)*Math.sin(th),
                      tgt.y+r2*Math.cos(ph),
                      tgt.z+r2*Math.sin(ph)*Math.cos(th));
@@ -964,7 +978,7 @@ function exportPNG(branded){
   var img=new Image();
   img.onload=function(){
     var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
-    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,132,W,IH);
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,122,W,IH);
 
     g.fillStyle="#1B1A17";g.font="600 52px "+FONT_UI;
     g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
@@ -973,7 +987,7 @@ function exportPNG(branded){
       g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
     }
 
-    var LY=926,cols=legendData.length>6?2:1;
+    var LY=958,cols=legendData.length>6?2:1;
     var colW=(W-PAD*2)/cols;
     legendData.forEach(function(d,i){
       var cxi=i%cols, ryi=Math.floor(i/cols);
@@ -987,20 +1001,20 @@ function exportPNG(branded){
     var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
     var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
     g.strokeStyle="#DCD7CD";g.lineWidth=2;
-    g.beginPath();g.moveTo(PAD,1128);g.lineTo(W-PAD,1128);g.stroke();
+    g.beginPath();g.moveTo(PAD,1148);g.lineTo(W-PAD,1148);g.stroke();
     g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
-    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1178);
+    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1194);
 
     if(branded){
       var on=document.getElementById("brandOn").checked;
       var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
       if(on){
-        var y=1232;
+        var y=1242;
         if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;g.fillText(nm,PAD,y);y+=46;}
         var l2=[ofs,tel].filter(Boolean).join("  ·  ");
         if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;g.fillText(l2,PAD,y);}
         if(logoImg&&logoImg.width){
-          var BW=200,BH=118,bx=W-PAD-BW,by=1170;
+          var BW=170,BH=96,bx=W-PAD-BW,by=1180;
           var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
           var lw=logoImg.width*sc,lh=logoImg.height*sc;
           g.drawImage(logoImg,bx+(BW-lw)/2,by+(BH-lh)/2,lw,lh);
