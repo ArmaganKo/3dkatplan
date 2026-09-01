@@ -59,6 +59,16 @@ button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
 .modes button{padding:8px 4px;font-size:13px}
+details.typefold{margin:0;border-top:none;padding-top:0}
+details.typefold>summary{border:1px solid var(--line);border-radius:var(--r);
+  background:#fff;padding:9px 11px;font-weight:400;font-size:14px;
+  display:flex;align-items:center;gap:8px}
+details.typefold>summary::before{content:"";display:none}
+details.typefold>summary .dot{width:12px;height:12px;border-radius:3px;flex:none;
+  border:1px solid rgba(0,0,0,0.12)}
+details.typefold>summary .cur{flex:1}
+details.typefold>summary .arw{color:var(--accent);font-size:11px}
+details.typefold[open]>summary{border-color:var(--accent);margin-bottom:6px}
 .types{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .types button{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:13px;
   font-weight:400;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line)}
@@ -158,7 +168,10 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <div id="paneDraw">
     <div class="field"><label for="rname">Oda adı</label><input id="rname" placeholder="Salon"></div>
     <div class="field"><label>Oda tipi</label>
-      <div class="types" id="typeGrid"></div>
+      <details class="fold typefold" id="typeFold">
+        <summary id="typeSum"></summary>
+        <div class="types" id="typeGrid"></div>
+      </details>
     </div>
 
     <div class="grid2">
@@ -920,14 +933,23 @@ document.getElementById("finishBtn").onclick=function(){
 document.getElementById("undoBtn").onclick=function(){draft.pop();err("");fit2d();};
 function numv(id){return parseFloat((document.getElementById(id).value||"").replace(",","."));}
 function renderTypes(){
-  var g=document.getElementById("typeGrid"); if(!g)return;
+  var g=document.getElementById("typeGrid"),su=document.getElementById("typeSum");
+  if(!g)return;
+  if(su){var ct=TYPES[curType];
+    su.innerHTML='<span class="dot" style="background:'+ct.h+'"></span>'+
+      '<span class="cur">'+ct.l+'</span><span class="arw">▾</span>';}
   g.innerHTML="";
   TYPE_ORDER.forEach(function(k){
     var t=TYPES[k]; if(!t)return;
     var b=document.createElement("button");
     b.type="button"; b.setAttribute("aria-pressed",String(k===curType));
     b.innerHTML='<span class="dot" style="background:'+t.h+'"></span><span>'+t.l+'</span>';
-    b.onclick=function(){curType=k;renderTypes();err("");};
+    b.onclick=function(){
+      curType=k; err("");
+      var f=document.getElementById("typeFold");
+      if(f)f.open=false;
+      renderTypes();
+    };
     g.appendChild(b);
   });
 }
@@ -1179,7 +1201,9 @@ document.getElementById("pngBtn").onclick=exportIlan;
 document.getElementById("pngBrandBtn").onclick=exportPaylasim;
 
 window.addEventListener("resize",function(){fit2d();size3d();});
-loadBrand();renderTypes();init3d();renderTabs();renderLists();
+loadBrand();
+
+renderTypes();init3d();renderTabs();renderLists();
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
                document.fonts.load("500 40px 'IBM Plex Mono'"),
