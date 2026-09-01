@@ -631,7 +631,7 @@ var labelMode="no";
 function nameMarker(nm,ar,sizeM){
   var W=1024,H=320,c=document.createElement("canvas");c.width=W;c.height=H;
   var g=c.getContext("2d");
-  var big=Math.max(56,Math.min(96,sizeM*20)), small=big*0.68;
+  var big=Math.max(68,Math.min(118,sizeM*25)), small=big*0.70;
   g.font="600 "+big+"px "+FONT_UI; var w1=g.measureText(nm).width;
   var at=ar.toFixed(1)+" m²";
   g.font="500 "+small+"px "+FONT_MONO; var w2=g.measureText(at).width;
@@ -647,7 +647,7 @@ function nameMarker(nm,ar,sizeM){
   g.fillStyle="#55524B";g.font="500 "+small+"px "+FONT_MONO;
   g.fillText(at,W/2,by+big+26);
   var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
-  var sc=Math.max(2.2,Math.min(5.4,sizeM*1.05));
+  var sc=Math.max(2.8,Math.min(6.6,sizeM*1.3));
   var m=new THREE.Mesh(new THREE.PlaneGeometry(sc,sc*(H/W)),
     new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
   m.rotation.x=-Math.PI/2;m.renderOrder=6;
@@ -987,7 +987,9 @@ document.getElementById("bLogo").onchange=function(e){
 document.getElementById("logoClr").onclick=function(){
   logoData=null;logoImg=null;document.getElementById("bLogo").value="";saveBrand();err("");};
 
-function renderTo(W,H){
+function renderTo(W,H,fill){
+  fill=fill||1;
+  var oldR=sceneR; sceneR=sceneR*fill;
   size3d(W,H);
   if(!topView){
     var r2=fitDist(sceneR,W/H);
@@ -1001,7 +1003,7 @@ function renderTo(W,H){
     ren.render(scene,ortho);
   }
   var d=ren.domElement.toDataURL("image/png");
-  size3d(); return d;
+  sceneR=oldR; size3d(); return d;
 }
 
 /* İLAN SÜRÜMÜ — yatay, tam ekran, sadece plan */
@@ -1010,7 +1012,7 @@ function exportIlan(){
   err("");
   var W=1600,H=1200;
   labelMode="name"; build3d();
-  var shot=renderTo(W,H);
+  var shot=renderTo(W,H,0.84);
   labelMode="no"; build3d();
   var img=new Image();
   img.onload=function(){
