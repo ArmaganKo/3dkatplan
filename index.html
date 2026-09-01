@@ -219,7 +219,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
    </div>
   </div>
   <div class="bar">
-    <button id="pngBtn">İlan görseli indir</button>
+    <button id="pngBtn">İlan görseli indir (yatay)</button>
     <button class="ghost" id="pngBrandBtn">Paylaşım görseli indir</button>
     <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
     <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
@@ -627,6 +627,32 @@ window.addEventListener("pointermove",function(e){if(!d3)return;
 window.addEventListener("pointerup",function(){d3=false;});
 wrap.addEventListener("wheel",function(e){rad=Math.max(5,Math.min(120,rad+e.deltaY*0.02));e.preventDefault();},{passive:false});
 
+var labelMode="no";
+function nameMarker(nm,ar,sizeM){
+  var W=1024,H=320,c=document.createElement("canvas");c.width=W;c.height=H;
+  var g=c.getContext("2d");
+  var big=Math.max(56,Math.min(96,sizeM*20)), small=big*0.68;
+  g.font="600 "+big+"px "+FONT_UI; var w1=g.measureText(nm).width;
+  var at=ar.toFixed(1)+" m²";
+  g.font="500 "+small+"px "+FONT_MONO; var w2=g.measureText(at).width;
+  var bw=Math.min(W-12,Math.max(w1,w2)+64), bh=big+small+52;
+  var bx=(W-bw)/2, by=(H-bh)/2;
+  g.fillStyle="rgba(250,248,244,0.93)";
+  if(g.roundRect){g.beginPath();g.roundRect(bx,by,bw,bh,16);g.fill();
+    g.strokeStyle="rgba(120,116,108,0.35)";g.lineWidth=3;g.stroke();}
+  else g.fillRect(bx,by,bw,bh);
+  g.textAlign="center";g.textBaseline="top";
+  g.fillStyle="#1B1A17";g.font="600 "+big+"px "+FONT_UI;
+  g.fillText(nm,W/2,by+18);
+  g.fillStyle="#55524B";g.font="500 "+small+"px "+FONT_MONO;
+  g.fillText(at,W/2,by+big+26);
+  var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
+  var sc=Math.max(2.2,Math.min(5.4,sizeM*1.05));
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(sc,sc*(H/W)),
+    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.renderOrder=6;
+  return m;
+}
 function numberMarker(no){
   var S=256,c=document.createElement("canvas");c.width=S;c.height=S;
   var g=c.getContext("2d");
@@ -713,7 +739,10 @@ function build3d(){
         wl.rotation.y=-Math.atan2(dy,dx);grp.add(wl);
       }
       lno++;legendData.push({no:lno,n:rm.n,a:area(rm.p),f:f.n,t:rm.t});
-      var sp0=labelSpot(rm.p),ct=sp0?sp0.p:centroid(rm.p),sp=numberMarker(lno);
+      var sp0=labelSpot(rm.p),ct=sp0?sp0.p:centroid(rm.p);
+      var sp=(labelMode==="name")
+        ? nameMarker(rm.n,area(rm.p),sp0?sp0.r*2:Math.sqrt(area(rm.p)))
+        : numberMarker(lno);
       sp.position.set(ct.x-cx,yb+0.14,ct.y-cy);grp.add(sp);
     });
     f.items.forEach(function(it){
@@ -958,13 +987,10 @@ document.getElementById("bLogo").onchange=function(e){
 document.getElementById("logoClr").onclick=function(){
   logoData=null;logoImg=null;document.getElementById("bLogo").value="";saveBrand();err("");};
 
-function exportPNG(branded){
-  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
-  err("");
-  var W=1080,H=1350,IH=800,PAD=70;
-  size3d(W,IH);
+function renderTo(W,H){
+  size3d(W,H);
   if(!topView){
-    var r2=fitDist(sceneR,W/IH);
+    var r2=fitDist(sceneR,W/H);
     cam.position.set(tgt.x+r2*Math.sin(ph)*Math.sin(th),
                      tgt.y+r2*Math.cos(ph),
                      tgt.z+r2*Math.sin(ph)*Math.cos(th));
@@ -974,7 +1000,36 @@ function exportPNG(branded){
     ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
     ren.render(scene,ortho);
   }
-  var shot=ren.domElement.toDataURL("image/png"); size3d();
+  var d=ren.domElement.toDataURL("image/png");
+  size3d(); return d;
+}
+
+/* İLAN SÜRÜMÜ — yatay, tam ekran, sadece plan */
+function exportIlan(){
+  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  err("");
+  var W=1600,H=1200;
+  labelMode="name"; build3d();
+  var shot=renderTo(W,H);
+  labelMode="no"; build3d();
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement("canvas");c.width=W;c.height=H;
+    var g=c.getContext("2d");
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);
+    g.drawImage(img,0,0,W,H);
+    var a=document.createElement("a");
+    a.download=fileBase()+"-ilan.png";a.href=c.toDataURL("image/png");a.click();
+  };
+  img.src=shot;
+}
+
+/* PAYLAŞIM SÜRÜMÜ — dikey, künye ve oda listesiyle */
+function exportPaylasim(){
+  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  err("");
+  var W=1080,H=1350,IH=800,PAD=70;
+  var shot=renderTo(W,IH);
   var img=new Image();
   img.onload=function(){
     var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
@@ -982,16 +1037,13 @@ function exportPNG(branded){
 
     g.fillStyle="#1B1A17";g.font="600 52px "+FONT_UI;
     g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
-    if(branded){
-      g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px "+FONT_UI;
-      g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
-    }
+    g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px "+FONT_UI;
+    g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
 
-    var LY=958,cols=legendData.length>6?2:1;
-    var colW=(W-PAD*2)/cols;
+    var LY=958,cols=legendData.length>6?2:1, colW=(W-PAD*2)/cols;
     legendData.forEach(function(d,i){
       var cxi=i%cols, ryi=Math.floor(i/cols);
-      var x=PAD+cxi*colW, y=LY+ryi*36;
+      var x=PAD+cxi*colW, y=LY+ryi*33;
       g.fillStyle="#1F4E5F";g.font="600 26px "+FONT_UI;g.fillText(String(d.no),x,y);
       g.fillStyle="#1B1A17";g.font="400 26px "+FONT_UI;g.fillText(d.n,x+34,y);
       g.fillStyle="#5C5952";g.font="400 24px "+FONT_MONO;
@@ -1005,33 +1057,31 @@ function exportPNG(branded){
     g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
     g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1194);
 
-    if(branded){
-      var on=document.getElementById("brandOn").checked;
-      var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
-      if(on){
-        var y=1242;
-        if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;g.fillText(nm,PAD,y);y+=46;}
-        var l2=[ofs,tel].filter(Boolean).join("  ·  ");
-        if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;g.fillText(l2,PAD,y);}
-        if(logoImg&&logoImg.width){
-          var BW=170,BH=96,bx=W-PAD-BW,by=1180;
-          var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
-          var lw=logoImg.width*sc,lh=logoImg.height*sc;
-          g.drawImage(logoImg,bx+(BW-lw)/2,by+(BH-lh)/2,lw,lh);
-        }
+    var on=document.getElementById("brandOn").checked;
+    var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
+    if(on){
+      var y=1242;
+      if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;g.fillText(nm,PAD,y);y+=46;}
+      var l2=[ofs,tel].filter(Boolean).join("  ·  ");
+      if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;g.fillText(l2,PAD,y);}
+      if(logoImg&&logoImg.width){
+        var BW=170,BH=96,bx=W-PAD-BW,by=1180;
+        var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
+        g.drawImage(logoImg,bx+(BW-logoImg.width*sc)/2,by+(BH-logoImg.height*sc)/2,
+                    logoImg.width*sc,logoImg.height*sc);
       }
-      g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
-      g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
     }
+    g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
+    g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
 
     var a=document.createElement("a");
-    a.download=fileBase()+(branded?"-paylasim":"-ilan")+".png";
-    a.href=c.toDataURL("image/png");a.click();
+    a.download=fileBase()+"-paylasim.png";a.href=c.toDataURL("image/png");a.click();
   };
   img.src=shot;
 }
-document.getElementById("pngBtn").onclick=function(){exportPNG(false);};
-document.getElementById("pngBrandBtn").onclick=function(){exportPNG(true);};
+
+document.getElementById("pngBtn").onclick=exportIlan;
+document.getElementById("pngBrandBtn").onclick=exportPaylasim;
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();init3d();renderTabs();renderLists();
