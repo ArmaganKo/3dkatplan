@@ -123,7 +123,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 
 article.info{max-width:760px;margin:0 auto;padding:44px 24px 70px;border-top:1px solid var(--line);text-align:left}
 article.info h2{font-size:20px;margin:34px 0 10px;font-weight:600}
-article.info h3{font-size:16px;margin:22px 0 6px;font-weight:600}
+article.info h3{font-size:16px;margin:26px 0 8px;font-weight:600}
+article.info dl{margin:0 0 16px}
+article.info dt{font-weight:600;font-size:15px;margin-top:12px}
+article.info dd{margin:2px 0 0;padding:0;color:#33312D}
 article.info p{margin:0 0 14px;color:#33312D}
 article.info ol{padding-left:20px;color:#33312D}
 article.info li{display:list-item;border:none;padding:4px 0;font-size:15px}
@@ -134,6 +137,18 @@ footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
   color:var(--soft);font-size:14px;text-align:center}
 footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);
   font-size:12.5px;color:#8F8B81;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.7}
+
+#tourHl{position:absolute;border-radius:8px;pointer-events:none;z-index:9998;
+  box-shadow:0 0 0 9999px rgba(24,23,20,0.62);transition:top .22s,left .22s,width .22s,height .22s}
+#tourBox{position:absolute;z-index:9999;background:var(--card);border:1px solid var(--line);
+  border-radius:8px;padding:16px 18px;width:min(330px,calc(100vw - 32px));
+  box-shadow:0 10px 34px rgba(24,23,20,0.22)}
+#tourBox h4{margin:0 0 6px;font-size:15px;font-weight:600}
+#tourBox p{margin:0 0 14px;font-size:14px;line-height:1.55;color:#33312D}
+#tourBox .row{display:flex;align-items:center;gap:8px}
+#tourBox .step{flex:1;font-size:12px;color:var(--soft);font-family:"IBM Plex Mono",monospace}
+#tourBox button{padding:7px 12px;font-size:13px}
+#tourStart{margin-left:auto}
 @media(min-width:1180px){.views{grid-template-columns:1fr 1fr}}
 @media(max-width:860px){.app{grid-template-columns:1fr}
  .panel{border-right:none;border-bottom:1px solid var(--line)}
@@ -265,6 +280,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <button class="ghost" id="undoAllBtn" disabled>Geri al</button>
     <button class="ghost" id="clearBtn">Temizle</button>
     <button class="ghost" id="modelBtn">Model klasörünü seç</button>
+    <button class="ghost" id="tourStart">Tanıtım turu</button>
     <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
     <input type="file" id="fileIn" accept=".json" hidden>
     <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
@@ -297,6 +313,86 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
 <h2>Ölçüyü Nasıl Almalısınız</h2>
 <p>Lazermetre kullanın. Önce dairenin içten içe toplam enini ve boyunu ölçün, sonra oda oda inin. Bir hat üzerindeki oda enleri ile duvar kalınlıklarını topladığınızda toplam eni bulmanız gerekir; bulamıyorsanız bir ölçüm hatalıdır. Duvar kalınlığını ölçemezseniz iç duvarlar için 10, dış duvarlar için 20 santimetre varsayabilirsiniz.</p>
+
+
+<h2>Düğmeler Ne İşe Yarıyor</h2>
+<p>Aracın tüm kontrolleri ve ne yaptıkları.</p>
+
+<h3>Kat bölümü</h3>
+<dl>
+<dt>Zemin kat / 1. kat</dt><dd>Katlar arasında geçiş yapar. Hangi katın üstünde çalıştığını gösterir; çizdiğin oda o kata eklenir.</dd>
+<dt>Kat ekle</dt><dd>Yeni bir kat açar. Dubleks daireler için kullanılır. Üst kattayken alt kat soluk kesikli çizgiyle görünür, hizalamayı ona göre yaparsın.</dd>
+<dt>Katı sil</dt><dd>Üstünde bulunduğun katı, içindeki tüm oda ve eşyalarla birlikte siler. Tek kat kaldıysa silinmez.</dd>
+</dl>
+
+<h3>Çalışma modları</h3>
+<dl>
+<dt>Oda çiz</dt><dd>Yeni oda ekleme modu. Ölçü girerek veya köşeleri tıklayarak oda oluşturursun.</dd>
+<dt>Düzenle</dt><dd>Var olan odaları taşıma ve ölçüsünü değiştirme modu. Odanın içine basılı tutup sürüklersen oda bütün olarak taşınır; köşedeki noktayı sürüklersen sadece o köşe hareket eder, yani ölçü değişir.</dd>
+<dt>Eşya</dt><dd>Mobilya, kapı, pencere ve merdiven yerleştirme modu.</dd>
+</dl>
+
+<h3>Oda çiz modu</h3>
+<dl>
+<dt>Portföy adı</dt><dd>En üstteki alan. İndireceğin dosyaların adı buradan gelir ve paylaşım görselinin başlığında yazar. Boş bırakabilirsin.</dd>
+<dt>Oda adı</dt><dd>Planda ve listede görünecek isim. "Salon", "Ebeveyn yatak odası" gibi.</dd>
+<dt>Oda tipi</dt><dd>Tıklayınca on beş tip açılır. Tip, odanın rengini, zemin dokusunu ve otomatik döşemede hangi eşyaların geleceğini belirler. Bahçe tipi duvarsız çizilir ve net metrekareye dahil edilmez.</dd>
+<dt>En (m) / Boy (m)</dt><dd>Odanın ölçüleri, metre cinsinden. Virgül veya nokta kullanabilirsin.</dd>
+<dt>Ölçüyle oda ekle</dt><dd>Girdiğin ölçüde dikdörtgen oda oluşturur ve mevcut odaların sağına yerleştirir. Sonra "Düzenle" moduna geçip yerine sürüklersin. Normal odalar için ana yöntem budur.</dd>
+<dt>Köşe köşe çiz</dt><dd>Katlanmış bölüm. L şeklinde salonlar, çıkmalar ve pahlı köşeler için. Plan alanına tıklayarak köşeleri koyarsın.</dd>
+<dt>Odayı tamamla</dt><dd>Köşe köşe çizerken, koyduğun köşeleri birleştirip odayı oluşturur. En az üç köşe gerekir.</dd>
+<dt>Son köşeyi sil</dt><dd>Köşe koyarken yanlış tıkladıysan son koyduğun noktayı kaldırır.</dd>
+</dl>
+
+<h3>Düzenle modu</h3>
+<dl>
+<dt>Odayı 90° çevir</dt><dd>Seçili odayı kendi merkezinde döndürür. 4,20 × 5,00 olan oda 5,00 × 4,20 olur. Metrekare değişmez. Önce odaya tıklayıp seçmen gerekir.</dd>
+<dt>Aynala</dt><dd>Seçili odayı yatay eksende ters çevirir. L şeklinde bir oda çizdin ama çıkıntı ters taraftaysa, baştan çizmek yerine aynalarsın.</dd>
+</dl>
+
+<h3>Eşya modu</h3>
+<dl>
+<dt>Eşya listesi</dt><dd>Yerleştirilecek eşyayı seçersin, sonra plana tıklarsın. Kapı, pencere ve merdiven de bu listededir.</dd>
+<dt>45° döndür</dt><dd>Seçili eşyayı kırk beşer derece çevirir. Kapının açılım yayını doğru tarafa çevirmek için kullanılır.</dd>
+<dt>Seçili odayı döşe</dt><dd>Odayı seçip basarsın, araç o odanın tipine uygun standart eşyaları kendi yerleştirir. Yatak odasına yatak ve gardırop, salona koltuk takımı ve TV ünitesi gelir. Beğenmediğini sürükler veya silersin.</dd>
+</dl>
+
+<h3>Listeler ve ölçüler</h3>
+<dl>
+<dt>Odalar listesi</dt><dd>Bu kattaki odalar ve metrekareleri. Bir odaya tıklayınca seçilir.</dd>
+<dt>Kalem simgesi</dt><dd>Odanın adını değiştirir. Yanlış yazdıysan odayı silmene gerek yok.</dd>
+<dt>Çarpı simgesi</dt><dd>Odayı veya eşyayı siler.</dd>
+<dt>Bu kat net</dt><dd>Üstünde bulunduğun katın net metrekaresi. Bahçe dahil değildir.</dd>
+<dt>Tüm katlar toplam</dt><dd>Bütün katların net metrekare toplamı.</dd>
+<dt>Kırmızı uyarı</dt><dd>İki oda üst üste bindiğinde çıkar. Çakışan odalar planda kırmızı kesikli çerçeveyle işaretlenir, listede adları kırmızıya döner. Metrekare toplamı bu durumda yanlış çıkar; odaları ayırman gerekir.</dd>
+</dl>
+
+<h3>Görsel künyesi</h3>
+<dl>
+<dt>Bilgilerimi görsele bas</dt><dd>Kapatırsan paylaşım görselinde de iletişim bilgin görünmez.</dd>
+<dt>Ad soyad, telefon, ofis adı, logo</dt><dd>Yalnızca paylaşım görseline basılır. Tarayıcıda saklanır, her seferinde yeniden yazman gerekmez.</dd>
+<dt>Logoyu kaldır</dt><dd>Yüklediğin logoyu siler.</dd>
+</dl>
+
+<h3>Görünüm ve indirme</h3>
+<dl>
+<dt>Plan (üstten görünüm)</dt><dd>Soldaki iki boyutlu çizim alanı. Odaları burada çizer, taşır, eşyaları buraya yerleştirirsin.</dd>
+<dt>Üç boyutlu görünüm</dt><dd>Sağdaki alan. Sürükleyerek döndürür, tekerlekle yakınlaştırırsın. Altındaki numaralı liste, plandaki numaraların hangi oda olduğunu gösterir.</dd>
+<dt>Üstten görünüm / İzometrik görünüm</dt><dd>Üç boyutlu görünümün açısını değiştirir. Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar.</dd>
+<dt>Tüm katları göster</dt><dd>İşaretliyse bütün katlar üst üste görünür. Kaldırırsan sadece üstünde çalıştığın kat gösterilir.</dd>
+<dt>İlan görseli indir (yatay)</dt><dd>1600 × 1200 yatay görsel. Sadece plan; başlık, oda listesi, marka, telefon ve site adresi yoktur. Oda isimleri ve metrekareler planın üstüne yazılır. İlan portalları görsellerde iletişim bilgisi ve filigran istemediği için Sahibinden, Hepsiemlak ve benzeri sitelere bu sürümü yükle.</dd>
+<dt>Paylaşım görseli indir</dt><dd>1080 × 1350 dikey görsel. Oda listesi, toplam metrekare, künyen ve logon dahildir. WhatsApp, Instagram ve basılı broşür için.</dd>
+</dl>
+
+<h3>Kaydetme ve diğerleri</h3>
+<dl>
+<dt>Projeyi kaydet</dt><dd>Çalışmanı bilgisayarına bir .json dosyası olarak indirir. Bu görsel değil, çalışma dosyasıdır: odaların koordinatları, eşya yerleri ve kat bilgileri içindedir. Portföy başına bir dosya tutarsan kendi arşivin oluşur.</dd>
+<dt>Proje aç</dt><dd>Daha önce kaydettiğin .json dosyasını geri yükler. Plan aynen geri gelir, üstünde değişiklik yapıp yeni görsel indirebilirsin. Tarayıcı kapanınca çalışman kaybolduğu için tek yedekleme yöntemi budur.</dd>
+<dt>Geri al</dt><dd>Son yaptığın işlemi geri alır. Yanlışlıkla oda sildiğinde, kötü sürüklediğinde veya otomatik döşemeyi beğenmediğinde kullanılır. Son yirmi beş işlemi tutar.</dd>
+<dt>Örnek dubleks</dt><dd>Bahçeli iki katlı örnek bir daire yükler. Aracı denemek ve nasıl göründüğünü anlamak için.</dd>
+<dt>Temizle</dt><dd>Tüm katları, odaları ve eşyaları siler. Onay sorar.</dd>
+<dt>Model klasörünü seç</dt><dd>Kendi bilgisayarındaki üç boyutlu mobilya modellerini yükler. Model yoksa eşyalar doğru ölçüde sade kütleler olarak görünür.</dd>
+</dl>
 
 <h2>İlanda Kullanırken</h2>
 <p>Plandaki metrekareyi ilanın resmi metrekare bilgisi olarak kullanmayın. Brüt ve net değerleri tapu ile projeden alın; plan görselini alıcının yerleşimi anlaması için kullanın.</p>
@@ -1294,6 +1390,74 @@ document.getElementById("undoAllBtn").onclick=function(){
   this.disabled=!undoStack.length;
   renderTabs();renderLists();build3d();fit2d();
 };
+
+
+/* ---------- tanıtım turu ---------- */
+var TOUR=[
+ {s:"#projName",t:"Portföy adı",
+  d:"Buraya dairenin adını yaz. İndireceğin dosyalar bu adı taşır, on portföy sonra karıştırmazsın. Boş bırakabilirsin."},
+ {s:"#typeFold",t:"Oda tipi",
+  d:"Tıklayınca on beş oda tipi açılır. Seçtiğin tip odanın rengini, zemin dokusunu ve otomatik döşemede gelecek eşyaları belirler."},
+ {s:"#rectBtn",t:"Ölçüyle oda ekle",
+  d:"Oda adını, enini ve boyunu yaz, bu düğmeye bas. Oda dikdörtgen olarak eklenir. Çizim yapmana gerek yok."},
+ {s:"#mEdit",t:"Düzenle modu",
+  d:"Eklediğin odayı yerine taşımak için buraya geç. Odanın içine basılı tutup sürükle. Köşedeki noktayı sürüklersen ölçüsü değişir."},
+ {s:"#mFurn",t:"Eşya modu",
+  d:"Mobilya, kapı, pencere ve merdiven ekler. Hızlı yol için odayı seçip \u0022Seçili odayı döşe\u0022 dersen araç eşyaları kendi yerleştirir."},
+ {s:"#addFloor",t:"Dubleks daireler",
+  d:"Kat ekle dersen üst katı açarsın. Üst kattayken alt kat soluk çizgiyle görünür, hizalamayı ona göre yaparsın."},
+ {s:"#topBtn",t:"Görünümü değiştir",
+  d:"Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar."},
+ {s:"#pngBtn",t:"İlan görseli",
+  d:"Yatay, tam ekran, sadece plan. Marka, telefon ve site adresi yoktur — ilan portalları bunları istemiyor. Sahibinden ve Hepsiemlak için bunu kullan."},
+ {s:"#pngBrandBtn",t:"Paylaşım görseli",
+  d:"Dikey format, oda listesi ve künyenle birlikte. WhatsApp, Instagram ve basılı broşür için."},
+ {s:"#saveBtn",t:"Projeyi kaydet",
+  d:"Çalışmanı .json olarak indirir. Sonra \u0022Proje aç\u0022 ile geri yükleyip devam edersin. Tarayıcı kapanınca çalışman kaybolur, tek yedek bu."}
+];
+var tourI=0,tourHl=null,tourBox=null;
+function tourEnd(){
+  if(tourHl){tourHl.remove();tourHl=null;}
+  if(tourBox){tourBox.remove();tourBox=null;}
+  window.removeEventListener("resize",tourShow);
+  try{localStorage.setItem("kp_tour","1");}catch(e){}
+}
+function tourShow(){
+  var st=TOUR[tourI], el=document.querySelector(st.s);
+  if(!el){tourI++; if(tourI<TOUR.length)return tourShow(); return tourEnd();}
+  el.scrollIntoView({block:"center",behavior:"smooth"});
+  setTimeout(function(){
+    var r=el.getBoundingClientRect(), sy=window.scrollY, sx=window.scrollX, pad=6;
+    tourHl.style.top=(r.top+sy-pad)+"px"; tourHl.style.left=(r.left+sx-pad)+"px";
+    tourHl.style.width=(r.width+pad*2)+"px"; tourHl.style.height=(r.height+pad*2)+"px";
+    tourBox.innerHTML='<h4>'+st.t+'</h4><p>'+st.d+'</p>'+
+      '<div class="row"><span class="step">'+(tourI+1)+' / '+TOUR.length+'</span>'+
+      '<button class="ghost" id="tSkip">Kapat</button>'+
+      (tourI>0?'<button class="ghost" id="tPrev">Geri</button>':'')+
+      '<button id="tNext">'+(tourI===TOUR.length-1?"Bitir":"İleri")+'</button></div>';
+    var bw=tourBox.offsetWidth, bh=tourBox.offsetHeight;
+    var top=r.bottom+sy+14, left=r.left+sx;
+    if(top+bh>sy+window.innerHeight-10) top=Math.max(sy+10,r.top+sy-bh-14);
+    if(left+bw>sx+window.innerWidth-10) left=Math.max(sx+10,sx+window.innerWidth-bw-10);
+    tourBox.style.top=top+"px"; tourBox.style.left=left+"px";
+    document.getElementById("tSkip").onclick=tourEnd;
+    document.getElementById("tNext").onclick=function(){
+      tourI++; if(tourI>=TOUR.length)return tourEnd(); tourShow();};
+    var pv=document.getElementById("tPrev");
+    if(pv)pv.onclick=function(){tourI--;tourShow();};
+  },320);
+}
+function tourStart(){
+  tourEnd(); tourI=0;
+  tourHl=document.createElement("div"); tourHl.id="tourHl";
+  tourBox=document.createElement("div"); tourBox.id="tourBox";
+  tourBox.setAttribute("role","dialog");
+  document.body.appendChild(tourHl); document.body.appendChild(tourBox);
+  window.addEventListener("resize",tourShow);
+  tourShow();
+}
+document.getElementById("tourStart").onclick=tourStart;
+try{ if(!localStorage.getItem("kp_tour")) setTimeout(tourStart,900); }catch(e){}
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();
