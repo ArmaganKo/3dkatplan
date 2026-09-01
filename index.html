@@ -562,24 +562,25 @@ function labelSpot(poly){
   }
   return best?{p:best,r:bd}:null;
 }
-function segInt(a,b,c,d){
-  function o(p,q,r){var v=(q.y-p.y)*(r.x-q.x)-(q.x-p.x)*(r.y-q.y);
-    return Math.abs(v)<1e-9?0:(v>0?1:2);}
-  var o1=o(a,b,c),o2=o(a,b,d),o3=o(c,d,a),o4=o(c,d,b);
-  return o1!==o2&&o3!==o4;
+function bboxOf(p){
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};
+  p.forEach(function(q){b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);
+    b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  return b;
 }
+/* iki odanın gerçekten kesişen alanı var mı — ortak duvar sayılmaz */
 function polysOverlap(p1,p2){
-  for(var i=0;i<p1.length;i++)for(var j=0;j<p2.length;j++){
-    if(segInt(p1[i],p1[(i+1)%p1.length],p2[j],p2[(j+1)%p2.length]))return true;
-  }
-  for(var k=0;k<p1.length;k++){
-    var m={x:(p1[k].x+p1[(k+1)%p1.length].x)/2,y:(p1[k].y+p1[(k+1)%p1.length].y)/2};
-    if(inPoly(m,p2))return true;
-  }
-  for(var n=0;n<p2.length;n++){
-    var m2={x:(p2[n].x+p2[(n+1)%p2.length].x)/2,y:(p2[n].y+p2[(n+1)%p2.length].y)/2};
-    if(inPoly(m2,p1))return true;
-  }
+  var a=bboxOf(p1), b=bboxOf(p2);
+  var x0=Math.max(a.x0,b.x0), x1=Math.min(a.x1,b.x1);
+  var y0=Math.max(a.y0,b.y0), y1=Math.min(a.y1,b.y1);
+  if(x1-x0<0.3||y1-y0<0.3)return false;
+  var step=0.25, hit=0;
+  for(var x=x0+step/2;x<x1;x+=step)
+    for(var y=y0+step/2;y<y1;y+=step)
+      if(inPoly({x:x,y:y},p1)&&inPoly({x:x,y:y},p2)){
+        hit++;
+        if(hit*step*step>0.5)return true;
+      }
   return false;
 }
 function findOverlaps(){
@@ -1463,10 +1464,16 @@ window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();
 
 renderTypes();init3d();renderTabs();renderLists();
+function reflow(){fit2d();size3d();}
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
                document.fonts.load("500 40px 'IBM Plex Mono'"),
                document.fonts.load("400 32px 'IBM Plex Sans'")])
-    .then(function(){build3d();draw2d();}).catch(function(){});
-}document.getElementById("sampleBtn").click();
+    .then(function(){build3d();reflow();}).catch(function(){});
+}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reflow).catch(function(){});
+window.addEventListener("load",reflow);
+requestAnimationFrame(function(){requestAnimationFrame(reflow);});
+setTimeout(reflow,400);
+setTimeout(reflow,1200);document.getElementById("sampleBtn").click();
 </script>
