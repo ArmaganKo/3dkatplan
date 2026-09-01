@@ -191,6 +191,11 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <p class="hint"><b>Odayı taşımak için</b> içine basılı tutup sürükle.<br>
     <b>Ölçüsünü değiştirmek için</b> köşedeki noktayı sürükle.<br>
     Eşyalar da aynı şekilde sürüklenir.</p>
+    <div class="bar" style="margin-top:10px">
+      <button class="ghost" id="rotRoomBtn">Odayı 90° çevir</button>
+      <button class="ghost" id="mirrorBtn">Aynala</button>
+    </div>
+    <p class="hint" style="margin-top:8px">Önce odaya tıklayıp seç. Çevirme, odayı kendi merkezinde döndürür — en ve boy yer değiştirir.</p>
   </div>
 
   <p class="err" id="err"></p>
@@ -951,6 +956,25 @@ document.getElementById("rotBtn").onclick=function(){
 document.getElementById("autoBtn").onclick=function(){
   if(selKind!=="room"){err("Önce bir oda seç.");return;}
   autoFurnish(R()[sel]);};
+function roomCenter(poly){
+  var x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  poly.forEach(function(q){x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);
+    x1=Math.max(x1,q.x);y1=Math.max(y1,q.y);});
+  return {x:(x0+x1)/2,y:(y0+y1)/2};
+}
+document.getElementById("rotRoomBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  var rm=R()[sel], c=roomCenter(rm.p);
+  rm.p=rm.p.map(function(q){
+    return {x:snap(c.x-(q.y-c.y)), y:snap(c.y+(q.x-c.x))};});
+  err("");renderLists();build3d();fit2d();
+};
+document.getElementById("mirrorBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  var rm=R()[sel], c=roomCenter(rm.p);
+  rm.p=rm.p.map(function(q){return {x:snap(2*c.x-q.x), y:q.y};}).reverse();
+  err("");renderLists();build3d();fit2d();
+};
 document.getElementById("allChk").onchange=function(){build3d();};
 document.getElementById("topBtn").onclick=function(){
   topView=!topView;
