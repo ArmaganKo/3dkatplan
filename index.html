@@ -933,12 +933,24 @@ document.getElementById("logoClr").onclick=function(){
 document.getElementById("pngBtn").onclick=function(){
   if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
   var W=1080,H=1350,IH=770,PAD=70;
-  size3d(W,IH);ren.render(scene,activeCam);
+  size3d(W,IH);
+  if(!topView){
+    var r2=rad*0.86;
+    cam.position.set(tgt.x+r2*Math.sin(ph)*Math.sin(th),
+                     tgt.y+r2*Math.cos(ph),
+                     tgt.z+r2*Math.sin(ph)*Math.cos(th));
+    cam.lookAt(tgt);
+    ren.render(scene,cam);
+  }else{
+    ortho.position.set(tgt.x,tgt.y+60,tgt.z+0.001);
+    ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
+    ren.render(scene,ortho);
+  }
   var shot=ren.domElement.toDataURL("image/png");size3d();
   var img=new Image();
   img.onload=function(){
     var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
-    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,132);
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,132,W,IH);
 
     g.fillStyle="#1B1A17";g.font="600 52px 'IBM Plex Sans',sans-serif";
     g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
