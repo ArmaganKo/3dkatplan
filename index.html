@@ -53,6 +53,8 @@ input:focus,select:focus,canvas:focus,button:focus-visible{outline:2px solid var
 button{font-family:inherit;font-size:14px;font-weight:500;border-radius:var(--r);cursor:pointer;
   padding:8px 13px;border:1px solid var(--accent);background:var(--accent);color:#fff}
 button:hover{background:#183D4B}
+button:disabled{opacity:0.4;cursor:default}
+button.ghost:disabled:hover{background:transparent}
 button.ghost{background:transparent;color:var(--accent)}
 button.ghost:hover{background:var(--accent-soft)}
 button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
@@ -256,6 +258,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <button class="ghost" id="saveBtn">Projeyi kaydet</button>
     <button class="ghost" id="loadBtn">Proje aç</button>
     <button class="ghost" id="sampleBtn">Örnek dubleks</button>
+    <button class="ghost" id="undoAllBtn" disabled>Geri al</button>
     <button class="ghost" id="clearBtn">Temizle</button>
     <button class="ghost" id="modelBtn">Model klasörünü seç</button>
     <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
@@ -545,10 +548,10 @@ c2.addEventListener("pointerdown",function(e){
     for(var i=0;i<rs.length;i++)for(var v=0;v<rs[i].p.length;v++){
       var q=rs[i].p[v];
       if(Math.abs(q.x-w.x)*V.s<10&&Math.abs(q.y-w.y)*V.s<10){
-        dragT="vert";dragI=i;dragV=v;sel=i;selKind="room";draw2d();return;}}
+        pushUndo();dragT="vert";dragI=i;dragV=v;sel=i;selKind="room";draw2d();return;}}
     for(var m2=rs.length-1;m2>=0;m2--){
       if(inPoly(w,rs[m2].p)){
-        dragT="room";dragI=m2;
+        pushUndo();dragT="room";dragI=m2;
         dragOrig=rs[m2].p.map(function(q){return{x:q.x,y:q.y};});
         dragStart={x:w.x,y:w.y};
         sel=m2;selKind="room";renderLists();draw2d();return;}
@@ -559,8 +562,9 @@ c2.addEventListener("pointerdown",function(e){
     var cat=byKey(its[k].k),d=its[k],dx=w.x-d.x,dy=w.y-d.y;
     var ca=Math.cos(-d.r),sa=Math.sin(-d.r),lx=dx*ca-dy*sa,ly=dx*sa+dy*ca;
     if(Math.abs(lx)<cat.w/2&&Math.abs(ly)<cat.d/2){
-      sel=k;selKind="item";dragT="item";dragI=k;renderLists();draw2d();return;}}
+      pushUndo();sel=k;selKind="item";dragT="item";dragI=k;renderLists();draw2d();return;}}
   if(mode==="furn"){
+    pushUndo();
     its.push({k:document.getElementById("fsel").value,x:snap(w.x),y:snap(w.y),r:0});
     sel=its.length-1;selKind="item";renderLists();build3d();fit2d();return;}
   var rs2=R();
@@ -834,6 +838,7 @@ function renderLegend(){
 /* ---------- otomatik döşeme ---------- */
 function autoFurnish(rm){
   var list=AUTO[rm.t]||[];if(!list.length){err("Bu oda tipi için hazır yerleşim yok.");return;}
+  pushUndo();
   var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};
   rm.p.forEach(function(q){b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);
     b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
@@ -873,9 +878,15 @@ function renderLists(){
     var li=document.createElement("li");if(selKind==="room"&&sel===i)li.className="on";
     li.innerHTML='<span class="sw" style="background:'+TYPES[rm.t].h+'"></span>'+
       '<span class="nm">'+rm.n+'</span><span class="dm">'+area(rm.p).toFixed(1)+' m²</span>';
+    var e=document.createElement("button");e.textContent="✎";e.title="Adını değiştir";
+    e.setAttribute("aria-label",rm.n+" odasının adını değiştir");
+    e.onclick=function(ev){ev.stopPropagation();
+      var v2=prompt("Oda adı:",rm.n);
+      if(v2&&v2.trim()){pushUndo();rm.n=v2.trim();renderLists();build3d();draw2d();}};
+    li.appendChild(e);
     var b=document.createElement("button");b.textContent="×";
     b.setAttribute("aria-label",rm.n+" odasını sil");
-    b.onclick=function(ev){ev.stopPropagation();R().splice(i,1);sel=null;selKind=null;
+    b.onclick=function(ev){ev.stopPropagation();pushUndo();R().splice(i,1);sel=null;selKind=null;
       renderLists();build3d();fit2d();};
     li.appendChild(b);li.onclick=function(){sel=i;selKind="room";renderLists();draw2d();};
     rl.appendChild(li);
@@ -892,7 +903,7 @@ function renderLists(){
     li.innerHTML='<span class="nm">'+cat.l+'</span>'+(missing[it.k]?'<span class="dm">yer tutucu</span>':'');
     var b=document.createElement("button");b.textContent="×";
     b.setAttribute("aria-label",cat.l+" eşyasını sil");
-    b.onclick=function(ev){ev.stopPropagation();I().splice(i,1);sel=null;selKind=null;
+    b.onclick=function(ev){ev.stopPropagation();pushUndo();I().splice(i,1);sel=null;selKind=null;
       renderLists();build3d();draw2d();};
     li.appendChild(b);li.onclick=function(){sel=i;selKind="item";renderLists();draw2d();};
     fl.appendChild(li);
@@ -926,6 +937,7 @@ document.getElementById("finishBtn").onclick=function(){
   var n=document.getElementById("rname").value.trim();
   if(draft.length<3){err("En az üç köşe koy.");return;}
   if(!n){err("Oda adını yaz.");return;}
+  pushUndo();
   R().push({n:n,t:curType,p:draft.slice()});
   draft=[];document.getElementById("rname").value="";err("");
   renderLists();build3d();fit2d();
@@ -965,6 +977,7 @@ document.getElementById("rectBtn").onclick=function(){
       mx=Math.max(mx,q.x); my=Math.min(my,q.y);});});
     x0=snap(mx+0.6); y0=snap(my);
   }
+  pushUndo();
   R().push({n:n,t:curType,
     p:[{x:x0,y:y0},{x:snap(x0+w),y:y0},{x:snap(x0+w),y:snap(y0+d)},{x:x0,y:snap(y0+d)}]});
   document.getElementById("rname").value="";
@@ -986,6 +999,7 @@ function roomCenter(poly){
 }
 document.getElementById("rotRoomBtn").onclick=function(){
   if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
   var rm=R()[sel], c=roomCenter(rm.p);
   rm.p=rm.p.map(function(q){
     return {x:snap(c.x-(q.y-c.y)), y:snap(c.y+(q.x-c.x))};});
@@ -993,6 +1007,7 @@ document.getElementById("rotRoomBtn").onclick=function(){
 };
 document.getElementById("mirrorBtn").onclick=function(){
   if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
   var rm=R()[sel], c=roomCenter(rm.p);
   rm.p=rm.p.map(function(q){return {x:snap(2*c.x-q.x), y:q.y};}).reverse();
   err("");renderLists();build3d();fit2d();
@@ -1005,6 +1020,8 @@ document.getElementById("topBtn").onclick=function(){
   size3d();
 };
 document.getElementById("clearBtn").onclick=function(){
+  if(!confirm("Tüm katlar, odalar ve eşyalar silinecek. Emin misin?"))return;
+  pushUndo();
   floors=[{n:"Zemin kat",rooms:[],items:[]}];fi=0;draft=[];sel=null;selKind=null;err("");
   renderTabs();renderLists();build3d();fit2d();};
 document.getElementById("rname").addEventListener("input",function(){err("");});
@@ -1033,6 +1050,7 @@ document.getElementById("fileIn").onchange=function(e){
 };
 
 document.getElementById("sampleBtn").onclick=function(){
+  pushUndo();
   floors=[
    {n:"Zemin kat",rooms:[
      {n:"Salon",t:"salon",p:[{x:0,y:0},{x:4.2,y:0},{x:4.2,y:3.2},{x:5.8,y:3.2},{x:5.8,y:5.4},{x:0,y:5.4}]},
@@ -1199,6 +1217,36 @@ function exportPaylasim(){
 
 document.getElementById("pngBtn").onclick=exportIlan;
 document.getElementById("pngBrandBtn").onclick=exportPaylasim;
+
+/* ---------- model klasörü ---------- */
+document.getElementById("modelBtn").onclick=function(){document.getElementById("dirIn").click();};
+document.getElementById("dirIn").onchange=function(e){
+  var fl=e.target.files,n=0;
+  for(var i=0;i<fl.length;i++){
+    var nm=fl[i].name; if(!/\.glb$/i.test(nm))continue;
+    localModels[nm.replace(/\.glb$/i,"")]=URL.createObjectURL(fl[i]); n++;
+  }
+  cache={}; missing={};
+  document.getElementById("modelInfo").textContent=
+    n?(n+" model yüklendi."):"Klasörde .glb dosyası bulunamadı.";
+  err(""); renderLists(); build3d();
+};
+
+/* ---------- geri alma ---------- */
+var undoStack=[];
+function pushUndo(){
+  try{ undoStack.push(JSON.stringify(floors));
+       if(undoStack.length>25)undoStack.shift();
+       document.getElementById("undoAllBtn").disabled=false; }catch(e){}
+}
+document.getElementById("undoAllBtn").onclick=function(){
+  if(!undoStack.length){err("Geri alınacak bir şey yok.");return;}
+  floors=JSON.parse(undoStack.pop());
+  if(fi>=floors.length)fi=floors.length-1;
+  sel=null;selKind=null;draft=[];err("");
+  this.disabled=!undoStack.length;
+  renderTabs();renderLists();build3d();fit2d();
+};
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();
