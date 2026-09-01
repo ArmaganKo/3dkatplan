@@ -161,11 +161,22 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
         <option value="giyinme">Giyinme odası</option>
         <option value="calisma">Çalışma odası</option>
       </select></div>
-    <div class="bar">
-      <button id="finishBtn">Odayı tamamla</button>
-      <button class="ghost" id="undoBtn">Son köşeyi sil</button>
+
+    <div class="grid2">
+      <div><label for="rw">En (m)</label><input id="rw" class="num" inputmode="decimal" placeholder="4.20"></div>
+      <div><label for="rd">Boy (m)</label><input id="rd" class="num" inputmode="decimal" placeholder="5.00"></div>
     </div>
-    <p class="hint" style="margin-top:8px">Plan üzerine tıklayarak köşeleri koy. En az üç köşe gerekli.</p>
+    <div class="bar"><button id="rectBtn">Ölçüyle oda ekle</button></div>
+    <p class="hint" style="margin-top:8px">Ölçüleri yaz, oda dikdörtgen olarak eklenir. Sonra "Düzenle" moduna geçip sürükleyerek yerine taşı.</p>
+
+    <details class="fold" style="margin-top:16px">
+      <summary>Köşe köşe çiz (L şekli, çıkma)</summary>
+      <p class="hint" style="margin:10px 0">Plan üzerine tıklayarak köşeleri koy. En az üç köşe gerekli.</p>
+      <div class="bar">
+        <button class="ghost" id="finishBtn">Odayı tamamla</button>
+        <button class="ghost" id="undoBtn">Son köşeyi sil</button>
+      </div>
+    </details>
   </div>
 
   <div id="paneFurn" hidden>
@@ -178,7 +189,9 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   </div>
 
   <div id="paneEdit" hidden>
-    <p class="hint">Köşeleri sürükleyerek odayı düzelt. Odaya tıklayınca seçilir, eşyalar da sürüklenebilir.</p>
+    <p class="hint"><b>Odayı taşımak için</b> içine basılı tutup sürükle.<br>
+    <b>Ölçüsünü değiştirmek için</b> köşedeki noktayı sürükle.<br>
+    Eşyalar da aynı şekilde sürüklenir.</p>
   </div>
 
   <p class="err" id="err"></p>
@@ -236,6 +249,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <div class="tips">
     <h3>Sahada ölçüm</h3>
     <p><b>Çerçeveden başla.</b> Önce dairenin içten içe toplam enini ve boyunu ölç, sonra oda oda in. Planın oturacağı sınır bu.</p>
+    <p><b>Oda eklemek için çizmen gerekmiyor.</b> En ve boy ölçüsünü yaz, oda kendiliğinden oluşsun; sonra sürükleyip yerine taşı.</p>
     <p><b>Toplamı kontrol et.</b> Bir hat üzerindeki oda enleri artı duvar kalınlıkları, dairenin toplam enini vermeli. Vermiyorsa bir ölçüm hatalı.</p>
     <p><b>Duvar kalınlığını ölçemezsen</b> iç duvarlar için 10, dış duvarlar için 20 santimetre varsay. Türkiye'deki konut stokunun çoğunda bu değerler tutar.</p>
     <p><b>Kapı yönü önemli.</b> Kapıyı koyduktan sonra döndürerek açılım yayını doğru tarafa çevir; plan o zaman mimari çizim gibi okunur.</p>
@@ -250,8 +264,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <h2>Nasıl Kullanılır</h2>
 <ol>
 <li>Portföy adını yazın. İndireceğiniz dosyalar bu adı taşır.</li>
-<li>"Oda çiz" modunda plan alanına tıklayarak odanın köşelerini koyun. Dikdörtgen olmak zorunda değil; L şeklinde salonlar ve çıkmalar için istediğiniz kadar köşe ekleyebilirsiniz.</li>
-<li>"Düzenle" modunda köşeleri sürükleyerek ölçüyü düzeltin. Metrekare anında güncellenir.</li>
+<li>Oda adını, tipini, enini ve boyunu yazıp "Ölçüyle oda ekle" deyin. Oda dikdörtgen olarak eklenir. L şeklinde salonlar ve çıkmalar için "Köşe köşe çiz" bölümünü kullanabilirsiniz.</li>
+<li>"Düzenle" moduna geçin. Odanın içine basılı tutup sürükleyerek yerine taşıyın, köşedeki noktaları sürükleyerek ölçüsünü değiştirin. Metrekare anında güncellenir.</li>
 <li>"Eşya" modunda mobilyaları yerleştirin. Hızlı yol için odayı seçip "Seçili odayı döşe" deyin.</li>
 <li>Dubleks daire çiziyorsanız "Kat ekle" ile üst katı açın. Alt kat soluk çizgiyle rehber olarak görünür.</li>
 <li>"İlan görseli indir" ile 1080x1350 ölçüsünde, ilan ve sosyal medya için hazır görseli alın.</li>
@@ -491,7 +505,7 @@ function draw2d(){
   }
 }
 
-var dragT=null,dragI=-1,dragV=-1;
+var dragT=null,dragI=-1,dragV=-1,dragOrig=null,dragStart=null;
 function evPos(e){var r=c2.getBoundingClientRect();return S2W(e.clientX-r.left,e.clientY-r.top);}
 c2.addEventListener("pointerdown",function(e){
   var w=evPos(e);
@@ -500,8 +514,15 @@ c2.addEventListener("pointerdown",function(e){
     var rs=R();
     for(var i=0;i<rs.length;i++)for(var v=0;v<rs[i].p.length;v++){
       var q=rs[i].p[v];
-      if(Math.abs(q.x-w.x)*V.s<9&&Math.abs(q.y-w.y)*V.s<9){
+      if(Math.abs(q.x-w.x)*V.s<10&&Math.abs(q.y-w.y)*V.s<10){
         dragT="vert";dragI=i;dragV=v;sel=i;selKind="room";draw2d();return;}}
+    for(var m2=rs.length-1;m2>=0;m2--){
+      if(inPoly(w,rs[m2].p)){
+        dragT="room";dragI=m2;
+        dragOrig=rs[m2].p.map(function(q){return{x:q.x,y:q.y};});
+        dragStart={x:w.x,y:w.y};
+        sel=m2;selKind="room";renderLists();draw2d();return;}
+    }
   }
   var its=I();
   for(var k=its.length-1;k>=0;k--){
@@ -520,6 +541,10 @@ c2.addEventListener("pointerdown",function(e){
 c2.addEventListener("pointermove",function(e){
   if(!dragT)return; var w=evPos(e);
   if(dragT==="vert")R()[dragI].p[dragV]={x:snap(w.x),y:snap(w.y)};
+  else if(dragT==="room"){
+    var dx=snap(w.x-dragStart.x), dy=snap(w.y-dragStart.y);
+    R()[dragI].p=dragOrig.map(function(q){return{x:snap(q.x+dx),y:snap(q.y+dy)};});
+  }
   else{I()[dragI].x=snap(w.x);I()[dragI].y=snap(w.y);}
   draw2d();e.preventDefault();
 },{passive:false});
@@ -876,6 +901,26 @@ document.getElementById("finishBtn").onclick=function(){
   renderLists();build3d();fit2d();
 };
 document.getElementById("undoBtn").onclick=function(){draft.pop();err("");fit2d();};
+function numv(id){return parseFloat((document.getElementById(id).value||"").replace(",","."));}
+document.getElementById("rectBtn").onclick=function(){
+  var n=document.getElementById("rname").value.trim();
+  var w=numv("rw"), d=numv("rd");
+  if(!n){err("Oda adını yaz.");return;}
+  if(!(w>0)||!(d>0)){err("En ve boy sıfırdan büyük olmalı.");return;}
+  var x0=0,y0=0;
+  if(R().length){
+    var mx=-Infinity,my=Infinity;
+    R().forEach(function(rm){rm.p.forEach(function(q){
+      mx=Math.max(mx,q.x); my=Math.min(my,q.y);});});
+    x0=snap(mx+0.6); y0=snap(my);
+  }
+  R().push({n:n,t:document.getElementById("rtype").value,
+    p:[{x:x0,y:y0},{x:snap(x0+w),y:y0},{x:snap(x0+w),y:snap(y0+d)},{x:x0,y:snap(y0+d)}]});
+  document.getElementById("rname").value="";
+  document.getElementById("rw").value="";document.getElementById("rd").value="";
+  sel=R().length-1; selKind="room"; err("");
+  renderLists();build3d();fit2d();
+};
 document.getElementById("rotBtn").onclick=function(){
   if(selKind!=="item"){err("Önce bir eşya seç.");return;}
   I()[sel].r+=Math.PI/4;err("");draw2d();build3d();};
