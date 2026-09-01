@@ -35,9 +35,16 @@ h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;line-height:1.
 header p{margin:3px 0 0;color:var(--soft);max-width:72ch;font-size:14px;line-height:1.45}
 .app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;align-items:start}
 .panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
-.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start}
+.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start;grid-template-rows:auto auto 1fr}
 h2{margin:0 0 10px;font-size:13px;font-weight:600}
 h2.sp{margin-top:22px}
+details.fold{margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+details.fold>summary{cursor:pointer;font-size:13px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:6px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:"▸";color:var(--accent);font-size:11px}
+details.fold[open]>summary::before{content:"▾"}
+details.fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 label{display:block;font-size:13px;color:var(--soft);margin-bottom:4px}
 input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);
   background:#fff;font-family:inherit;font-size:14px;color:var(--ink)}
@@ -56,7 +63,7 @@ button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
 .tabs button{padding:6px 12px;font-size:13px}
 .err{color:#8C2B22;font-size:13px;margin:8px 0 0}
 .hint{color:var(--soft);font-size:13px;margin:0}
-ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line);max-height:230px;overflow-y:auto}
+ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line);max-height:170px;overflow-y:auto}
 li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 li .sw{width:11px;height:11px;border-radius:3px;flex:none}
 li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -85,7 +92,7 @@ li.on{font-weight:500}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .cap{font-size:13px;color:var(--soft);margin:0 0 6px}
 .tips{border:1px solid var(--line);border-radius:var(--r);background:var(--card);
-  padding:16px 18px;font-size:14px;line-height:1.6}
+  padding:18px 20px;font-size:14px;line-height:1.65}
 .tips h3{margin:0 0 8px;font-size:14px;font-weight:600}
 .tips p{margin:0 0 10px;color:#33312D}
 .tips p:last-child{margin-bottom:0}
@@ -184,16 +191,19 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <h2 class="sp">Eşyalar</h2>
   <ul id="flist"></ul>
 
-  <h2 class="sp">Görsel künyesi</h2>
-  <label class="chk" style="margin-bottom:10px"><input type="checkbox" id="brandOn" checked> Bilgilerimi görsele bas</label>
-  <div id="brandFields">
-    <div class="field"><label for="bName">Ad soyad</label><input id="bName" placeholder="Adınız Soyadınız"></div>
-    <div class="field"><label for="bPhone">Telefon</label><input id="bPhone" placeholder="0500 000 00 00"></div>
-    <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
-    <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
-    <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
-    <p class="hint" style="margin-top:8px">Bu bilgiler yalnızca "Paylaşım görseli"ne basılır. İlan sitelerine yükleyeceğin görselde hiçbir marka, adres veya telefon bulunmaz.</p>
-  </div>
+  <details class="fold">
+    <summary>Görsel künyesi</summary>
+    <label class="chk" style="margin:10px 0"><input type="checkbox" id="brandOn" checked> Bilgilerimi görsele bas</label>
+    <div id="brandFields">
+      <div class="field"><label for="bName">Ad soyad</label><input id="bName" placeholder="Adınız Soyadınız"></div>
+      <div class="field"><label for="bPhone">Telefon</label><input id="bPhone" placeholder="0500 000 00 00"></div>
+      <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
+      <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
+      <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
+      <p class="hint" style="margin-top:8px">Bu bilgiler yalnızca "Paylaşım görseli"ne basılır. İlan sitelerine yükleyeceğin görselde hiçbir marka, adres veya telefon bulunmaz.</p>
+    </div>
+  </details>
+
 </section>
 
 <section class="stage">
