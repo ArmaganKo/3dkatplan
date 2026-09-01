@@ -192,7 +192,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
     <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
     <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
-    <p class="hint" style="margin-top:8px">Bilgiler bu tarayıcıda saklanır, her seferinde yazmana gerek kalmaz.</p>
+    <p class="hint" style="margin-top:8px">Bu bilgiler yalnızca "Paylaşım görseli"ne basılır. İlan sitelerine yükleyeceğin görselde hiçbir marka, adres veya telefon bulunmaz.</p>
   </div>
 </section>
 
@@ -210,6 +210,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   </div>
   <div class="bar">
     <button id="pngBtn">İlan görseli indir</button>
+    <button class="ghost" id="pngBrandBtn">Paylaşım görseli indir</button>
     <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
     <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
     <button class="ghost" id="saveBtn">Projeyi kaydet</button>
@@ -257,6 +258,9 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
 <h3>Telefondan Kullanabilir miyim?</h3>
 <p>Kullanabilirsiniz, ancak köşe yerleştirme ve eşya taşıma bilgisayar ekranında çok daha rahattır. Sahada ölçüp ofiste çizmeniz önerilir.</p>
+
+<h3>Görseli Sahibinden veya Hepsiemlak'a Yükleyebilir miyim?</h3>
+<p>Evet. "İlan görseli indir" ile inen dosyada hiçbir site adresi, telefon, logo veya marka bulunmaz; sadece plan, oda listesi ve metrekare bilgisi vardır. İlan portalları görsellerde iletişim bilgisi ve filigran istemediği için bu sürümü kullanın. İletişim bilgilerinizin basılı olduğu sürümü "Paylaşım görseli indir" ile alır, WhatsApp, sosyal medya ve basılı broşürlerde kullanırsınız.</p>
 
 <h3>Çizdiğim Plan Başkası Tarafından Görülür mü?</h3>
 <p>Hayır. Tüm işlem tarayıcınızda gerçekleşir, kaydettiğiniz proje dosyası kendi bilgisayarınızda kalır.</p>
@@ -930,8 +934,9 @@ document.getElementById("bLogo").onchange=function(e){
 document.getElementById("logoClr").onclick=function(){
   logoData=null;logoImg=null;document.getElementById("bLogo").value="";saveBrand();err("");};
 
-document.getElementById("pngBtn").onclick=function(){
+function exportPNG(branded){
   if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  err("");
   var W=1080,H=1350,IH=770,PAD=70;
   size3d(W,IH);
   if(!topView){
@@ -939,69 +944,70 @@ document.getElementById("pngBtn").onclick=function(){
     cam.position.set(tgt.x+r2*Math.sin(ph)*Math.sin(th),
                      tgt.y+r2*Math.cos(ph),
                      tgt.z+r2*Math.sin(ph)*Math.cos(th));
-    cam.lookAt(tgt);
-    ren.render(scene,cam);
+    cam.lookAt(tgt); ren.render(scene,cam);
   }else{
     ortho.position.set(tgt.x,tgt.y+60,tgt.z+0.001);
     ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
     ren.render(scene,ortho);
   }
-  var shot=ren.domElement.toDataURL("image/png");size3d();
+  var shot=ren.domElement.toDataURL("image/png"); size3d();
   var img=new Image();
   img.onload=function(){
     var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
     g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,132,W,IH);
 
-    g.fillStyle="#1B1A17";g.font="600 52px 'IBM Plex Sans',sans-serif";
+    g.fillStyle="#1B1A17";g.font="600 52px "+FONT_UI;
     g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
-    g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px 'IBM Plex Sans',sans-serif";
-    g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
+    if(branded){
+      g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px "+FONT_UI;
+      g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
+    }
 
-    var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
-    var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
-
-    g.strokeStyle="#DCD7CD";g.lineWidth=2;
-    g.beginPath();g.moveTo(PAD,1128);g.lineTo(W-PAD,1128);g.stroke();
-
-    g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
-    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1178);
-
-    // lejant
     var LY=926,cols=legendData.length>6?2:1;
     var colW=(W-PAD*2)/cols;
     legendData.forEach(function(d,i){
       var cxi=i%cols, ryi=Math.floor(i/cols);
       var x=PAD+cxi*colW, y=LY+ryi*36;
-      g.fillStyle="#1F4E5F";g.font="600 26px "+FONT_UI;
-      g.fillText(String(d.no),x,y);
-      g.fillStyle="#1B1A17";g.font="400 26px "+FONT_UI;
-      g.fillText(d.n,x+34,y);
+      g.fillStyle="#1F4E5F";g.font="600 26px "+FONT_UI;g.fillText(String(d.no),x,y);
+      g.fillStyle="#1B1A17";g.font="400 26px "+FONT_UI;g.fillText(d.n,x+34,y);
       g.fillStyle="#5C5952";g.font="400 24px "+FONT_MONO;
       g.textAlign="right";g.fillText(d.a.toFixed(1)+" m²",x+colW-40,y);g.textAlign="left";
     });
-    var on=document.getElementById("brandOn").checked;
-    var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
-    if(on){
-      var y=1232;
-      if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;
-        g.fillText(nm,PAD,y);y+=46;}
-      var l2=[ofs,tel].filter(Boolean).join("  ·  ");
-      if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;
-        g.fillText(l2,PAD,y);}
-      if(logoImg&&logoImg.width){
-        var BW=200,BH=118,bx=W-PAD-BW,by=1170;
-        var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
-        var lw=logoImg.width*sc,lh=logoImg.height*sc;
-        g.drawImage(logoImg,bx+(BW-lw)/2,by+(BH-lh)/2,lw,lh);
-      }
-    }
-    g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
-    g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
 
-    var a=document.createElement("a");a.download=fileBase()+".png";a.href=c.toDataURL("image/png");a.click();
+    var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
+    var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
+    g.strokeStyle="#DCD7CD";g.lineWidth=2;
+    g.beginPath();g.moveTo(PAD,1128);g.lineTo(W-PAD,1128);g.stroke();
+    g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
+    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1178);
+
+    if(branded){
+      var on=document.getElementById("brandOn").checked;
+      var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
+      if(on){
+        var y=1232;
+        if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;g.fillText(nm,PAD,y);y+=46;}
+        var l2=[ofs,tel].filter(Boolean).join("  ·  ");
+        if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;g.fillText(l2,PAD,y);}
+        if(logoImg&&logoImg.width){
+          var BW=200,BH=118,bx=W-PAD-BW,by=1170;
+          var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
+          var lw=logoImg.width*sc,lh=logoImg.height*sc;
+          g.drawImage(logoImg,bx+(BW-lw)/2,by+(BH-lh)/2,lw,lh);
+        }
+      }
+      g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
+      g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
+    }
+
+    var a=document.createElement("a");
+    a.download=fileBase()+(branded?"-paylasim":"-ilan")+".png";
+    a.href=c.toDataURL("image/png");a.click();
   };
   img.src=shot;
-};
+}
+document.getElementById("pngBtn").onclick=function(){exportPNG(false);};
+document.getElementById("pngBrandBtn").onclick=function(){exportPNG(true);};
 
 window.addEventListener("resize",function(){fit2d();size3d();});
 loadBrand();init3d();renderTabs();renderLists();
