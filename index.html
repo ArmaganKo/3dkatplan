@@ -177,6 +177,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <div class="bar" style="margin-bottom:16px">
     <button class="ghost" id="addFloor">Kat ekle</button>
     <button class="ghost" id="delFloor">Katı sil</button>
+    <button class="ghost" id="renFloor">Adını değiştir</button>
   </div>
 
   <div class="modes">
@@ -227,6 +228,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <div class="bar" style="margin-top:10px">
       <button class="ghost" id="rotRoomBtn">Odayı 90° çevir</button>
       <button class="ghost" id="mirrorBtn">Aynala</button>
+      <button class="ghost" id="retypeBtn">Tipini değiştir</button>
     </div>
     <p class="hint" style="margin-top:8px">Önce odaya tıklayıp seç. Çevirme, odayı kendi merkezinde döndürür — en ve boy yer değiştirir.</p>
   </div>
@@ -238,6 +240,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <p class="warn-box" id="overlapWarn" style="display:none"></p>
   <div class="total"><span>Bu kat net</span><b id="total">0 m²</b></div>
   <div class="sub"><span>Tüm katlar toplam</span><span id="grand">0 m²</span></div>
+  <p class="hint" style="margin-top:8px">Ölçüler yaklaşıktır. Resmi metrekare için tapu ve projeyi esas al.</p>
 
   <h2 class="sp">Eşyalar</h2>
   <ul id="flist"></ul>
@@ -322,7 +325,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <dl>
 <dt>Zemin kat / 1. kat</dt><dd>Katlar arasında geçiş yapar. Hangi katın üstünde çalıştığını gösterir; çizdiğin oda o kata eklenir.</dd>
 <dt>Kat ekle</dt><dd>Yeni bir kat açar. Dubleks daireler için kullanılır. Üst kattayken alt kat soluk kesikli çizgiyle görünür, hizalamayı ona göre yaparsın.</dd>
-<dt>Katı sil</dt><dd>Üstünde bulunduğun katı, içindeki tüm oda ve eşyalarla birlikte siler. Tek kat kaldıysa silinmez.</dd>
+<dt>Katı sil</dt><dd>Üstünde bulunduğun katı, içindeki tüm oda ve eşyalarla birlikte siler. Dolu bir katta onay sorar. Tek kat kaldıysa silinmez.</dd>
+<dt>Adını değiştir</dt><dd>Katın adını değiştirir. "Zemin kat" yerine "Bahçe katı", "1. kat" yerine "Çatı katı" yazabilirsin.</dd>
 </dl>
 
 <h3>Çalışma modları</h3>
@@ -348,6 +352,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <dl>
 <dt>Odayı 90° çevir</dt><dd>Seçili odayı kendi merkezinde döndürür. 4,20 × 5,00 olan oda 5,00 × 4,20 olur. Metrekare değişmez. Önce odaya tıklayıp seçmen gerekir.</dd>
 <dt>Aynala</dt><dd>Seçili odayı yatay eksende ters çevirir. L şeklinde bir oda çizdin ama çıkıntı ters taraftaysa, baştan çizmek yerine aynalarsın.</dd>
+<dt>Tipini değiştir</dt><dd>Seçili odanın tipini, o an seçili olan oda tipiyle değiştirir. Yanlış tip seçtiysen odayı silmene gerek yok: üstteki listeden doğru tipi seç, odaya tıkla, bu düğmeye bas. Rengi, zemin dokusu ve otomatik döşemesi yeni tipe göre olur.</dd>
 </dl>
 
 <h3>Eşya modu</h3>
@@ -1067,13 +1072,25 @@ document.getElementById("mDraw").onclick=function(){setMode("draw");};
 document.getElementById("mEdit").onclick=function(){setMode("edit");};
 document.getElementById("mFurn").onclick=function(){setMode("furn");};
 
+document.getElementById("renFloor").onclick=function(){
+  var v2=prompt("Kat adı:",floors[fi].n);
+  if(v2&&v2.trim()){pushUndo();floors[fi].n=v2.trim();
+    err("");renderTabs();renderLists();build3d();}
+};
 document.getElementById("addFloor").onclick=function(){
+  pushUndo();
   floors.push({n:floors.length+". kat",rooms:[],items:[]});
   fi=floors.length-1;sel=null;selKind=null;draft=[];err("");
   renderTabs();renderLists();build3d();fit2d();
 };
 document.getElementById("delFloor").onclick=function(){
   if(floors.length<2){err("Tek kat silinemez.");return;}
+  var f0=floors[fi];
+  if(f0.rooms.length||f0.items.length){
+    if(!confirm('"'+f0.n+'" katı, içindeki '+f0.rooms.length+' oda ve '+
+      f0.items.length+' eşyayla birlikte silinecek. Emin misin?'))return;
+  }
+  pushUndo();
   floors.splice(fi,1);fi=Math.max(0,fi-1);sel=null;selKind=null;draft=[];err("");
   renderTabs();renderLists();build3d();fit2d();
 };
@@ -1155,6 +1172,13 @@ document.getElementById("mirrorBtn").onclick=function(){
   var rm=R()[sel], c=roomCenter(rm.p);
   rm.p=rm.p.map(function(q){return {x:snap(2*c.x-q.x), y:q.y};}).reverse();
   err("");renderLists();build3d();fit2d();
+};
+document.getElementById("retypeBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
+  R()[sel].t=curType;
+  err('Oda tipi "'+TYPES[curType].l+'" olarak değiştirildi.');
+  renderLists();build3d();draw2d();
 };
 document.getElementById("allChk").onchange=function(){build3d();};
 document.getElementById("topBtn").onclick=function(){
@@ -1297,6 +1321,26 @@ function exportIlan(){
     var g=c.getContext("2d");
     g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);
     g.drawImage(img,0,0,W,H);
+
+    var t=floors.reduce(function(a2,f){return a2+netOf(f.rooms);},0);
+    var nr=floors.reduce(function(a2,f){return a2+f.rooms.length;},0);
+    var big="Toplam net alan  "+t.toFixed(1)+" m²";
+    var sub=nr+" hacim · "+floors.length+" kat";
+    var note="Ölçüler yaklaşıktır. Resmi metrekare için tapu ve proje esas alınmalıdır.";
+    g.font="600 46px "+FONT_MONO; var bw1=g.measureText(big).width;
+    g.font="400 28px "+FONT_UI;   var bw2=g.measureText(sub).width;
+    g.font="400 22px "+FONT_UI;   var bw3=g.measureText(note).width;
+    var pw=Math.max(bw1,bw2,bw3)+56, phh=170, px=52, py=H-phh-46;
+    g.fillStyle="rgba(250,248,244,0.90)";
+    if(g.roundRect){g.beginPath();g.roundRect(px,py,pw,phh,10);g.fill();
+      g.strokeStyle="rgba(120,116,108,0.28)";g.lineWidth=2;g.stroke();}
+    else g.fillRect(px,py,pw,phh);
+    g.textBaseline="top";
+    g.fillStyle="#1B1A17";g.font="600 46px "+FONT_MONO;g.fillText(big,px+28,py+22);
+    g.fillStyle="#55524B";g.font="400 28px "+FONT_UI;g.fillText(sub,px+28,py+82);
+    g.fillStyle="#8A867E";g.font="400 22px "+FONT_UI;g.fillText(note,px+28,py+126);
+    g.textBaseline="alphabetic";
+
     var a=document.createElement("a");
     a.download=fileBase()+"-ilan.png";a.href=c.toDataURL("image/png");a.click();
   };
@@ -1335,6 +1379,8 @@ function exportPaylasim(){
     g.beginPath();g.moveTo(PAD,1148);g.lineTo(W-PAD,1148);g.stroke();
     g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
     g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1194);
+    g.fillStyle="#8A867E";g.font="400 21px "+FONT_UI;
+    g.fillText("Ölçüler yaklaşıktır. Resmi metrekare için tapu ve proje esas alınmalıdır.",PAD,1222);
 
     var on=document.getElementById("brandOn").checked;
     var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
