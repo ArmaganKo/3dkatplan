@@ -80,6 +80,9 @@ details.typefold[open]>summary{border-color:var(--accent);margin-bottom:6px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .tabs button{padding:6px 12px;font-size:13px}
 .err{color:#8C2B22;font-size:13px;margin:8px 0 0}
+.warn-box{margin:12px 0 0;padding:9px 11px;border-radius:var(--r);font-size:13px;
+  line-height:1.5;background:#FBF0EE;border:1px solid #E3C4BF;color:#8C2B22}
+li.bad .nm{color:#B02A20;font-weight:500}
 .hint{color:var(--soft);font-size:13px;margin:0}
 ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line);max-height:170px;overflow-y:auto}
 li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -217,6 +220,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
   <h2 class="sp">Odalar — <span id="floorName"></span></h2>
   <ul id="rlist"></ul>
+  <p class="warn-box" id="overlapWarn" style="display:none"></p>
   <div class="total"><span>Bu kat net</span><b id="total">0 m²</b></div>
   <div class="sub"><span>Tüm katlar toplam</span><span id="grand">0 m²</span></div>
 
@@ -462,6 +466,34 @@ function labelSpot(poly){
   }
   return best?{p:best,r:bd}:null;
 }
+function segInt(a,b,c,d){
+  function o(p,q,r){var v=(q.y-p.y)*(r.x-q.x)-(q.x-p.x)*(r.y-q.y);
+    return Math.abs(v)<1e-9?0:(v>0?1:2);}
+  var o1=o(a,b,c),o2=o(a,b,d),o3=o(c,d,a),o4=o(c,d,b);
+  return o1!==o2&&o3!==o4;
+}
+function polysOverlap(p1,p2){
+  for(var i=0;i<p1.length;i++)for(var j=0;j<p2.length;j++){
+    if(segInt(p1[i],p1[(i+1)%p1.length],p2[j],p2[(j+1)%p2.length]))return true;
+  }
+  for(var k=0;k<p1.length;k++){
+    var m={x:(p1[k].x+p1[(k+1)%p1.length].x)/2,y:(p1[k].y+p1[(k+1)%p1.length].y)/2};
+    if(inPoly(m,p2))return true;
+  }
+  for(var n=0;n<p2.length;n++){
+    var m2={x:(p2[n].x+p2[(n+1)%p2.length].x)/2,y:(p2[n].y+p2[(n+1)%p2.length].y)/2};
+    if(inPoly(m2,p1))return true;
+  }
+  return false;
+}
+function findOverlaps(){
+  var rs=R(), bad={};
+  for(var i=0;i<rs.length;i++)for(var j=i+1;j<rs.length;j++){
+    if(rs[i].t==="bahce"||rs[j].t==="bahce")continue;
+    if(polysOverlap(rs[i].p,rs[j].p)){bad[i]=true;bad[j]=true;}
+  }
+  return bad;
+}
 function polyPath(p){g2.beginPath();p.forEach(function(q,k){var s=W2S(q);k?g2.lineTo(s.x,s.y):g2.moveTo(s.x,s.y);});g2.closePath();}
 
 function draw2d(){
@@ -481,11 +513,18 @@ function draw2d(){
     floors[fi-1].rooms.forEach(function(rm){polyPath(rm.p);g2.stroke();});
     g2.setLineDash([]);
   }
+  var bad=findOverlaps();
   R().forEach(function(rm,i){
     polyPath(rm.p);
     g2.fillStyle=TYPES[rm.t].h;g2.fill();
-    g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
-    g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
+    if(bad[i]){
+      g2.fillStyle="rgba(176,42,32,0.16)";g2.fill();
+      g2.strokeStyle="#B02A20";g2.lineWidth=3;g2.setLineDash([7,4]);g2.stroke();
+      g2.setLineDash([]);
+    }else{
+      g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
+      g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
+    }
     if(mode==="edit")rm.p.forEach(function(q){var s2=W2S(q);
       g2.beginPath();g2.arc(s2.x,s2.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
       g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
@@ -876,6 +915,7 @@ function renderLists(){
   if(!R().length)rl.innerHTML='<li class="empty">Bu katta henüz oda yok.</li>';
   R().forEach(function(rm,i){
     var li=document.createElement("li");if(selKind==="room"&&sel===i)li.className="on";
+    if(bad2[i])li.classList.add("bad");
     li.innerHTML='<span class="sw" style="background:'+TYPES[rm.t].h+'"></span>'+
       '<span class="nm">'+rm.n+'</span><span class="dm">'+area(rm.p).toFixed(1)+' m²</span>';
     var e=document.createElement("button");e.textContent="✎";e.title="Adını değiştir";
@@ -891,7 +931,14 @@ function renderLists(){
     li.appendChild(b);li.onclick=function(){sel=i;selKind="room";renderLists();draw2d();};
     rl.appendChild(li);
   });
+  var bad2=findOverlaps(), badN=Object.keys(bad2).length;
   document.getElementById("total").textContent=netOf(R()).toFixed(1)+" m²";
+  var wr=document.getElementById("overlapWarn");
+  if(wr){
+    if(badN){wr.style.display="block";
+      wr.textContent=badN+" oda birbirinin üstüne biniyor. Metrekare toplamı yanlış çıkar, çakışan odaları ayır.";}
+    else wr.style.display="none";
+  }
   document.getElementById("grand").textContent=
     floors.reduce(function(a,f){return a+netOf(f.rooms);},0).toFixed(1)+" m²";
 
