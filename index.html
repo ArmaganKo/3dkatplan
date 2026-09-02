@@ -20,8 +20,24 @@
 :root{--paper:#F4F2ED;--card:#FBFAF7;--ink:#1B1A17;--soft:#5C5952;--line:#DCD7CD;
   --accent:#1F4E5F;--accent-soft:#E3EBED;--r:6px}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);
+body{margin:0;padding-top:30px;background:var(--paper);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.6}
+#serit-ag{position:fixed;top:0;left:0;right:0;height:30px;background:#2C6355;
+  display:flex;align-items:center;gap:14px;padding:0 12px;overflow-x:auto;z-index:50;
+  font-size:12.5px;white-space:nowrap;-webkit-overflow-scrolling:touch}
+#serit-ag span{color:#BFD8D0;flex:none}
+#serit-ag a{color:#fff;text-decoration:none;flex:none;opacity:.85}
+#serit-ag a:hover{opacity:1;text-decoration:underline}
+#serit-ag a.burada{opacity:1;font-weight:700;cursor:default}
+@media print{#serit-ag{display:none}body{padding-top:0}}
+.capraz{margin-top:14px;background:#E8F1EE;border:1px solid #DFE2E1;
+  border-radius:14px;padding:16px;font-size:14.5px;line-height:1.5}
+.capraz b{display:block;font-size:16px;color:#2C6355;margin-bottom:6px}
+.capraz a{color:#2C6355;font-weight:700}
+.telif{margin-top:16px;padding-top:14px;border-top:1px solid #DFE2E1;
+  font-size:12.5px;line-height:1.7;color:#6B7A75}
+.telif a{color:#2C6355}
+.telif a.site{font-weight:700;font-size:14px}
 header{padding:16px 24px 14px;border-bottom:1px solid var(--line);text-align:left}
 .head-in{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .brand{display:block;line-height:0;flex:none}
@@ -35,7 +51,7 @@ h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;line-height:1.
 header p{margin:3px 0 0;color:var(--soft);max-width:72ch;font-size:14px;line-height:1.45}
 .app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;align-items:start}
 .panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
-.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start;grid-template-rows:auto auto 1fr}
+.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start;grid-template-rows:auto auto auto 1fr}
 h2{margin:0 0 10px;font-size:13px;font-weight:600}
 h2.sp{margin-top:22px}
 details.fold{margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
@@ -80,6 +96,8 @@ details.typefold[open]>summary{border-color:var(--accent);margin-bottom:6px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .tabs button{padding:6px 12px;font-size:13px}
 .err{color:#8C2B22;font-size:13px;margin:8px 0 0}
+.ok-box{margin:10px 0 0;padding:9px 11px;border-radius:var(--r);font-size:13px;
+  line-height:1.5;background:#E8F1EE;border:1px solid #C9DED7;color:#2C6355}
 .warn-box{margin:12px 0 0;padding:9px 11px;border-radius:var(--r);font-size:13px;
   line-height:1.5;background:#FBF0EE;border:1px solid #E3C4BF;color:#8C2B22}
 li.bad .nm{color:#B02A20;font-weight:500}
@@ -154,6 +172,14 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
  .panel{border-right:none;border-bottom:1px solid var(--line)}
  #plan2d{height:300px}#wrap3d{height:320px}}
 </style>
+
+<nav id="serit-ag">
+  <span>Ücretsiz emlak araçları:</span>
+  <a href="https://parseltur.com">Parsel videosu</a>
+  <a href="https://gunesalirmi.com">Güneş alır mı?</a>
+  <a href="https://3dkatplan.com" class="burada">3D kat planı</a>
+  <a href="https://ilanfotosu.com">İlan fotoğrafı</a>
+</nav>
 
 <header>
  <div class="head-in">
@@ -234,6 +260,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   </div>
 
   <p class="err" id="err"></p>
+  <p class="ok-box" id="okMsg" style="display:none"></p>
 
   <h2 class="sp">Odalar — <span id="floorName"></span></h2>
   <ul id="rlist"></ul>
@@ -287,6 +314,12 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
     <input type="file" id="fileIn" accept=".json" hidden>
     <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
+  </div>
+
+  <div class="capraz">
+    <b>Kat planı hazır.</b>
+    İlanı tamamlamak için fotoğraflarınızı da portal ölçüsüne getirin, plakaları kapatın
+    ve konum bilgisini silin: <a href="https://ilanfotosu.com">ilanfotosu.com</a>
   </div>
 
   <div class="tips">
@@ -419,6 +452,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <ul class="tools">
 <li><a href="https://www.parseltur.com" target="_blank" rel="noopener"><strong>ParselTur</strong></a> — TKGM'den indirdiğiniz parsel dosyasını üç boyutlu drone videosuna çevirir. Arsa ve arazi ilanlarınız için hazır tanıtım videosu üretir.</li>
 <li><a href="https://www.gunesalirmi.com" target="_blank" rel="noopener"><strong>Güneş Alır mı?</strong></a> — Bir dairenin hangi odasının hangi saatlerde güneş aldığını gösterir. Cephe yönünü girersiniz, gün boyu ışık durumunu görürsünüz.</li>
+<li><a href="https://ilanfotosu.com" target="_blank" rel="noopener"><strong>İlan Fotoğrafı</strong></a> — İlan fotoğraflarını portal ölçüsüne getirir, plaka ve yüzleri kapatır, fotoğrafın içindeki konum bilgisini siler.</li>
 </ul>
 </article>
 
@@ -427,11 +461,15 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 Üsküdar, Ümraniye, Çekmeköy ve Kadıköy hattındaki mülklerinizle ilgileniyoruz.<br>
 0507 917 33 58 · <a href="https://www.armagankocabas.com">armagankocabas.com</a>
 <div class="legal">
-  Çizimleriniz yalnızca tarayıcınızda işlenir, hiçbir veri sunucuya gönderilmez.<br>
-  © <span id="yr">2026</span> 3dkatplan.com — Tüm hakları saklıdır.
+  Çizimleriniz yalnızca tarayıcınızda işlenir, hiçbir veri sunucuya gönderilmez.
+</div>
+<div class="telif">
+  <a href="https://www.armagankocabas.com" class="site">www.armagankocabas.com</a>
+  <div>Armağan Kocabaş — İstanbul lüks konut uzmanı, RE/MAX Eksen</div>
+  <div>&copy; <span id="yil"></span> Armağan Kocabaş. Tüm hakları saklıdır.</div>
 </div>
 </footer>
-<script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
+<script>document.getElementById("yil").textContent=new Date().getFullYear();</script>
 
 <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -512,10 +550,13 @@ function R(){return floors[fi].rooms;} function I(){return floors[fi].items;}
 
 function area(p){var a=0;for(var i=0;i<p.length;i++){var j=(i+1)%p.length;a+=p[i].x*p[j].y-p[j].x*p[i].y;}return Math.abs(a)/2;}
 function centroid(p){var x=0,y=0;p.forEach(function(q){x+=q.x;y+=q.y;});return{x:x/p.length,y:y/p.length};}
-function snap(v){return Math.round(v/SNAP)*SNAP;}
+function snap(v){return Math.round(Math.round(v/SNAP)*SNAP*100)/100;}
 function byKey(k){for(var i=0;i<CATALOG.length;i++)if(CATALOG[i].k===k)return CATALOG[i];return CATALOG[0];}
 function netOf(list){return list.filter(function(r){return r.t!=="bahce";}).reduce(function(a,r){return a+area(r.p);},0);}
-function err(m){document.getElementById("err").textContent=m||"";}
+function err(m){
+  document.getElementById("err").textContent=m||"";
+  var o=document.getElementById("okMsg"); if(o&&m)o.style.display="none";
+}
 function inPoly(pt,p){var c=false;
   for(var i=0,j=p.length-1;i<p.length;j=i++){
     if(((p[i].y>pt.y)!=(p[j].y>pt.y))&&(pt.x<(p[j].x-p[i].x)*(pt.y-p[i].y)/(p[j].y-p[i].y)+p[i].x))c=!c;}
@@ -1013,6 +1054,7 @@ function renderTabs(){
   document.getElementById("floorName").textContent=floors[fi].n;
 }
 function renderLists(){
+  var bad2=findOverlaps();
   var rl=document.getElementById("rlist");rl.innerHTML="";
   if(!R().length)rl.innerHTML='<li class="empty">Bu katta henüz oda yok.</li>';
   R().forEach(function(rm,i){
@@ -1033,7 +1075,7 @@ function renderLists(){
     li.appendChild(b);li.onclick=function(){sel=i;selKind="room";renderLists();draw2d();};
     rl.appendChild(li);
   });
-  var bad2=findOverlaps(), badN=Object.keys(bad2).length;
+  var badN=Object.keys(bad2).length;
   document.getElementById("total").textContent=netOf(R()).toFixed(1)+" m²";
   var wr=document.getElementById("overlapWarn");
   if(wr){
@@ -1061,6 +1103,7 @@ function renderLists(){
 
 /* ---------- kontroller ---------- */
 function setMode(m){
+  var o=document.getElementById("okMsg"); if(o)o.style.display="none";
   mode=m;sel=null;selKind=null;
   [["draw","mDraw","paneDraw"],["edit","mEdit","paneEdit"],["furn","mFurn","paneFurn"]]
    .forEach(function(x){document.getElementById(x[1]).setAttribute("aria-pressed",String(m===x[0]));
@@ -1143,7 +1186,12 @@ document.getElementById("rectBtn").onclick=function(){
     p:[{x:x0,y:y0},{x:snap(x0+w),y:y0},{x:snap(x0+w),y:snap(y0+d)},{x:x0,y:snap(y0+d)}]});
   document.getElementById("rname").value="";
   document.getElementById("rw").value="";document.getElementById("rd").value="";
-  sel=R().length-1; selKind="room"; err("");
+  sel=R().length-1; selKind="room";
+  setMode("edit"); sel=R().length-1; selKind="room";
+  err("");
+  var ok=document.getElementById("okMsg");
+  if(ok){ok.style.display="block";
+    ok.textContent='"'+n+'" eklendi ('+w.toFixed(2)+' × '+d.toFixed(2)+' m). Planda içine basılı tutup sürükleyerek yerine taşı.';}
   renderLists();build3d();fit2d();
 };
 document.getElementById("rotBtn").onclick=function(){
