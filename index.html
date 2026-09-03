@@ -241,10 +241,13 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <div id="paneFurn" hidden>
     <div class="field"><label for="fsel">Eşya</label><select id="fsel"></select></div>
     <div class="bar">
+      <button id="placeBtn">Plana yerleştir</button>
       <button class="ghost" id="rotBtn">45° döndür</button>
+    </div>
+    <div class="bar" style="margin-top:8px">
       <button class="ghost" id="autoBtn">Seçili odayı döşe</button>
     </div>
-    <p class="hint" style="margin-top:8px">Plana tıklayarak yerleştir, sürükleyerek taşı. Kapı ve pencereyi duvarın üstüne koy.</p>
+    <p class="hint" id="furnHint" style="margin-top:8px">Listeden eşyayı seç, "Plana yerleştir" de, sonra plana tıkla. Bir tane eklenir. Yenisini eklemek için tekrar bas.</p>
   </div>
 
   <div id="paneEdit" hidden>
@@ -390,7 +393,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
 <h3>Eşya modu</h3>
 <dl>
-<dt>Eşya listesi</dt><dd>Yerleştirilecek eşyayı seçersin, sonra plana tıklarsın. Kapı, pencere ve merdiven de bu listededir.</dd>
+<dt>Eşya listesi</dt><dd>Yerleştirilecek eşyayı seçersin. Kapı, pencere ve merdiven de bu listededir. Listeden yeni bir eşya seçtiğinde yerleştirme kendiliğinden hazır duruma geçer.</dd>
+<dt>Plana yerleştir</dt><dd>Bu düğmeye bastıktan sonra plan üzerinde tıkladığın yere <b>bir tane</b> eşya konur ve yerleştirme kapanır. Böylece her tıklamada yeni eşya üremez. İkinci bir tane koymak için düğmeye tekrar basarsın. Yerleştirme kapalıyken plana tıklamak var olan eşyaları seçer ve taşır.</dd>
 <dt>45° döndür</dt><dd>Seçili eşyayı kırk beşer derece çevirir. Kapının açılım yayını doğru tarafa çevirmek için kullanılır.</dd>
 <dt>Seçili odayı döşe</dt><dd>Odayı seçip basarsın, araç o odanın tipine uygun standart eşyaları kendi yerleştirir. Yatak odasına yatak ve gardırop, salona koltuk takımı ve TV ünitesi gelir. Beğenmediğini sürükler veya silersin.</dd>
 </dl>
@@ -745,10 +749,16 @@ c2.addEventListener("pointerdown",function(e){
     var ca=Math.cos(-d.r),sa=Math.sin(-d.r),lx=dx*ca-dy*sa,ly=dx*sa+dy*ca;
     if(Math.abs(lx)<cat.w/2&&Math.abs(ly)<cat.d/2){
       pushUndo();sel=k;selKind="item";dragT="item";dragI=k;renderLists();draw2d();return;}}
-  if(mode==="furn"){
+  if(mode==="furn"&&placeArmed){
     pushUndo();
-    its.push({k:document.getElementById("fsel").value,x:snap(w.x),y:snap(w.y),r:0});
-    sel=its.length-1;selKind="item";renderLists();build3d();fit2d();return;}
+    var kk=document.getElementById("fsel").value;
+    its.push({k:kk,x:snap(w.x),y:snap(w.y),r:0});
+    sel=its.length-1;selKind="item";
+    placeArmed=false; armUI();
+    var ok=document.getElementById("okMsg");
+    if(ok){ok.style.display="block";
+      ok.textContent=byKey(kk).l+" yerleştirildi. Sürükleyerek taşıyabilir, \u002245° döndür\u0022 ile çevirebilirsin.";}
+    renderLists();build3d();fit2d();return;}
   var rs2=R();
   for(var m=rs2.length-1;m>=0;m--)if(inPoly(w,rs2[m].p)){
     sel=m;selKind="room";renderLists();draw2d();return;}
@@ -1104,7 +1114,7 @@ function renderLists(){
 /* ---------- kontroller ---------- */
 function setMode(m){
   var o=document.getElementById("okMsg"); if(o)o.style.display="none";
-  mode=m;sel=null;selKind=null;
+  mode=m;sel=null;selKind=null;placeArmed=false;armUI();
   [["draw","mDraw","paneDraw"],["edit","mEdit","paneEdit"],["furn","mFurn","paneFurn"]]
    .forEach(function(x){document.getElementById(x[1]).setAttribute("aria-pressed",String(m===x[0]));
      document.getElementById(x[2]).hidden=(m!==x[0]);});
@@ -1242,8 +1252,21 @@ document.getElementById("clearBtn").onclick=function(){
   renderTabs();renderLists();build3d();fit2d();};
 document.getElementById("rname").addEventListener("input",function(){err("");});
 
+function armUI(){
+  var b=document.getElementById("placeBtn"), h=document.getElementById("furnHint");
+  if(!b)return;
+  b.textContent=placeArmed?"Plana tıkla…":"Plana yerleştir";
+  b.setAttribute("aria-pressed",String(placeArmed));
+  if(h)h.textContent=placeArmed
+    ? "Şimdi plan üzerinde eşyanın geleceği yere tıkla."
+    : "Listeden eşyayı seç, \u0022Plana yerleştir\u0022 de, sonra plana tıkla. Bir tane eklenir.";
+}
+document.getElementById("placeBtn").onclick=function(){
+  placeArmed=!placeArmed; err(""); armUI();
+};
 var fs=document.getElementById("fsel");
 CATALOG.forEach(function(it){var o=document.createElement("option");o.value=it.k;o.textContent=it.l;fs.appendChild(o);});
+fs.onchange=function(){placeArmed=true;err("");armUI();};
 
 document.getElementById("saveBtn").onclick=function(){
   var blob=new Blob([JSON.stringify({v:4,name:val("projName"),floors:floors},null,1)],{type:"application/json"});
