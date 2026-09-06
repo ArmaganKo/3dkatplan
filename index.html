@@ -259,6 +259,18 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
       <button class="ghost" id="mirrorBtn">Aynala</button>
       <button class="ghost" id="retypeBtn">Tipini değiştir</button>
     </div>
+    <details class="fold" style="margin-top:14px">
+      <summary>Köşesinden parça çıkar (balkon, çıkma)</summary>
+      <p class="hint" style="margin:10px 0">Dikdörtgen odanın bir köşesinden parça çıkarır, oda L şekline döner. Çıkan yere balkonu ayrı oda olarak eklersin.</p>
+      <div class="field"><label>Hangi köşe</label>
+        <div class="types" id="notchGrid"></div>
+      </div>
+      <div class="grid2">
+        <div><label for="nw">Çıkıntı eni (m)</label><input id="nw" class="num" inputmode="decimal" placeholder="1.60"></div>
+        <div><label for="nd">Çıkıntı boyu (m)</label><input id="nd" class="num" inputmode="decimal" placeholder="1.20"></div>
+      </div>
+      <div class="bar"><button class="ghost" id="notchBtn">Köşeyi çıkar</button></div>
+    </div>
     <p class="hint" style="margin-top:8px">Önce odaya tıklayıp seç. Çevirme, odayı kendi merkezinde döndürür — en ve boy yer değiştirir.</p>
   </div>
 
@@ -368,7 +380,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <h3>Çalışma modları</h3>
 <dl>
 <dt>Oda çiz</dt><dd>Yeni oda ekleme modu. Ölçü girerek veya köşeleri tıklayarak oda oluşturursun.</dd>
-<dt>Düzenle</dt><dd>Var olan odaları taşıma ve ölçüsünü değiştirme modu. Odanın içine basılı tutup sürüklersen oda bütün olarak taşınır; köşedeki noktayı sürüklersen sadece o köşe hareket eder, yani ölçü değişir.</dd>
+<dt>Düzenle</dt><dd>Var olan odaları taşıma ve ölçüsünü değiştirme modu. Odanın içine basılı tutup sürüklersen oda bütün olarak taşınır; köşedeki noktayı sürüklersen sadece o köşe hareket eder, yani ölçü değişir. Sürüklediğin oda komşu bir odanın kenarına 35 santimetre yaklaşınca kendiliğinden yapışır, böylece aralarında boşluk kalmaz ve duvarlar üst üste binmez.</dd>
 <dt>Eşya</dt><dd>Mobilya, kapı, pencere ve merdiven yerleştirme modu.</dd>
 </dl>
 
@@ -388,12 +400,14 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <dl>
 <dt>Odayı 90° çevir</dt><dd>Seçili odayı kendi merkezinde döndürür. 4,20 × 5,00 olan oda 5,00 × 4,20 olur. Metrekare değişmez. Önce odaya tıklayıp seçmen gerekir.</dd>
 <dt>Aynala</dt><dd>Seçili odayı yatay eksende ters çevirir. L şeklinde bir oda çizdin ama çıkıntı ters taraftaysa, baştan çizmek yerine aynalarsın.</dd>
+<dt>Köşesinden parça çıkar</dt><dd>Dikdörtgen bir odanın istediğin köşesinden parça çıkarır ve odayı L şekline çevirir. Kare bir salonun sağ üst köşesinde balkon varsa: salonu normal dikdörtgen olarak ekle, sonra bu araçla balkonun oturacağı köşeyi çıkar, ardından balkonu ayrı bir oda olarak o boşluğa ekle. Köşe köşe çizmeye gerek kalmaz. Metrekare otomatik güncellenir.</dd>
 <dt>Tipini değiştir</dt><dd>Seçili odanın tipini, o an seçili olan oda tipiyle değiştirir. Yanlış tip seçtiysen odayı silmene gerek yok: üstteki listeden doğru tipi seç, odaya tıkla, bu düğmeye bas. Rengi, zemin dokusu ve otomatik döşemesi yeni tipe göre olur.</dd>
 </dl>
 
 <h3>Eşya modu</h3>
 <dl>
 <dt>Eşya listesi</dt><dd>Yerleştirilecek eşyayı seçersin. Kapı, pencere ve merdiven de bu listededir. Listeden yeni bir eşya seçtiğinde yerleştirme kendiliğinden hazır duruma geçer.</dd>
+<dt>Kapı ve pencere duvarı deler</dt><dd>Duvara kapı veya pencere koyduğunda araç o duvarda gerçek bir boşluk açar. Bu yüzden hol ve koridorlar kapalı kutu gibi durmaz, kapı koyduğun odalara açılır. Pencerenin boşluğuna saydam bir panel gelir. Komşu iki odanın paylaştığı duvar da tek kez çizilir, üst üste iki duvar oluşmaz.</dd>
 <dt>Plana yerleştir</dt><dd>Bu düğmeye bastıktan sonra plan üzerinde tıkladığın yere <b>bir tane</b> eşya konur ve yerleştirme kapanır. Böylece her tıklamada yeni eşya üremez. İkinci bir tane koymak için düğmeye tekrar basarsın. Yerleştirme kapalıyken plana tıklamak var olan eşyaları seçer ve taşır.</dd>
 <dt>45° döndür</dt><dd>Seçili eşyayı kırk beşer derece çevirir. Kapının açılım yayını doğru tarafa çevirmek için kullanılır.</dd>
 <dt>Seçili odayı döşe</dt><dd>Odayı seçip basarsın, araç o odanın tipine uygun standart eşyaları kendi yerleştirir. Yatak odasına yatak ve gardırop, salona koltuk takımı ve TV ünitesi gelir. Beğenmediğini sürükler veya silersin.</dd>
@@ -419,6 +433,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <h3>Görünüm ve indirme</h3>
 <dl>
 <dt>Plan (üstten görünüm)</dt><dd>Soldaki iki boyutlu çizim alanı. Odaları burada çizer, taşır, eşyaları buraya yerleştirirsin.</dd>
+<dt>Duvar yüksekliği</dt><dd>Üç boyutlu görünümde duvarlar bilerek alçak çizilir, yoksa odaların içi görünmez. Bu yüzden kapı, gardırop ve duşakabin gibi yüksek eşyalar da duvar yüksekliğine sıkıştırılır. Gerçek yükseklikleri değişmez, sadece görünümde kısaltılır.</dd>
 <dt>Üç boyutlu görünüm</dt><dd>Sağdaki alan. Sürükleyerek döndürür, tekerlekle yakınlaştırırsın. Altındaki numaralı liste, plandaki numaraların hangi oda olduğunu gösterir.</dd>
 <dt>Üstten görünüm / İzometrik görünüm</dt><dd>Üç boyutlu görünümün açısını değiştirir. Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar.</dd>
 <dt>Tüm katları göster</dt><dd>İşaretliyse bütün katlar üst üste görünür. Kaldırırsan sadece üstünde çalıştığın kat gösterilir.</dd>
@@ -677,13 +692,45 @@ function draw2d(){
       g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
   });
   I().forEach(function(it,i){
-    var cat=byKey(it.k),s=W2S({x:it.x,y:it.y});
-    g2.save();g2.translate(s.x,s.y);g2.rotate(it.r);
-    g2.fillStyle=(it.k==="kapi"||it.k==="pencere")?"rgba(31,78,95,0.35)":"rgba(60,58,52,0.5)";
-    g2.fillRect(-cat.w*V.s/2,-cat.d*V.s/2,cat.w*V.s,cat.d*V.s);
-    g2.strokeStyle=(selKind==="item"&&sel===i)?"#1F4E5F":"#3C3A34";
-    g2.lineWidth=(selKind==="item"&&sel===i)?3:1.5;
-    g2.strokeRect(-cat.w*V.s/2,-cat.d*V.s/2,cat.w*V.s,cat.d*V.s);
+    var cat=byKey(it.k),sc=W2S({x:it.x,y:it.y});
+    var on=(selKind==="item"&&sel===i);
+    var W3=cat.w*V.s, D3=cat.d*V.s;
+    g2.save();g2.translate(sc.x,sc.y);g2.rotate(it.r);
+
+    if(it.k==="kapi"){
+      /* duvarda boşluk */
+      g2.fillStyle="#F4F2ED";
+      g2.fillRect(-W3/2,-5,W3,10);
+      /* kanat ve açılım yayı */
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?2.5:1.6;
+      g2.beginPath();g2.moveTo(-W3/2,0);g2.lineTo(-W3/2,W3);g2.stroke();
+      g2.beginPath();g2.arc(-W3/2,0,W3,0,Math.PI/2);
+      g2.setLineDash([4,3]);g2.lineWidth=1.1;g2.stroke();g2.setLineDash([]);
+      /* boşluğun iki ucundaki duvar bitişi */
+      g2.strokeStyle=on?"#1F4E5F":"#6E6A62";g2.lineWidth=on?2.5:1.6;
+      g2.beginPath();g2.moveTo(-W3/2,-4);g2.lineTo(-W3/2,4);
+      g2.moveTo(W3/2,-4);g2.lineTo(W3/2,4);g2.stroke();
+
+    }else if(it.k==="pencere"){
+      g2.fillStyle="#F4F2ED";
+      g2.fillRect(-W3/2,-5,W3,10);
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?2.2:1.4;
+      g2.beginPath();
+      g2.moveTo(-W3/2,-2.5);g2.lineTo(W3/2,-2.5);
+      g2.moveTo(-W3/2,2.5);g2.lineTo(W3/2,2.5);
+      g2.moveTo(-W3/2,-4);g2.lineTo(-W3/2,4);
+      g2.moveTo(W3/2,-4);g2.lineTo(W3/2,4);
+      g2.stroke();
+
+    }else{
+      g2.fillStyle="rgba(60,58,52,0.45)";
+      g2.fillRect(-W3/2,-D3/2,W3,D3);
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?3:1.5;
+      g2.strokeRect(-W3/2,-D3/2,W3,D3);
+    }
     g2.restore();
   });
   R().forEach(function(rm){
@@ -769,7 +816,9 @@ c2.addEventListener("pointermove",function(e){
   if(dragT==="vert")R()[dragI].p[dragV]={x:snap(w.x),y:snap(w.y)};
   else if(dragT==="room"){
     var dx=snap(w.x-dragStart.x), dy=snap(w.y-dragStart.y);
-    R()[dragI].p=dragOrig.map(function(q){return{x:snap(q.x+dx),y:snap(q.y+dy)};});
+    var moved=dragOrig.map(function(q){return{x:snap(q.x+dx),y:snap(q.y+dy)};});
+    var adj=magnet(moved,dragI);
+    R()[dragI].p=moved.map(function(q){return{x:snap(q.x+adj.x),y:snap(q.y+adj.y)};});
   }
   else{I()[dragI].x=snap(w.x);I()[dragI].y=snap(w.y);}
   draw2d();e.preventDefault();
@@ -920,32 +969,42 @@ function numberMarker(no){
   return m;
 }
 function fitModel(obj,cat){
+  var cd=capDims(cat);
   var box=new THREE.Box3().setFromObject(obj),sz=new THREE.Vector3();box.getSize(sz);
-  obj.scale.setScalar(Math.min(cat.w/(sz.x||1),cat.h/(sz.y||1),cat.d/(sz.z||1)));
+  obj.scale.setScalar(Math.min(cat.w/(sz.x||1),cd.h/(sz.y||1),cat.d/(sz.z||1)));
   var b2=new THREE.Box3().setFromObject(obj),ct=new THREE.Vector3();b2.getCenter(ct);
   obj.position.x-=ct.x;obj.position.z-=ct.z;obj.position.y-=b2.min.y;
   return obj;
 }
+function capDims(cat){
+  var e=cat.e||0, h=cat.h, top=e+h;
+  if(top<=WALL_H)return {e:e,h:h};
+  var f=WALL_H/top;
+  return {e:e*f, h:h*f};
+}
 function proxy(cat){
+  var cd=capDims(cat);
   var g=new THREE.Group();
   if(cat.k==="agac"){
-    var tr=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.18,cat.h*0.42,8),
+    var th2=cat.h*0.62;
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.18,th2*0.42,8),
       new THREE.MeshLambertMaterial({color:0x8A6B4A}));
-    tr.position.y=cat.h*0.21; g.add(tr);
+    tr.position.y=th2*0.21; g.add(tr);
     var cn=new THREE.Mesh(new THREE.SphereGeometry(cat.w*0.46,14,10),
       new THREE.MeshLambertMaterial({color:cat.c}));
-    cn.position.y=cat.h*0.66; cn.scale.y=1.15; g.add(cn);
+    cn.position.y=th2*0.66; cn.scale.y=1.15; g.add(cn);
     return g;
   }
-  var m=new THREE.Mesh(new THREE.BoxGeometry(cat.w,cat.h,cat.d),
+  var m=new THREE.Mesh(new THREE.BoxGeometry(cat.w,cd.h,cat.d),
     new THREE.MeshLambertMaterial({color:cat.c,transparent:cat.k==="pencere",opacity:cat.k==="pencere"?0.55:1}));
-  m.position.y=cat.h/2; g.add(m); return g;
+  m.position.y=cd.h/2; g.add(m); return g;
 }
 function addItem(it,cx,cy,yb){
   var cat=byKey(it.k),holder=new THREE.Group();
-  holder.position.set(it.x-cx,yb+0.08+(cat.e||0),it.y-cy);holder.rotation.y=-it.r;
+  holder.position.set(it.x-cx,yb+0.08+capDims(cat).e,it.y-cy);holder.rotation.y=-it.r;
   grp.add(holder);
-  if(missing[it.k]||it.k==="kapi"||it.k==="pencere"){holder.add(proxy(cat));return;}
+  if(it.k==="kapi"||it.k==="pencere")return;   /* duvar boşluğu olarak çiziliyor */
+  if(missing[it.k]){holder.add(proxy(cat));return;}
   if(cache[it.k]){holder.add(fitModel(cache[it.k].clone(true),cat));return;}
   var ph2=proxy(cat);holder.add(ph2);
   loader.load(modelURL(it.k),function(gl){
@@ -953,6 +1012,38 @@ function addItem(it,cx,cy,yb){
   },undefined,function(){missing[it.k]=true;});
 }
 var legendData=[];
+function edgeKey(a,b){
+  var r=function(v){return Math.round(v*20)/20;};
+  var p1=r(a.x)+","+r(a.y), p2=r(b.x)+","+r(b.y);
+  return p1<p2 ? p1+"|"+p2 : p2+"|"+p1;
+}
+/* duvar üzerindeki kapı/pencere boşluklarını [t0,t1] olarak döndür */
+function gapSpans(a,b,len,items,kind){
+  var dx=(b.x-a.x)/len, dy=(b.y-a.y)/len, out=[];
+  items.forEach(function(it){
+    if(kind&&it.k!==kind)return;
+    if(it.k!=="kapi"&&it.k!=="pencere")return;
+    var vx=it.x-a.x, vy=it.y-a.y;
+    var t=vx*dx+vy*dy;                  /* duvar boyunca konum (m) */
+    var dist=Math.abs(vx*dy-vy*dx);     /* duvara dik uzaklık */
+    if(dist>0.35)return;
+    var w=byKey(it.k).w/2+0.04;
+    var t0=Math.max(0,(t-w)/len), t1=Math.min(1,(t+w)/len);
+    if(t1>t0)out.push([t0,t1]);
+  });
+  out.sort(function(p,q){return p[0]-q[0];});
+  return out;
+}
+/* boşluklar çıkarıldıktan sonra duvarın kalan parçaları */
+function keepSpans(a,b,len,items){
+  var gaps=gapSpans(a,b,len,items,null), keep=[], cur=0;
+  gaps.forEach(function(g){
+    if(g[0]>cur)keep.push([cur,g[0]]);
+    cur=Math.max(cur,g[1]);
+  });
+  if(cur<1)keep.push([cur,1]);
+  return keep;
+}
 function doorArc(it,cx,cy,yb){
   var w=byKey("kapi").w, pts=[];
   for(var i=0;i<=18;i++){
@@ -973,7 +1064,7 @@ function build3d(){
   var b=bounds(true),cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2;
   floors.forEach(function(f,idx){
     if(!showAll&&idx!==fi)return;
-    var yb=idx*FLOOR_H;
+    var yb=idx*FLOOR_H, wallSeen={};
     f.rooms.forEach(function(rm){
       var sh=new THREE.Shape();
       rm.p.forEach(function(q,i){i?sh.lineTo(q.x-cx,q.y-cy):sh.moveTo(q.x-cx,q.y-cy);});
@@ -982,12 +1073,33 @@ function build3d(){
         map:mkTex(TEXOF[rm.t]||"wood"),color:0xFFFFFF,side:THREE.DoubleSide}));
       fl.position.y=yb;grp.add(fl);
       if(rm.t!=="bahce")for(var i=0;i<rm.p.length;i++){
-        var a=rm.p[i],c=rm.p[(i+1)%rm.p.length],dx=c.x-a.x,dy=c.y-a.y;
-        var len=Math.sqrt(dx*dx+dy*dy); if(len<0.05)continue;
-        var wl=new THREE.Mesh(new THREE.BoxGeometry(len+TH,WALL_H,TH),
-          new THREE.MeshLambertMaterial({color:0x97938A}));
-        wl.position.set((a.x+c.x)/2-cx,yb+WALL_H/2,(a.y+c.y)/2-cy);
-        wl.rotation.y=-Math.atan2(dy,dx);grp.add(wl);
+        var a=rm.p[i],c2=rm.p[(i+1)%rm.p.length];
+        var dx=c2.x-a.x,dy=c2.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+        if(len<0.05)continue;
+        var key=edgeKey(a,c2);
+        if(wallSeen[key])continue;      /* ortak duvarı iki kez çizme */
+        wallSeen[key]=true;
+        var ang=Math.atan2(dy,dx);
+        keepSpans(a,c2,len,f.items).forEach(function(sp){
+          var segLen=(sp[1]-sp[0])*len;
+          if(segLen<0.06)return;
+          var mt=(sp[0]+sp[1])/2;
+          var mx=a.x+dx*mt, my=a.y+dy*mt;
+          var wl=new THREE.Mesh(new THREE.BoxGeometry(segLen,WALL_H,TH),
+            new THREE.MeshLambertMaterial({color:0x97938A}));
+          wl.position.set(mx-cx,yb+WALL_H/2,my-cy);
+          wl.rotation.y=-ang; grp.add(wl);
+        });
+        /* pencere varsa boşluğa saydam panel koy */
+        gapSpans(a,c2,len,f.items,"pencere").forEach(function(sp){
+          var segLen=(sp[1]-sp[0])*len; if(segLen<0.1)return;
+          var mt=(sp[0]+sp[1])/2, mx=a.x+dx*mt, my=a.y+dy*mt;
+          var ph2=WALL_H-0.35;
+          var pn=new THREE.Mesh(new THREE.BoxGeometry(segLen,ph2,TH*0.6),
+            new THREE.MeshLambertMaterial({color:0xBBD3DC,transparent:true,opacity:0.55}));
+          pn.position.set(mx-cx,yb+0.35+ph2/2,my-cy);
+          pn.rotation.y=-ang; grp.add(pn);
+        });
       }
       lno++;legendData.push({no:lno,n:rm.n,a:area(rm.p),f:f.n,t:rm.t});
       var sp0=labelSpot(rm.p),ct=sp0?sp0.p:centroid(rm.p);
@@ -1210,6 +1322,23 @@ document.getElementById("rotBtn").onclick=function(){
 document.getElementById("autoBtn").onclick=function(){
   if(selKind!=="room"){err("Önce bir oda seç.");return;}
   autoFurnish(R()[sel]);};
+var MAG=0.35;
+function magnet(poly,skipIdx){
+  var xs=[],ys=[],rs=R();
+  rs.forEach(function(rm,i){ if(i===skipIdx)return;
+    rm.p.forEach(function(q){xs.push(q.x);ys.push(q.y);}); });
+  if(!xs.length)return {x:0,y:0};
+  var b=bboxOf(poly), best={x:0,y:0}, dx=MAG, dy=MAG;
+  [b.x0,b.x1].forEach(function(v){
+    xs.forEach(function(t){var d=t-v;
+      if(Math.abs(d)<Math.abs(dx)){dx=d;best.x=d;}});});
+  [b.y0,b.y1].forEach(function(v){
+    ys.forEach(function(t){var d=t-v;
+      if(Math.abs(d)<Math.abs(dy)){dy=d;best.y=d;}});});
+  if(Math.abs(best.x)>=MAG)best.x=0;
+  if(Math.abs(best.y)>=MAG)best.y=0;
+  return best;
+}
 function roomCenter(poly){
   var x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
   poly.forEach(function(q){x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);
@@ -1237,6 +1366,43 @@ document.getElementById("retypeBtn").onclick=function(){
   R()[sel].t=curType;
   err('Oda tipi "'+TYPES[curType].l+'" olarak değiştirildi.');
   renderLists();build3d();draw2d();
+};
+var NOTCH=[["sol-ust","Sol üst"],["sag-ust","Sağ üst"],["sag-alt","Sağ alt"],["sol-alt","Sol alt"]];
+var curNotch="sag-ust";
+function renderNotch(){
+  var g=document.getElementById("notchGrid"); if(!g)return;
+  g.innerHTML="";
+  NOTCH.forEach(function(x){
+    var b=document.createElement("button");b.type="button";
+    b.setAttribute("aria-pressed",String(x[0]===curNotch));
+    b.textContent=x[1];
+    b.onclick=function(){curNotch=x[0];renderNotch();err("");};
+    g.appendChild(b);
+  });
+}
+document.getElementById("notchBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  var rm=R()[sel];
+  if(rm.p.length!==4){err("Bu araç sadece dikdörtgen odalarda çalışır.");return;}
+  var w=parseFloat((document.getElementById("nw").value||"").replace(",","."));
+  var d=parseFloat((document.getElementById("nd").value||"").replace(",","."));
+  var b=bboxOf(rm.p), W2=b.x1-b.x0, D2=b.y1-b.y0;
+  if(!(w>0)||!(d>0)){err("Çıkıntı en ve boyunu yaz.");return;}
+  if(w>=W2||d>=D2){err("Çıkıntı odadan küçük olmalı.");return;}
+  var x0=b.x0,y0=b.y0,x1=b.x1,y1=b.y1,P;
+  if(curNotch==="sag-ust")
+    P=[{x:x0,y:y0},{x:snap(x1-w),y:y0},{x:snap(x1-w),y:snap(y0+d)},{x:x1,y:snap(y0+d)},{x:x1,y:y1},{x:x0,y:y1}];
+  else if(curNotch==="sol-ust")
+    P=[{x:snap(x0+w),y:y0},{x:x1,y:y0},{x:x1,y:y1},{x:x0,y:y1},{x:x0,y:snap(y0+d)},{x:snap(x0+w),y:snap(y0+d)}];
+  else if(curNotch==="sag-alt")
+    P=[{x:x0,y:y0},{x:x1,y:y0},{x:x1,y:snap(y1-d)},{x:snap(x1-w),y:snap(y1-d)},{x:snap(x1-w),y:y1},{x:x0,y:y1}];
+  else
+    P=[{x:x0,y:y0},{x:x1,y:y0},{x:x1,y:y1},{x:snap(x0+w),y:y1},{x:snap(x0+w),y:snap(y1-d)},{x:x0,y:snap(y1-d)}];
+  pushUndo(); rm.p=P; err("");
+  var ok=document.getElementById("okMsg");
+  if(ok){ok.style.display="block";
+    ok.textContent=rm.n+" artık L şeklinde. Yeni alan "+area(P).toFixed(1)+" m². Çıkan boşluğa balkonu ayrı oda olarak ekleyebilirsin.";}
+  renderLists();build3d();fit2d();
 };
 document.getElementById("allChk").onchange=function(){build3d();};
 document.getElementById("topBtn").onclick=function(){
