@@ -1,837 +1,1762 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>İlan Fotoğrafı Hazırla — boyut küçültme, plaka kapatma, toplu kırpma</title>
-<meta name="description" content="Sahibinden ve diğer portallar için ilan fotoğrafı boyutu küçültme, plaka ve yüz sansürleme, fotoğraftan konum silme, toplu 4:3 kırpma. Ücretsiz ve üyeliksiz.">
+<title>3D Kat Planı Çıkarma Aracı: Ücretsiz | 3dkatplan.com</title>
+<meta name="description" content="3D kat planı çıkarma aracı: daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://3dkatplan.com/">
 <link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#2C6355">
+<meta name="theme-color" content="#F4F2ED">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://ilanfotosu.com/">
-<meta property="og:title" content="İlan Fotosu — ilan fotoğrafı hazırlama aracı">
-<meta property="og:description" content="İlan fotoğraflarını portal ölçüsüne kırpın, plaka ve yüzleri kapatın, dosya boyutunu küçültün, konum bilgisini silin. Ücretsiz ve üyeliksiz.">
-<meta property="og:image" content="https://ilanfotosu.com/logo.png">
+<meta property="og:title" content="3D Kat Planı Çıkarma Aracı: Ücretsiz">
+<meta property="og:description" content="Daireyi köşe köşe çizin, eşyaları yerleştirin, dubleks katları ekleyin ve ilan görselini ücretsiz indirin.">
+<meta property="og:image" content="https://3dkatplan.com/og.png">
+<meta property="og:url" content="https://3dkatplan.com/">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --yesil:#3B8574; --yesil-koyu:#2C6355; --yesil-acik:#E8F1EE;
-  --gri:#F4F5F5; --cizgi:#DFE2E1; --metin:#22302C; --soluk:#6B7A75;
-  --uyari-bg:#FFF6E4; --uyari-cizgi:#F0DDB4; --uyari-metin:#8A5A00;
-}
+:root{--paper:#F4F2ED;--card:#FBFAF7;--ink:#1B1A17;--soft:#5C5952;--line:#DCD7CD;
+  --accent:#1F4E5F;--accent-soft:#E3EBED;--r:6px}
 *{box-sizing:border-box}
-body{margin:0;padding-top:30px;background:#fff;color:var(--metin);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  line-height:1.5;-webkit-font-smoothing:antialiased}
-
-#serit-ag{position:fixed;top:0;left:0;right:0;height:30px;background:var(--yesil-koyu);
+body{margin:0;padding-top:30px;background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.6}
+#serit-ag{position:fixed;top:0;left:0;right:0;height:30px;background:#2C6355;
   display:flex;align-items:center;gap:14px;padding:0 12px;overflow-x:auto;z-index:50;
   font-size:12.5px;white-space:nowrap;-webkit-overflow-scrolling:touch}
 #serit-ag span{color:#BFD8D0;flex:none}
 #serit-ag a{color:#fff;text-decoration:none;flex:none;opacity:.85}
 #serit-ag a:hover{opacity:1;text-decoration:underline}
-#serit-ag a.burada{opacity:1;font-weight:700;text-decoration:none;cursor:default}
-
-.kap{max-width:720px;margin:0 auto;padding:20px 16px 130px}
-
-header{padding:8px 0 20px;border-bottom:1px solid var(--cizgi);margin-bottom:22px}
-.ev{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-.logo{display:block;width:62px;height:auto;flex:none}
-h1.marka{font-size:21px;font-weight:800;letter-spacing:-.4px;color:var(--yesil-koyu);margin:0}
-.slogan{margin-top:8px}
-@media(max-width:520px){.logo{width:54px}h1.marka{font-size:19px}}
-.slogan{font-size:15px;color:var(--soluk);margin-top:4px}
-
-.adim{margin-bottom:22px}
-.adim-bas{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.adim-no{width:26px;height:26px;border-radius:50%;background:var(--yesil);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none}
-.adim-bas h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px}
-.kart{background:var(--gri);border:1px solid var(--cizgi);border-radius:14px;padding:16px}
-
-#birak{border:2px dashed var(--cizgi);border-radius:14px;padding:30px 18px;text-align:center;
-  background:var(--gri);cursor:pointer}
-#birak.uzerinde{border-color:var(--yesil);background:var(--yesil-acik)}
-#birak p{margin:0;font-size:15px;color:var(--soluk)}
-#birak b{display:block;color:var(--yesil-koyu);font-size:16px;margin-bottom:4px}
-
-label{display:block;font-size:13px;color:var(--soluk);margin-bottom:5px}
-select,input[type=text],input[type=number]{width:100%;padding:11px 12px;border:1px solid var(--cizgi);
-  border-radius:10px;background:#fff;font-size:16px;color:var(--metin);font-family:inherit}
-select:focus,input:focus{outline:2px solid var(--yesil);outline-offset:1px;border-color:var(--yesil)}
-.ikili{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.ikili:last-child{margin-bottom:0}
-@media(max-width:520px){.ikili{grid-template-columns:1fr}}
-
-.serit{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
-.kucuk{position:relative;flex:none;width:78px;height:78px;border-radius:10px;overflow:hidden;
-  border:2px solid transparent;cursor:grab;background:var(--gri);touch-action:pan-x}
-.kucuk.secili{border-color:var(--yesil)}
-.kucuk.tasiniyor{opacity:.55;transform:scale(.94)}
-.kucuk img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-.kucuk .no{position:absolute;left:3px;top:3px;background:rgba(34,48,44,.78);color:#fff;
-  font-size:11px;font-weight:700;border-radius:5px;padding:1px 5px}
-.kucuk .isaret{position:absolute;right:3px;top:3px;background:var(--yesil);color:#fff;
-  font-size:11px;border-radius:5px;padding:1px 4px}
-
-#tuval{width:100%;display:block;border-radius:12px;background:var(--gri);touch-action:none}
-.arac{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.arac button{flex:1 1 auto;min-width:104px}
-
-button{padding:12px 14px;border-radius:11px;font-size:14.5px;font-weight:600;
-  font-family:inherit;cursor:pointer;background:#fff;color:var(--yesil-koyu);
-  border:1.5px solid var(--yesil)}
-button:hover{background:var(--yesil-acik)}
-button.aktif{background:var(--yesil);color:#fff}
-button.ana{background:var(--yesil);color:#fff;border-color:var(--yesil);width:100%;
-  padding:16px;font-size:16px;font-weight:700;margin-bottom:10px}
-button.ana:hover{background:var(--yesil-koyu)}
-button.sade{border-color:var(--cizgi);color:var(--soluk)}
-button:disabled{opacity:.45;cursor:default}
-button:focus-visible{outline:2px solid var(--yesil-koyu);outline-offset:2px}
-
-.kaydir{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--soluk)}
-.kaydir span{flex:none;width:96px}
-input[type=range]{flex:1;accent-color:var(--yesil)}
-
-.ipuc{font-size:13px;color:var(--soluk);margin-top:8px}
-.uyari{background:var(--uyari-bg);border:1px solid var(--uyari-cizgi);border-left:4px solid var(--uyari-metin);
-  border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--uyari-metin);margin-top:10px}
-
-#durum{font-size:13.5px;color:var(--soluk);margin-top:10px;text-align:center;min-height:20px}
-#bitti{margin-top:14px;background:var(--yesil-acik);border:1px solid var(--cizgi);
-  border-radius:14px;padding:16px;font-size:14.5px}
-#bitti b{display:block;font-size:16px;color:var(--yesil-koyu);margin-bottom:6px}
-#bitti a{color:var(--yesil-koyu);font-weight:700}
-
-details{background:var(--gri);border:1px solid var(--cizgi);border-radius:14px;padding:14px 16px;margin-top:10px}
-summary{cursor:pointer;font-weight:600;font-size:15px;color:var(--yesil-koyu)}
-details p,details li{font-size:14px;color:var(--soluk)}
-details ol,details ul{padding-left:18px;margin:10px 0 0}
-h2.sss{font-size:17px;margin:26px 0 10px;letter-spacing:-.2px}
-
-footer{margin-top:32px;padding-top:18px;border-top:1px solid var(--cizgi);font-size:13px;color:var(--soluk)}
-footer a{color:var(--yesil-koyu)}
-.telif{margin-top:16px;padding-top:14px;border-top:1px solid var(--cizgi);
-  font-size:12.5px;line-height:1.7}
+#serit-ag a.burada{opacity:1;font-weight:700;cursor:default}
+@media print{#serit-ag{display:none}body{padding-top:0}}
+.capraz{margin-top:14px;background:#E8F1EE;border:1px solid #DFE2E1;
+  border-radius:14px;padding:16px;font-size:14.5px;line-height:1.5}
+.capraz b{display:block;font-size:16px;color:#2C6355;margin-bottom:6px}
+.capraz a{color:#2C6355;font-weight:700}
+.telif{margin-top:16px;padding-top:14px;border-top:1px solid #DFE2E1;
+  font-size:12.5px;line-height:1.7;color:#6B7A75}
+.telif a{color:#2C6355}
 .telif a.site{font-weight:700;font-size:14px}
-.gizli{display:none !important}
+header{padding:16px 24px 14px;border-bottom:1px solid var(--line);text-align:left}
+.head-in{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:block;line-height:0;flex:none}
+.brand img{width:132px;height:auto;display:block}
+.head-txt{min-width:240px;flex:1}
+h1 a{color:inherit;text-decoration:none}
+h1 a:hover{color:var(--accent)}
+h1 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;line-height:1.25}
+header p{margin:3px 0 0;color:var(--soft);max-width:72ch;font-size:14px;line-height:1.45}
+.app{display:grid;grid-template-columns:300px 1fr;max-width:1440px;margin:0 auto;align-items:start}
+.panel{padding:20px 22px;border-right:1px solid var(--line);background:var(--card)}
+.stage{padding:18px 22px;display:grid;grid-template-columns:1fr;gap:16px;align-content:start;grid-template-rows:auto auto auto 1fr}
+h2{margin:0 0 10px;font-size:13px;font-weight:600}
+h2.sp{margin-top:22px}
+details.fold{margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+details.fold>summary{cursor:pointer;font-size:13px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:6px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:"▸";color:var(--accent);font-size:11px}
+details.fold[open]>summary::before{content:"▾"}
+details.fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label{display:block;font-size:13px;color:var(--soft);margin-bottom:4px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);
+  background:#fff;font-family:inherit;font-size:14px;color:var(--ink)}
+input:focus,select:focus,canvas:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field{margin-bottom:10px}
+button{font-family:inherit;font-size:14px;font-weight:500;border-radius:var(--r);cursor:pointer;
+  padding:8px 13px;border:1px solid var(--accent);background:var(--accent);color:#fff}
+button:hover{background:#183D4B}
+button:disabled{opacity:0.4;cursor:default}
+button.ghost:disabled:hover{background:transparent}
+button.ghost{background:transparent;color:var(--accent)}
+button.ghost:hover{background:var(--accent-soft)}
+button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.modes button{padding:8px 4px;font-size:13px}
+details.typefold{margin:0;border-top:none;padding-top:0}
+details.typefold>summary{border:1px solid var(--line);border-radius:var(--r);
+  background:#fff;padding:9px 11px;font-weight:400;font-size:14px;
+  display:flex;align-items:center;gap:8px}
+details.typefold>summary::before{content:"";display:none}
+details.typefold>summary .dot{width:12px;height:12px;border-radius:3px;flex:none;
+  border:1px solid rgba(0,0,0,0.12)}
+details.typefold>summary .cur{flex:1}
+details.typefold>summary .arw{color:var(--accent);font-size:11px}
+details.typefold[open]>summary{border-color:var(--accent);margin-bottom:6px}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.types button{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:13px;
+  font-weight:400;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.types button:hover{background:var(--accent-soft);border-color:var(--accent)}
+.types button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:500}
+.types .dot{width:11px;height:11px;border-radius:3px;flex:none;border:1px solid rgba(0,0,0,0.12)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.tabs button{padding:6px 12px;font-size:13px}
+.err{color:#8C2B22;font-size:13px;margin:8px 0 0}
+.ok-box{margin:10px 0 0;padding:9px 11px;border-radius:var(--r);font-size:13px;
+  line-height:1.5;background:#E8F1EE;border:1px solid #C9DED7;color:#2C6355}
+.warn-box{margin:12px 0 0;padding:9px 11px;border-radius:var(--r);font-size:13px;
+  line-height:1.5;background:#FBF0EE;border:1px solid #E3C4BF;color:#8C2B22}
+li.bad .nm{color:#B02A20;font-weight:500}
+.hint{color:var(--soft);font-size:13px;margin:0}
+ul{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--line);max-height:170px;overflow-y:auto}
+li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+li .sw{width:11px;height:11px;border-radius:3px;flex:none}
+li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li .dm{color:var(--soft);font-size:13px;font-family:"IBM Plex Mono",monospace}
+li button{padding:1px 6px;border:none;background:transparent;color:var(--soft);font-size:17px;line-height:1}
+li button:hover{background:transparent;color:#8C2B22}
+li.on{font-weight:500}
+.empty{padding:26px 10px;text-align:center;color:var(--soft);font-size:13px;display:block}
+.total{margin-top:14px;padding-top:12px;border-top:2px solid var(--ink);display:flex;
+  justify-content:space-between;align-items:baseline}
+.total b{font-size:21px;font-weight:600;font-family:"IBM Plex Mono",monospace}
+.sub{display:flex;justify-content:space-between;font-size:13px;color:var(--soft);margin-top:4px}
+.view{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#F4F2ED;position:relative}
+#legend{margin-top:10px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:10px 13px;font-size:13px;line-height:1.55;
+  columns:2;column-gap:22px}
+#legend:empty{display:none}
+#legend div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  break-inside:avoid;-webkit-column-break-inside:avoid}
+#legend .no{display:inline-block;min-width:15px;font-weight:600;color:var(--accent)}
+#legend .kf{font-weight:600;margin-top:6px}
+#legend .kf:first-child{margin-top:0}
+#plan2d{height:420px}
+#wrap3d{height:420px}
+.views{display:grid;gap:16px}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.cap{font-size:13px;color:var(--soft);margin:0 0 6px}
+.tips{border:1px solid var(--line);border-radius:var(--r);background:var(--card);
+  padding:18px 20px;font-size:14px;line-height:1.65}
+.tips h3{margin:0 0 8px;font-size:14px;font-weight:600}
+.tips p{margin:0 0 10px;color:#33312D}
+.tips p:last-child{margin-bottom:0}
+.tips b{font-weight:600}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--soft)}
+.chk input{width:auto}
+
+article.info{max-width:760px;margin:0 auto;padding:44px 24px 70px;border-top:1px solid var(--line);text-align:left}
+article.info h2{font-size:20px;margin:34px 0 10px;font-weight:600}
+article.info h3{font-size:16px;margin:26px 0 8px;font-weight:600}
+article.info dl{margin:0 0 16px}
+article.info dt{font-weight:600;font-size:15px;margin-top:12px}
+article.info dd{margin:2px 0 0;padding:0;color:#33312D}
+article.info p{margin:0 0 14px;color:#33312D}
+article.info ol{padding-left:20px;color:#33312D}
+article.info li{display:list-item;border:none;padding:4px 0;font-size:15px}
+article.info a{color:var(--accent)}
+article.info ul.tools{padding-left:20px;margin:0 0 14px}
+article.info ul.tools li{display:list-item;list-style:disc;border:none;padding:6px 0;color:#33312D}
+footer.site{padding:26px 24px 40px;border-top:1px solid var(--line);
+  color:var(--soft);font-size:14px;text-align:center}
+footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);
+  font-size:12.5px;color:#8F8B81;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.7}
+
+#tourHl{position:absolute;border-radius:8px;pointer-events:none;z-index:9998;
+  box-shadow:0 0 0 9999px rgba(24,23,20,0.62);transition:top .22s,left .22s,width .22s,height .22s}
+#tourBox{position:absolute;z-index:9999;background:var(--card);border:1px solid var(--line);
+  border-radius:8px;padding:16px 18px;width:min(330px,calc(100vw - 32px));
+  box-shadow:0 10px 34px rgba(24,23,20,0.22)}
+#tourBox h4{margin:0 0 6px;font-size:15px;font-weight:600}
+#tourBox p{margin:0 0 14px;font-size:14px;line-height:1.55;color:#33312D}
+#tourBox .row{display:flex;align-items:center;gap:8px}
+#tourBox .step{flex:1;font-size:12px;color:var(--soft);font-family:"IBM Plex Mono",monospace}
+#tourBox button{padding:7px 12px;font-size:13px}
+#tourStart{margin-left:auto}
+@media(min-width:1180px){.views{grid-template-columns:1fr 1fr}}
+@media(max-width:860px){.app{grid-template-columns:1fr}
+ .panel{border-right:none;border-bottom:1px solid var(--line)}
+ #plan2d{height:300px}#wrap3d{height:320px}}
 </style>
-</head>
-<body>
 
 <nav id="serit-ag">
   <span>Ücretsiz emlak araçları:</span>
   <a href="https://parseltur.com">Parsel videosu</a>
   <a href="https://gunesalirmi.com">Güneş alır mı?</a>
-  <a href="https://3dkatplan.com">3D kat planı</a>
-  <a href="/" class="burada">İlan fotoğrafı</a>
-  <a href="/pdf/">PDF küçültme</a>
+  <a href="https://3dkatplan.com" class="burada">3D kat planı</a>
+  <a href="https://ilanfotosu.com">İlan fotoğrafı</a>
 </nav>
 
-<div class="kap">
-
 <header>
-  <a href="/" class="ev" aria-label="İlan Fotosu ana sayfa">
-    <img src="logo.png" class="logo" width="620" height="535"
-         alt="İlan Fotosu — emlak ilanı fotoğrafı hazırlama aracı">
-    <h1 class="marka">İlan fotoğrafı hazırla</h1>
+ <div class="head-in">
+  <a class="brand" href="/" aria-label="3dkatplan.com ana sayfa">
+    <img src="logo.png" alt="3dkatplan.com" width="132" height="87">
   </a>
-  <div class="slogan">Boyutu küçült, plakayı ve yüzü kapat, konum bilgisini sil, portal ölçüsüne kırp</div>
+  <div class="head-txt">
+    <h1><a href="/">3D Kat Planı Çıkarma Aracı</a></h1>
+    <p>Odayı köşe köşe çiz, eşyaları yerleştir, dubleks katları ekle, üç boyutlu kat planını ilan görseli olarak indir. Ücretsiz.</p>
+  </div>
+ </div>
 </header>
 
-<div class="adim">
-  <div class="adim-bas"><div class="adim-no">1</div><h2>Fotoğrafları ekleyin</h2></div>
-  <div id="birak">
-    <p><b>Fotoğrafları buraya bırakın</b>ya da dokunup galeriden seçin. Aynı anda birden fazla seçebilirsiniz. iPhone'un HEIC dosyaları da açılır.</p>
+<div class="app">
+<section class="panel">
+  <div class="field"><label for="projName">Portföy adı</label>
+    <input id="projName" placeholder="Ataşehir 3+1 bahçe katı"></div>
+
+  <h2>Kat</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="bar" style="margin-bottom:16px">
+    <button class="ghost" id="addFloor">Kat ekle</button>
+    <button class="ghost" id="delFloor">Katı sil</button>
+    <button class="ghost" id="renFloor">Adını değiştir</button>
   </div>
-  <input type="file" id="dosya" accept="image/*,.heic,.heif" multiple class="gizli">
-  <div class="serit" id="serit"></div>
+
+  <div class="modes">
+    <button class="ghost" id="mDraw" aria-pressed="true">Oda çiz</button>
+    <button class="ghost" id="mEdit" aria-pressed="false">Düzenle</button>
+    <button class="ghost" id="mFurn" aria-pressed="false">Eşya</button>
+  </div>
+
+  <div id="paneDraw">
+    <div class="field"><label for="rname">Oda adı</label><input id="rname" placeholder="Salon"></div>
+    <div class="field"><label>Oda tipi</label>
+      <details class="fold typefold" id="typeFold">
+        <summary id="typeSum"></summary>
+        <div class="types" id="typeGrid"></div>
+      </details>
+    </div>
+
+    <div class="grid2">
+      <div><label for="rw">En (m)</label><input id="rw" class="num" inputmode="decimal" placeholder="4.20"></div>
+      <div><label for="rd">Boy (m)</label><input id="rd" class="num" inputmode="decimal" placeholder="5.00"></div>
+    </div>
+    <div class="bar"><button id="rectBtn">Ölçüyle oda ekle</button></div>
+    <p class="hint" style="margin-top:8px">Ölçüleri yaz, oda dikdörtgen olarak eklenir. Sonra "Düzenle" moduna geçip sürükleyerek yerine taşı.</p>
+
+    <details class="fold" style="margin-top:16px">
+      <summary>Köşe köşe çiz (L şekli, çıkma)</summary>
+      <p class="hint" style="margin:10px 0">Plan üzerine tıklayarak köşeleri koy. En az üç köşe gerekli.</p>
+      <div class="bar">
+        <button class="ghost" id="finishBtn">Odayı tamamla</button>
+        <button class="ghost" id="undoBtn">Son köşeyi sil</button>
+      </div>
+    </details>
+  </div>
+
+  <div id="paneFurn" hidden>
+    <div class="field"><label for="fsel">Eşya</label><select id="fsel"></select></div>
+    <div class="bar">
+      <button id="placeBtn">Plana yerleştir</button>
+      <button class="ghost" id="rotBtn">45° döndür</button>
+    </div>
+    <div class="bar" style="margin-top:8px">
+      <button class="ghost" id="autoBtn">Seçili odayı döşe</button>
+    </div>
+    <p class="hint" id="furnHint" style="margin-top:8px">Listeden eşyayı seç, "Plana yerleştir" de, sonra plana tıkla. Bir tane eklenir. Yenisini eklemek için tekrar bas.</p>
+  </div>
+
+  <div id="paneEdit" hidden>
+    <p class="hint"><b>Odayı taşımak için</b> içine basılı tutup sürükle.<br>
+    <b>Ölçüsünü değiştirmek için</b> köşedeki noktayı sürükle.<br>
+    Eşyalar da aynı şekilde sürüklenir.</p>
+    <div class="bar" style="margin-top:10px">
+      <button class="ghost" id="rotRoomBtn">Odayı 90° çevir</button>
+      <button class="ghost" id="mirrorBtn">Aynala</button>
+      <button class="ghost" id="retypeBtn">Tipini değiştir</button>
+    </div>
+    <details class="fold" style="margin-top:14px">
+      <summary>Köşesinden parça çıkar (balkon, çıkma)</summary>
+      <p class="hint" style="margin:10px 0">Dikdörtgen odanın bir köşesinden parça çıkarır, oda L şekline döner. Çıkan yere balkonu ayrı oda olarak eklersin.</p>
+      <div class="field"><label>Hangi köşe</label>
+        <div class="types" id="notchGrid"></div>
+      </div>
+      <div class="grid2">
+        <div><label for="nw">Çıkıntı eni (m)</label><input id="nw" class="num" inputmode="decimal" placeholder="1.60"></div>
+        <div><label for="nd">Çıkıntı boyu (m)</label><input id="nd" class="num" inputmode="decimal" placeholder="1.20"></div>
+      </div>
+      <div class="bar"><button class="ghost" id="notchBtn">Köşeyi çıkar</button></div>
+    </details>
+    <p class="hint" style="margin-top:8px">Önce odaya tıklayıp seç. Çevirme, odayı kendi merkezinde döndürür — en ve boy yer değiştirir.</p>
+  </div>
+
+  <p class="err" id="err"></p>
+  <p class="ok-box" id="okMsg" style="display:none"></p>
+
+  <h2 class="sp">Odalar — <span id="floorName"></span></h2>
+  <ul id="rlist"></ul>
+  <p class="warn-box" id="overlapWarn" style="display:none"></p>
+  <div class="total"><span>Bu kat net</span><b id="total">0 m²</b></div>
+  <div class="sub"><span>Tüm katlar toplam</span><span id="grand">0 m²</span></div>
+  <p class="hint" style="margin-top:8px">Ölçüler yaklaşıktır. Resmi metrekare için tapu ve projeyi esas al.</p>
+
+  <h2 class="sp">Eşyalar</h2>
+  <ul id="flist"></ul>
+
+  <details class="fold">
+    <summary>Görsel künyesi</summary>
+    <label class="chk" style="margin:10px 0"><input type="checkbox" id="brandOn" checked> Bilgilerimi görsele bas</label>
+    <div id="brandFields">
+      <div class="field"><label for="bName">Ad soyad</label><input id="bName" placeholder="Adınız Soyadınız"></div>
+      <div class="field"><label for="bPhone">Telefon</label><input id="bPhone" placeholder="0500 000 00 00"></div>
+      <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
+      <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
+      <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
+      <p class="hint" style="margin-top:8px">Bu bilgiler yalnızca "Paylaşım görseli"ne basılır. İlan sitelerine yükleyeceğin görselde hiçbir marka, adres veya telefon bulunmaz.</p>
+    </div>
+  </details>
+
+</section>
+
+<section class="stage">
+  <div class="views">
+   <div>
+    <p class="cap">Plan — üstten görünüm, ızgara 1 metre. Alt kat soluk çizgiyle görünür.</p>
+    <div class="view" id="plan2d"><canvas id="c2d" tabindex="0"></canvas></div>
+   </div>
+   <div>
+    <p class="cap">Üç boyutlu görünüm — sürükleyerek döndür, tekerlekle yakınlaştır</p>
+    <div class="view" id="wrap3d"></div>
+    <div id="legend"></div>
+   </div>
+  </div>
+  <div class="bar">
+    <button id="pngBtn">İlan görseli indir (yatay)</button>
+    <button class="ghost" id="pngBrandBtn">Paylaşım görseli indir</button>
+    <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
+    <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
+    <button class="ghost" id="saveBtn">Projeyi kaydet</button>
+    <button class="ghost" id="loadBtn">Proje aç</button>
+    <button class="ghost" id="sampleBtn">Örnek dubleks</button>
+    <button class="ghost" id="undoAllBtn" disabled>Geri al</button>
+    <button class="ghost" id="clearBtn">Temizle</button>
+    <button class="ghost" id="modelBtn">Model klasörünü seç</button>
+    <button class="ghost" id="tourStart">Tanıtım turu</button>
+    <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
+    <input type="file" id="fileIn" accept=".json" hidden>
+    <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
+  </div>
+
+  <div class="capraz">
+    <b>Kat planı hazır.</b>
+    İlanı tamamlamak için fotoğraflarınızı da portal ölçüsüne getirin, plakaları kapatın
+    ve konum bilgisini silin: <a href="https://ilanfotosu.com">ilanfotosu.com</a>
+  </div>
+
+  <div class="tips">
+    <h3>Sahada ölçüm</h3>
+    <p><b>Çerçeveden başla.</b> Önce dairenin içten içe toplam enini ve boyunu ölç, sonra oda oda in. Planın oturacağı sınır bu.</p>
+    <p><b>Oda eklemek için çizmen gerekmiyor.</b> En ve boy ölçüsünü yaz, oda kendiliğinden oluşsun; sonra sürükleyip yerine taşı.</p>
+    <p><b>Toplamı kontrol et.</b> Bir hat üzerindeki oda enleri artı duvar kalınlıkları, dairenin toplam enini vermeli. Vermiyorsa bir ölçüm hatalı.</p>
+    <p><b>Duvar kalınlığını ölçemezsen</b> iç duvarlar için 10, dış duvarlar için 20 santimetre varsay. Türkiye'deki konut stokunun çoğunda bu değerler tutar.</p>
+    <p><b>Kapı yönü önemli.</b> Kapıyı koyduktan sonra döndürerek açılım yayını doğru tarafa çevir; plan o zaman mimari çizim gibi okunur.</p>
+  </div>
+</section>
 </div>
 
-<div class="adim" id="a-ayar">
-  <div class="adim-bas"><div class="adim-no">2</div><h2>Çıktı ayarları</h2></div>
-  <div class="kart">
-    <div class="ikili">
-      <div>
-        <label for="oran">En-boy oranı</label>
-        <select id="oran">
-          <option value="1.3333">4:3 — önerilen</option>
-          <option value="1.7778">16:9 — geniş</option>
-          <option value="1.5">3:2</option>
-          <option value="1">1:1 — kare</option>
-          <option value="0">Orijinal oran</option>
-        </select>
-      </div>
-      <div>
-        <label for="kenar">Uzun kenar (piksel)</label>
-        <select id="kenar">
-          <option value="1600">1600 — önerilen</option>
-          <option value="1200">1200</option>
-          <option value="1920">1920</option>
-          <option value="800">800</option>
-        </select>
-      </div>
-    </div>
-    <div class="ikili">
-      <div>
-        <label for="hedef">Hedef dosya boyutu (KB)</label>
-        <input type="number" id="hedef" value="500" min="80" max="4000" step="50">
-      </div>
-      <div>
-        <label for="onek">Dosya adı öneki</label>
-        <input type="text" id="onek" value="ilan" placeholder="ilan">
-      </div>
-    </div>
-    <div class="uyari">
-      Fotoğraflar yeniden kodlanırken içindeki konum (GPS) ve cihaz bilgisi otomatik silinir.
-      Böylece evin koordinatı fotoğrafın içinde portala gitmez.
-    </div>
-  </div>
+<article class="info">
+<h2>3D Kat Planı Çıkarma Aracı</h2>
+<p>3dkatplan.com, gayrimenkul danışmanlarının ve ev sahiplerinin bir dairenin kat planını üç boyutlu olarak çıkarması için hazırlandı. Program indirmeniz, üyelik açmanız ya da ücret ödemeniz gerekmiyor. Çizim tamamen tarayıcınızın içinde gerçekleşir; ölçüleriniz hiçbir sunucuya gönderilmez.</p>
+
+<h2>Nasıl Kullanılır</h2>
+<ol>
+<li>Portföy adını yazın. İndireceğiniz dosyalar bu adı taşır.</li>
+<li>Oda adını, tipini, enini ve boyunu yazıp "Ölçüyle oda ekle" deyin. Oda dikdörtgen olarak eklenir. L şeklinde salonlar ve çıkmalar için "Köşe köşe çiz" bölümünü kullanabilirsiniz.</li>
+<li>"Düzenle" moduna geçin. Odanın içine basılı tutup sürükleyerek yerine taşıyın, köşedeki noktaları sürükleyerek ölçüsünü değiştirin. Metrekare anında güncellenir.</li>
+<li>"Eşya" modunda mobilyaları yerleştirin. Hızlı yol için odayı seçip "Seçili odayı döşe" deyin.</li>
+<li>Dubleks daire çiziyorsanız "Kat ekle" ile üst katı açın. Alt kat soluk çizgiyle rehber olarak görünür.</li>
+<li>"İlan görseli indir" ile 1080x1350 ölçüsünde, ilan ve sosyal medya için hazır görseli alın.</li>
+</ol>
+
+<h2>Ölçüyü Nasıl Almalısınız</h2>
+<p>Lazermetre kullanın. Önce dairenin içten içe toplam enini ve boyunu ölçün, sonra oda oda inin. Bir hat üzerindeki oda enleri ile duvar kalınlıklarını topladığınızda toplam eni bulmanız gerekir; bulamıyorsanız bir ölçüm hatalıdır. Duvar kalınlığını ölçemezseniz iç duvarlar için 10, dış duvarlar için 20 santimetre varsayabilirsiniz.</p>
+
+
+<h2>Düğmeler Ne İşe Yarıyor</h2>
+<p>Aracın tüm kontrolleri ve ne yaptıkları.</p>
+
+<h3>Kat bölümü</h3>
+<dl>
+<dt>Zemin kat / 1. kat</dt><dd>Katlar arasında geçiş yapar. Hangi katın üstünde çalıştığını gösterir; çizdiğin oda o kata eklenir.</dd>
+<dt>Kat ekle</dt><dd>Yeni bir kat açar. Dubleks daireler için kullanılır. Üst kattayken alt kat soluk kesikli çizgiyle görünür, hizalamayı ona göre yaparsın.</dd>
+<dt>Katı sil</dt><dd>Üstünde bulunduğun katı, içindeki tüm oda ve eşyalarla birlikte siler. Dolu bir katta onay sorar. Tek kat kaldıysa silinmez.</dd>
+<dt>Adını değiştir</dt><dd>Katın adını değiştirir. "Zemin kat" yerine "Bahçe katı", "1. kat" yerine "Çatı katı" yazabilirsin.</dd>
+</dl>
+
+<h3>Çalışma modları</h3>
+<dl>
+<dt>Oda çiz</dt><dd>Yeni oda ekleme modu. Ölçü girerek veya köşeleri tıklayarak oda oluşturursun.</dd>
+<dt>Düzenle</dt><dd>Var olan odaları taşıma ve ölçüsünü değiştirme modu. Odanın içine basılı tutup sürüklersen oda bütün olarak taşınır; köşedeki noktayı sürüklersen sadece o köşe hareket eder, yani ölçü değişir. Sürüklediğin oda komşu bir odanın kenarına 35 santimetre yaklaşınca kendiliğinden yapışır, böylece aralarında boşluk kalmaz ve duvarlar üst üste binmez.</dd>
+<dt>Eşya</dt><dd>Mobilya, kapı, pencere ve merdiven yerleştirme modu.</dd>
+</dl>
+
+<h3>Oda çiz modu</h3>
+<dl>
+<dt>Portföy adı</dt><dd>En üstteki alan. İndireceğin dosyaların adı buradan gelir ve paylaşım görselinin başlığında yazar. Boş bırakabilirsin.</dd>
+<dt>Oda adı</dt><dd>Planda ve listede görünecek isim. "Salon", "Ebeveyn yatak odası" gibi.</dd>
+<dt>Oda tipi</dt><dd>Tıklayınca on beş tip açılır. Tip, odanın rengini, zemin dokusunu ve otomatik döşemede hangi eşyaların geleceğini belirler. Bahçe tipi duvarsız çizilir ve net metrekareye dahil edilmez.</dd>
+<dt>En (m) / Boy (m)</dt><dd>Odanın ölçüleri, metre cinsinden. Virgül veya nokta kullanabilirsin.</dd>
+<dt>Ölçüyle oda ekle</dt><dd>Girdiğin ölçüde dikdörtgen oda oluşturur ve mevcut odaların sağına yerleştirir. Sonra "Düzenle" moduna geçip yerine sürüklersin. Normal odalar için ana yöntem budur.</dd>
+<dt>Köşe köşe çiz</dt><dd>Katlanmış bölüm. L şeklinde salonlar, çıkmalar ve pahlı köşeler için. Plan alanına tıklayarak köşeleri koyarsın.</dd>
+<dt>Odayı tamamla</dt><dd>Köşe köşe çizerken, koyduğun köşeleri birleştirip odayı oluşturur. En az üç köşe gerekir.</dd>
+<dt>Son köşeyi sil</dt><dd>Köşe koyarken yanlış tıkladıysan son koyduğun noktayı kaldırır.</dd>
+</dl>
+
+<h3>Düzenle modu</h3>
+<dl>
+<dt>Odayı 90° çevir</dt><dd>Seçili odayı kendi merkezinde döndürür. 4,20 × 5,00 olan oda 5,00 × 4,20 olur. Metrekare değişmez. Önce odaya tıklayıp seçmen gerekir.</dd>
+<dt>Aynala</dt><dd>Seçili odayı yatay eksende ters çevirir. L şeklinde bir oda çizdin ama çıkıntı ters taraftaysa, baştan çizmek yerine aynalarsın.</dd>
+<dt>Köşesinden parça çıkar</dt><dd>Dikdörtgen bir odanın istediğin köşesinden parça çıkarır ve odayı L şekline çevirir. Kare bir salonun sağ üst köşesinde balkon varsa: salonu normal dikdörtgen olarak ekle, sonra bu araçla balkonun oturacağı köşeyi çıkar, ardından balkonu ayrı bir oda olarak o boşluğa ekle. Köşe köşe çizmeye gerek kalmaz. Metrekare otomatik güncellenir.</dd>
+<dt>Tipini değiştir</dt><dd>Seçili odanın tipini, o an seçili olan oda tipiyle değiştirir. Yanlış tip seçtiysen odayı silmene gerek yok: üstteki listeden doğru tipi seç, odaya tıkla, bu düğmeye bas. Rengi, zemin dokusu ve otomatik döşemesi yeni tipe göre olur.</dd>
+</dl>
+
+<h3>Eşya modu</h3>
+<dl>
+<dt>Eşya listesi</dt><dd>Yerleştirilecek eşyayı seçersin. Kapı, pencere ve merdiven de bu listededir. Listeden yeni bir eşya seçtiğinde yerleştirme kendiliğinden hazır duruma geçer.</dd>
+<dt>Kapı ve pencere duvarı deler</dt><dd>Duvara kapı veya pencere koyduğunda araç o duvarda gerçek bir boşluk açar. Bu yüzden hol ve koridorlar kapalı kutu gibi durmaz, kapı koyduğun odalara açılır. Pencerenin boşluğuna saydam bir panel gelir. Komşu iki odanın paylaştığı duvar da tek kez çizilir, üst üste iki duvar oluşmaz.</dd>
+<dt>Plana yerleştir</dt><dd>Bu düğmeye bastıktan sonra plan üzerinde tıkladığın yere <b>bir tane</b> eşya konur ve yerleştirme kapanır. Böylece her tıklamada yeni eşya üremez. İkinci bir tane koymak için düğmeye tekrar basarsın. Yerleştirme kapalıyken plana tıklamak var olan eşyaları seçer ve taşır.</dd>
+<dt>45° döndür</dt><dd>Seçili eşyayı kırk beşer derece çevirir. Kapının açılım yayını doğru tarafa çevirmek için kullanılır.</dd>
+<dt>Seçili odayı döşe</dt><dd>Odayı seçip basarsın, araç o odanın tipine uygun standart eşyaları kendi yerleştirir. Yatak odasına yatak ve gardırop, salona koltuk takımı ve TV ünitesi gelir. Beğenmediğini sürükler veya silersin.</dd>
+</dl>
+
+<h3>Listeler ve ölçüler</h3>
+<dl>
+<dt>Odalar listesi</dt><dd>Bu kattaki odalar ve metrekareleri. Bir odaya tıklayınca seçilir.</dd>
+<dt>Kalem simgesi</dt><dd>Odanın adını değiştirir. Yanlış yazdıysan odayı silmene gerek yok.</dd>
+<dt>Çarpı simgesi</dt><dd>Odayı veya eşyayı siler.</dd>
+<dt>Bu kat net</dt><dd>Üstünde bulunduğun katın net metrekaresi. Bahçe dahil değildir.</dd>
+<dt>Tüm katlar toplam</dt><dd>Bütün katların net metrekare toplamı.</dd>
+<dt>Kırmızı uyarı</dt><dd>İki oda üst üste bindiğinde çıkar. Çakışan odalar planda kırmızı kesikli çerçeveyle işaretlenir, listede adları kırmızıya döner. Metrekare toplamı bu durumda yanlış çıkar; odaları ayırman gerekir.</dd>
+</dl>
+
+<h3>Görsel künyesi</h3>
+<dl>
+<dt>Bilgilerimi görsele bas</dt><dd>Kapatırsan paylaşım görselinde de iletişim bilgin görünmez.</dd>
+<dt>Ad soyad, telefon, ofis adı, logo</dt><dd>Yalnızca paylaşım görseline basılır. Tarayıcıda saklanır, her seferinde yeniden yazman gerekmez.</dd>
+<dt>Logoyu kaldır</dt><dd>Yüklediğin logoyu siler.</dd>
+</dl>
+
+<h3>Görünüm ve indirme</h3>
+<dl>
+<dt>Plan (üstten görünüm)</dt><dd>Soldaki iki boyutlu çizim alanı. Odaları burada çizer, taşır, eşyaları buraya yerleştirirsin.</dd>
+<dt>Duvar yüksekliği</dt><dd>Üç boyutlu görünümde duvarlar bilerek alçak çizilir, yoksa odaların içi görünmez. Bu yüzden kapı, gardırop ve duşakabin gibi yüksek eşyalar da duvar yüksekliğine sıkıştırılır. Gerçek yükseklikleri değişmez, sadece görünümde kısaltılır.</dd>
+<dt>Üç boyutlu görünüm</dt><dd>Sağdaki alan. Sürükleyerek döndürür, tekerlekle yakınlaştırırsın. Altındaki numaralı liste, plandaki numaraların hangi oda olduğunu gösterir.</dd>
+<dt>Üstten görünüm / İzometrik görünüm</dt><dd>Üç boyutlu görünümün açısını değiştirir. Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar.</dd>
+<dt>Tüm katları göster</dt><dd>İşaretliyse bütün katlar üst üste görünür. Kaldırırsan sadece üstünde çalıştığın kat gösterilir.</dd>
+<dt>İlan görseli indir (yatay)</dt><dd>1600 × 1200 yatay görsel. Sadece plan; başlık, oda listesi, marka, telefon ve site adresi yoktur. Oda isimleri ve metrekareler planın üstüne yazılır. İlan portalları görsellerde iletişim bilgisi ve filigran istemediği için Sahibinden, Hepsiemlak ve benzeri sitelere bu sürümü yükle.</dd>
+<dt>Paylaşım görseli indir</dt><dd>1080 × 1350 dikey görsel. Oda listesi, toplam metrekare, künyen ve logon dahildir. WhatsApp, Instagram ve basılı broşür için.</dd>
+</dl>
+
+<h3>Kaydetme ve diğerleri</h3>
+<dl>
+<dt>Projeyi kaydet</dt><dd>Çalışmanı bilgisayarına bir .json dosyası olarak indirir. Bu görsel değil, çalışma dosyasıdır: odaların koordinatları, eşya yerleri ve kat bilgileri içindedir. Portföy başına bir dosya tutarsan kendi arşivin oluşur.</dd>
+<dt>Proje aç</dt><dd>Daha önce kaydettiğin .json dosyasını geri yükler. Plan aynen geri gelir, üstünde değişiklik yapıp yeni görsel indirebilirsin. Tarayıcı kapanınca çalışman kaybolduğu için tek yedekleme yöntemi budur.</dd>
+<dt>Geri al</dt><dd>Son yaptığın işlemi geri alır. Yanlışlıkla oda sildiğinde, kötü sürüklediğinde veya otomatik döşemeyi beğenmediğinde kullanılır. Son yirmi beş işlemi tutar.</dd>
+<dt>Örnek dubleks</dt><dd>Bahçeli iki katlı örnek bir daire yükler. Aracı denemek ve nasıl göründüğünü anlamak için.</dd>
+<dt>Temizle</dt><dd>Tüm katları, odaları ve eşyaları siler. Onay sorar.</dd>
+<dt>Model klasörünü seç</dt><dd>Kendi bilgisayarındaki üç boyutlu mobilya modellerini yükler. Model yoksa eşyalar doğru ölçüde sade kütleler olarak görünür.</dd>
+</dl>
+
+<h2>İlanda Kullanırken</h2>
+<p>Plandaki metrekareyi ilanın resmi metrekare bilgisi olarak kullanmayın. Brüt ve net değerleri tapu ile projeden alın; plan görselini alıcının yerleşimi anlaması için kullanın.</p>
+
+<h3>Ücretli mi?</h3>
+<p>Hayır. Ürettiğiniz görselleri ilanlarınızda, broşürlerinizde ve sosyal medyada serbestçe kullanabilirsiniz.</p>
+
+<h3>Telefondan Kullanabilir miyim?</h3>
+<p>Kullanabilirsiniz, ancak köşe yerleştirme ve eşya taşıma bilgisayar ekranında çok daha rahattır. Sahada ölçüp ofiste çizmeniz önerilir.</p>
+
+<h3>Görseli Sahibinden veya Hepsiemlak'a Yükleyebilir miyim?</h3>
+<p>Evet. "İlan görseli indir" ile inen dosyada hiçbir site adresi, telefon, logo veya marka bulunmaz; sadece plan, oda listesi ve metrekare bilgisi vardır. İlan portalları görsellerde iletişim bilgisi ve filigran istemediği için bu sürümü kullanın. İletişim bilgilerinizin basılı olduğu sürümü "Paylaşım görseli indir" ile alır, WhatsApp, sosyal medya ve basılı broşürlerde kullanırsınız.</p>
+
+<h3>Çizdiğim Plan Başkası Tarafından Görülür mü?</h3>
+<p>Hayır. Tüm işlem tarayıcınızda gerçekleşir, kaydettiğiniz proje dosyası kendi bilgisayarınızda kalır.</p>
+
+<h2>Diğer Ücretsiz Araçlarım</h2>
+<p>Gayrimenkul danışmanları için hazırladığım diğer ücretsiz araçlar:</p>
+<ul class="tools">
+<li><a href="https://www.parseltur.com" target="_blank" rel="noopener"><strong>ParselTur</strong></a> — TKGM'den indirdiğiniz parsel dosyasını üç boyutlu drone videosuna çevirir. Arsa ve arazi ilanlarınız için hazır tanıtım videosu üretir.</li>
+<li><a href="https://www.gunesalirmi.com" target="_blank" rel="noopener"><strong>Güneş Alır mı?</strong></a> — Bir dairenin hangi odasının hangi saatlerde güneş aldığını gösterir. Cephe yönünü girersiniz, gün boyu ışık durumunu görürsünüz.</li>
+<li><a href="https://ilanfotosu.com" target="_blank" rel="noopener"><strong>İlan Fotoğrafı</strong></a> — İlan fotoğraflarını portal ölçüsüne getirir, plaka ve yüzleri kapatır, fotoğrafın içindeki konum bilgisini siler.</li>
+</ul>
+</article>
+
+<footer class="site">
+3dkatplan.com — Armağan Kocabaş, İstanbul lüks konut uzmanı, RE/MAX Eksen<br>
+Üsküdar, Ümraniye, Çekmeköy ve Kadıköy hattındaki mülklerinizle ilgileniyoruz.<br>
+0507 917 33 58 · <a href="https://www.armagankocabas.com">armagankocabas.com</a>
+<div class="legal">
+  Çizimleriniz yalnızca tarayıcınızda işlenir, hiçbir veri sunucuya gönderilmez.
 </div>
-
-<div class="adim gizli" id="a-duzen">
-  <div class="adim-bas"><div class="adim-no">3</div><h2>Kadraj, aydınlık ve bulanıklaştırma</h2></div>
-  <div class="kart">
-    <canvas id="tuval"></canvas>
-
-    <div class="kaydir">
-      <span>Yakınlaştır</span>
-      <input type="range" id="zoom" min="100" max="300" value="100">
-    </div>
-    <div class="kaydir">
-      <span>Aydınlık</span>
-      <input type="range" id="isik" min="100" max="150" value="100">
-    </div>
-
-    <div class="arac">
-      <button id="m-kadraj" class="aktif">Kadrajı kaydır</button>
-      <button id="m-bulanik">Bulanıklaştır</button>
-      <button id="b-yuz" class="sade">Yüzleri bul</button>
-      <button id="b-plaka" class="sade">Plakaları bul</button>
-      <button id="b-geri" class="sade">Geri al</button>
-      <button id="b-hepsi" class="sade">Ayarı hepsine uygula</button>
-    </div>
-    <p class="ipuc" id="ipuc">Parmağınızı sürükleyerek kadrajı kaydırın. Bulanıklaştırmak için önce "Bulanıklaştır" düğmesine basın.</p>
-  </div>
+<div class="telif">
+  <a href="https://www.armagankocabas.com" class="site">www.armagankocabas.com</a>
+  <div>Armağan Kocabaş — İstanbul lüks konut uzmanı, RE/MAX Eksen</div>
+  <div>&copy; <span id="yil"></span> Armağan Kocabaş. Tüm hakları saklıdır.</div>
 </div>
-
-<div class="adim gizli" id="a-indir">
-  <div class="adim-bas"><div class="adim-no">4</div><h2>İndirin</h2></div>
-  <button class="ana" id="b-indir">Hepsini zip olarak indir</button>
-  <button class="ana" id="b-telefon" style="background:#fff;color:var(--yesil-koyu)">Fotoğrafları tek tek indir</button>
-  <div id="durum"></div>
-  <div id="bitti" class="gizli">
-    <b>Fotoğraflar hazır.</b>
-    İlanı tamamlamak için kat planı da eklemek ister misiniz? Ölçüleri girin,
-    <a href="https://3dkatplan.com">3dkatplan.com</a> ilana koyacağınız 3 boyutlu kat planını üretsin.
-  </div>
-</div>
-
-<h2 class="sss">Sık sorulan sorular</h2>
-
-<details>
-  <summary>Nasıl kullanılır?</summary>
-  <ol>
-    <li>Fotoğrafları ekleyin. Şeritteki küçük görsellere dokunarak aralarında geçiş yapar, basılı tutup sürükleyerek sıralarını değiştirirsiniz. Baştaki fotoğraf kapak olur; dosya adlarındaki numaralar da bu sıraya göre verilir.</li>
-    <li>Oranı seçin. Portallar yatay fotoğrafı sever; 4:3 çoğu ilan sitesinde kırpılmadan görünür.</li>
-    <li>Kadrajı parmağınızla kaydırın, gerekirse yakınlaştırın. Oda loşsa aydınlık çubuğunu biraz sağa çekin. "Bulanıklaştır" moduna geçip yüzün ya da plakanın üstünden geçin.</li>
-    <li>Aynı evin fotoğrafları benzer çekildiği için bir tanesinin kadrajını ve aydınlığını ayarlayıp "Ayarı hepsine uygula" demek çoğu zaman yeterli olur.</li>
-    <li>Hepsini tek zip dosyası olarak indirin ya da fotoğrafları tek tek indirin.</li>
-  </ol>
-  <p>Hiçbir fotoğraf sunucuya yüklenmez. Tüm işlem kendi tarayıcınızda yapılır, sayfayı kapattığınızda hiçbir iz kalmaz.</p>
-</details>
-
-<details>
-  <summary>Sahibinden fotoğraf boyutu küçültme nasıl yapılır?</summary>
-  <p>Sahibinden.com'a yüklediğiniz fotoğraflar 800x600 pikselin üzerindeyse site bunları
-  otomatik olarak küçültür, dosya sınırı ise fotoğraf başına 10 MB'tır. Telefonla çekilen
-  bir fotoğraf çoğu zaman 4-8 MB olduğu için yükleme yavaşlar, sıkıştırma da sitenin
-  insafına kalır.</p>
-  <p>Bu araçta hedef dosya boyutunu KB cinsinden yazarsınız, araç kaliteyi kendisi ayarlayıp
-  o boyutun altında kalan bir fotoğraf üretir. 500 KB çoğu ilan için yeterlidir ve
-  hem yükleme hızlanır hem netlik korunur. Sahibinden fotoğraf boyutu küçültme işini
-  başka bir program kurmadan, doğrudan tarayıcınızda yaparsınız.</p>
-</details>
-
-<details>
-  <summary>İlan fotoğrafında plaka kapatma ve yüz sansürleme nasıl yapılır?</summary>
-  <p>İlan fotoğraflarında araç plakası, komşuların yüzü ya da kapı zilindeki isim
-  görünmesi hem rahatsız edici hem gereksiz risktir. Bu araçta üç yolu var:
-  "Yüzleri bul" düğmesi fotoğraftaki yüzleri arayıp üstlerini kapatır,
-  "Plakaları bul" düğmesi plaka görünümlü dikdörtgenleri işaretler,
-  "Bulanıklaştır" modunda ise parmağınızı gezdirdiğiniz her yer bulanıklaşır.</p>
-  <p>Otomatik aramaların ikisi de kesin sonuç vermez; kaçırabilir, fazladan yer de
-  işaretleyebilir. Bu yüzden işaretlenen yerleri gözden geçirin, gereksizini
-  "Geri al" ile kaldırın, atlananı elle kapatın. Plaka kapatma ve yüz sansürleme
-  işinde son karar her zaman sizde olmalı.</p>
-</details>
-
-<details>
-  <summary>Fotoğraftan konum silme neden gerekli?</summary>
-  <p>Telefonla çekilen her fotoğrafın içine çekim yeri, tarihi ve cihaz bilgisi gömülür.
-  Buna EXIF verisi denir. İlanda adresi gizleseniz bile fotoğrafı indiren biri bu bilgiyi
-  okuyup evin koordinatını haritada bulabilir. Boş bir evin adresinin dolaşıma girmesi
-  ev sahibi için ciddi bir güvenlik sorunudur.</p>
-  <p>Bu araç fotoğrafı yeniden kodladığı için fotoğraftan konum silme işlemi kendiliğinden
-  yapılır. Ayrı bir düğmeye basmanıza gerek yoktur; indirdiğiniz dosyaların içinde
-  konum, tarih ve cihaz bilgisi bulunmaz.</p>
-</details>
-
-<details>
-  <summary>Fotoğrafları toplu olarak 4:3 kırpmak mümkün mü?</summary>
-  <p>Evet. Oran listesinden 4:3'ü seçin, bir fotoğrafın kadrajını beğendiğiniz gibi
-  ayarlayın ve "Ayarı hepsine uygula" düğmesine basın. Aynı evin fotoğrafları benzer
-  açıyla çekildiği için tek ayar çoğu zaman hepsine oturur. 4:3 fotoğraf kırpma toplu
-  yapıldığında ilan sayfasında bütün görseller aynı yükseklikte durur, ilan derli toplu görünür.</p>
-  <p>Kadrajı kaçan fotoğraf olursa şeritten ona geçip tek tek düzeltebilirsiniz.
-  16:9, 3:2 ve kare oranlar için de aynı yol geçerlidir.</p>
-</details>
-
-<details>
-  <summary>iPhone ile çekilen HEIC fotoğraflar açılır mı?</summary>
-  <p>Açılır. Telefondan seçtiğinizde iOS çoğu zaman kendisi JPEG'e çevirir.
-  Bilgisayara aktardığınız .heic dosyalarını sürükleyip bıraktığınızda ise araç
-  dönüştürmeyi kendisi yapar, ilk HEIC dosyasında birkaç saniye sürebilir.
-  Çıktılar her durumda JPEG olarak iner, portallar bu formatı sorunsuz kabul eder.</p>
-</details>
-
-<footer>
-  Ücretsiz ve üyeliksizdir. Tüm işlem tarayıcınızda yapılır, sunucuya fotoğraf gönderilmez.<br>
-  Diğer ücretsiz araçlar:
-  <a href="https://parseltur.com">parseltur.com</a> ·
-  <a href="https://gunesalirmi.com">gunesalirmi.com</a> ·
-  <a href="https://3dkatplan.com">3dkatplan.com</a> ·
-  <a href="/pdf/">PDF küçültme</a>
-
-  <div class="telif">
-    <a href="https://www.armagankocabas.com" class="site">www.armagankocabas.com</a>
-    <div>Armağan Kocabaş — İstanbul lüks konut uzmanı, RE/MAX Eksen</div>
-    <div>&copy; <span id="yil"></span> Armağan Kocabaş. Tüm hakları saklıdır.</div>
-  </div>
 </footer>
+<script>document.getElementById("yil").textContent=new Date().getFullYear();</script>
 
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
-const $ = id => document.getElementById(id);
-$('yil').textContent = new Date().getFullYear();
-const foto = [];
-let aktif = -1;
-let mod = 'kadraj';
-let dedektor = null;
-let heicHazir = null;
+var TYPES={
+ salon:{l:"Salon",c:0xB4C2AC,h:"#B4C2AC"}, yatak:{l:"Yatak odası",c:0xD3C4AF,h:"#D3C4AF"},
+ mutfak:{l:"Mutfak",c:0xAEBDC6,h:"#AEBDC6"}, banyo:{l:"Banyo",c:0xA8BAB8,h:"#A8BAB8"},
+ hol:{l:"Hol",c:0xD9D3C7,h:"#D9D3C7"}, balkon:{l:"Balkon",c:0xC3CDB2,h:"#C3CDB2"},
+ bahce:{l:"Bahçe",c:0x9FB98A,h:"#9FB98A"},
+ kiler:{l:"Kiler / Depo",c:0xC5BFB2,h:"#C5BFB2"},
+ giyinme:{l:"Giyinme odası",c:0xDCCFC0,h:"#DCCFC0"},
+ calisma:{l:"Çalışma odası",c:0xB9C6BC,h:"#B9C6BC"},
+ ebeveyn:{l:"Ebeveyn odası",c:0xC8B79F,h:"#C8B79F"},
+ cocuk:{l:"Çocuk odası",c:0xE3D0BE,h:"#E3D0BE"},
+ oturma:{l:"Oturma odası",c:0xA8BAA0,h:"#A8BAA0"},
+ teras:{l:"Teras",c:0xBCC9B0,h:"#BCC9B0"},
+ camasir:{l:"Çamaşır odası",c:0xB6C3C6,h:"#B6C3C6"}
+};
+/* w genişlik, d derinlik, h yükseklik, e zeminden yükseklik (metre) */
+var CATALOG=[
+ {k:"kapi",l:"Kapı",w:0.9,d:0.12,h:2.1,e:0,c:0x8A7051},
+ {k:"pencere",l:"Pencere",w:1.4,d:0.12,h:1.2,e:0.9,c:0xBBD3DC},
+ {k:"merdiven",l:"Merdiven",w:1.1,d:3.0,h:2.7,e:0,c:0xAFA79A},
+ {k:"koltuk-takimi",l:"Koltuk takımı",w:2.4,d:1.7,h:0.8,c:0x8C8578},
+ {k:"tekli-koltuk",l:"Tekli koltuk",w:0.9,d:0.9,h:0.8,c:0x8C8578},
+ {k:"sehpa",l:"Sehpa",w:1.1,d:0.6,h:0.45,c:0xA98F6F},
+ {k:"tv-unitesi",l:"TV ünitesi",w:1.8,d:0.4,h:0.5,c:0xA98F6F},
+ {k:"tv",l:"Televizyon",w:1.2,d:0.1,h:0.7,e:0.5,c:0x3A3A38},
+ {k:"cift-yatak",l:"Çift kişilik yatak",w:1.6,d:2.0,h:0.5,c:0xB9AC99},
+ {k:"tek-yatak",l:"Tek kişilik yatak",w:0.9,d:2.0,h:0.5,c:0xB9AC99},
+ {k:"gardirop",l:"Gardırop",w:2.0,d:0.6,h:2.2,c:0xA98F6F},
+ {k:"komodin",l:"Komodin",w:0.5,d:0.4,h:0.55,c:0xA98F6F},
+ {k:"calisma-masasi",l:"Çalışma masası",w:1.4,d:0.7,h:0.75,c:0xA98F6F},
+ {k:"yemek-masasi",l:"Yemek masası",w:1.6,d:0.9,h:0.75,c:0xA98F6F},
+ {k:"sandalye",l:"Sandalye",w:0.45,d:0.45,h:0.9,c:0x9A9384},
+ {k:"mutfak-tezgahi",l:"Mutfak tezgahı",w:2.4,d:0.6,h:0.9,c:0xC2BDB2},
+ {k:"mutfak-adasi",l:"Mutfak adası",w:1.6,d:0.9,h:0.9,c:0xC2BDB2},
+ {k:"buzdolabi",l:"Buzdolabı",w:0.7,d:0.7,h:1.8,c:0xBFC4C6},
+ {k:"ocak",l:"Ocak",w:0.6,d:0.6,h:0.9,c:0xBFC4C6},
+ {k:"klozet",l:"Klozet",w:0.4,d:0.7,h:0.8,c:0xE6E4DF},
+ {k:"lavabo",l:"Lavabo",w:0.6,d:0.5,h:0.85,c:0xE6E4DF},
+ {k:"dusakabin",l:"Duşakabin",w:0.9,d:0.9,h:2.0,c:0xCFD8DA},
+ {k:"kuvet",l:"Küvet",w:1.7,d:0.75,h:0.6,c:0xE6E4DF},
+ {k:"balkon-masasi",l:"Balkon masası",w:0.8,d:0.8,h:0.75,c:0xA98F6F},
+ {k:"balkon-sandalye",l:"Balkon sandalyesi",w:0.45,d:0.45,h:0.85,c:0x9A9384},
+ {k:"sezlong",l:"Şezlong",w:0.7,d:1.9,h:0.4,c:0x9A9384},
+ {k:"agac",l:"Ağaç",w:2.0,d:2.0,h:3.5,c:0x6E8C57},
+ {k:"cit",l:"Çit",w:2.0,d:0.1,h:1.0,c:0x8A7A62},
+ {k:"araba",l:"Araba",w:1.8,d:4.4,h:1.5,c:0x7A8A93}
+];
+var AUTO={
+ salon:["koltuk-takimi","sehpa","tv-unitesi"],
+ yatak:["cift-yatak","gardirop","komodin"],
+ mutfak:["mutfak-tezgahi","buzdolabi","yemek-masasi"],
+ banyo:["klozet","lavabo","dusakabin"],
+ balkon:["balkon-masasi","balkon-sandalye"],
+ bahce:["agac","agac"],
+ kiler:[],
+ giyinme:["gardirop"],
+ calisma:["calisma-masasi","sandalye"],
+ ebeveyn:["cift-yatak","gardirop","komodin"],
+ cocuk:["tek-yatak","gardirop","calisma-masasi"],
+ oturma:["koltuk-takimi","sehpa","tv-unitesi"],
+ teras:["balkon-masasi","balkon-sandalye"],
+ camasir:[],
+ hol:[]
+};
+var FONT_UI="'IBM Plex Sans', system-ui, sans-serif";
+var FONT_MONO="'IBM Plex Mono', ui-monospace, monospace";
+var MODEL_DIR="models/", WALL_H=1.05, TH=0.1, SNAP=0.1, FLOOR_H=3.0;
 
-/* ---------- dosya alma ---------- */
-$('birak').addEventListener('click', () => $('dosya').click());
-$('dosya').addEventListener('change', e => ekle(e.target.files));
-['dragenter','dragover'].forEach(t => $('birak').addEventListener(t, e => {
-  e.preventDefault(); $('birak').classList.add('uzerinde');
-}));
-['dragleave','drop'].forEach(t => $('birak').addEventListener(t, e => {
-  e.preventDefault(); $('birak').classList.remove('uzerinde');
-}));
-$('birak').addEventListener('drop', e => ekle(e.dataTransfer.files));
+var TYPE_ORDER=["salon","oturma","yatak","ebeveyn","cocuk","calisma","giyinme",
+  "mutfak","banyo","camasir","hol","kiler","balkon","teras","bahce"];
+var curType="salon";
+var floors=[{n:"Zemin kat",rooms:[],items:[]}], fi=0;
+var draft=[], mode="draw", sel=null, selKind=null;
+function R(){return floors[fi].rooms;} function I(){return floors[fi].items;}
 
-function heicMi(f){
-  return /image\/(heic|heif)/i.test(f.type) || /\.(heic|heif)$/i.test(f.name);
+function area(p){var a=0;for(var i=0;i<p.length;i++){var j=(i+1)%p.length;a+=p[i].x*p[j].y-p[j].x*p[i].y;}return Math.abs(a)/2;}
+function centroid(p){var x=0,y=0;p.forEach(function(q){x+=q.x;y+=q.y;});return{x:x/p.length,y:y/p.length};}
+function snap(v){return Math.round(Math.round(v/SNAP)*SNAP*100)/100;}
+function byKey(k){for(var i=0;i<CATALOG.length;i++)if(CATALOG[i].k===k)return CATALOG[i];return CATALOG[0];}
+function netOf(list){return list.filter(function(r){return r.t!=="bahce";}).reduce(function(a,r){return a+area(r.p);},0);}
+function err(m){
+  document.getElementById("err").textContent=m||"";
+  var o=document.getElementById("okMsg"); if(o&&m)o.style.display="none";
 }
-function betikYukle(src){
-  return new Promise((ok, hata) => {
-    const s = document.createElement('script');
-    s.src = src; s.onload = ok; s.onerror = hata;
-    document.head.appendChild(s);
-  });
-}
-async function heicCevir(f){
-  if(!heicHazir){
-    heicHazir = betikYukle('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js');
-  }
-  await heicHazir;
-  const blob = await heic2any({ blob:f, toType:'image/jpeg', quality:0.92 });
-  return Array.isArray(blob) ? blob[0] : blob;
-}
-
-async function ekle(list){
-  const dizi = [...list];
-  if(dizi.some(heicMi)) $('birak').querySelector('b').textContent = 'HEIC dosyaları dönüştürülüyor…';
-  for(const f of dizi){
-    if(!f.type.startsWith('image/') && !heicMi(f)) continue;
-    try{
-      const kaynak = heicMi(f) ? await heicCevir(f) : f;
-      const bit = await createImageBitmap(kaynak, { imageOrientation:'from-image' });
-      foto.push({ ad:f.name, bit, cx:bit.width/2, cy:bit.height/2, zoom:1, isik:100, lekeler:[] });
-    }catch(err){ console.warn('Okunamadı:', f.name, err); }
-  }
-  $('birak').querySelector('b').textContent = 'Fotoğrafları buraya bırakın';
-  if(foto.length){
-    if(aktif < 0) aktif = 0;
-    $('a-duzen').classList.remove('gizli');
-    $('a-indir').classList.remove('gizli');
-    seritCiz(); ciz(); ayarlariYukle();
-  }
+function inPoly(pt,p){var c=false;
+  for(var i=0,j=p.length-1;i<p.length;j=i++){
+    if(((p[i].y>pt.y)!=(p[j].y>pt.y))&&(pt.x<(p[j].x-p[i].x)*(pt.y-p[i].y)/(p[j].y-p[i].y)+p[i].x))c=!c;}
+  return c;}
+function bounds(all){
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity},n=0;
+  var src=all?floors:[floors[fi]];
+  src.forEach(function(f){f.rooms.forEach(function(r){r.p.forEach(function(q){n++;
+    b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});});});
+  draft.forEach(function(q){n++;b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  if(!n)return{x0:0,y0:0,x1:12,y1:10};
+  if(b.x1-b.x0<4)b.x1=b.x0+4; if(b.y1-b.y0<4)b.y1=b.y0+4;
+  return b;
 }
 
-/* ---------- şerit ---------- */
-let surukle = null;
-
-function seritCiz(){
-  $('serit').innerHTML = '';
-  foto.forEach((f, i) => {
-    const d = document.createElement('div');
-    d.className = 'kucuk' + (i===aktif ? ' secili' : '');
-    d._f = f;
-    const c = document.createElement('canvas');
-    c.width = 78; c.height = 78;
-    const x = c.getContext('2d');
-    const s = Math.max(78/f.bit.width, 78/f.bit.height);
-    const w = f.bit.width*s, h = f.bit.height*s;
-    x.drawImage(f.bit, (78-w)/2, (78-h)/2, w, h);
-    const im = document.createElement('img'); im.src = c.toDataURL(); im.draggable = false;
-    d.appendChild(im);
-    const n = document.createElement('span'); n.className='no'; n.textContent = i+1;
-    d.appendChild(n);
-    if(f.lekeler.length){
-      const s2 = document.createElement('span'); s2.className='isaret'; s2.textContent='●';
-      d.appendChild(s2);
+/* ---------- 2D ---------- */
+var c2=document.getElementById("c2d"),g2=c2.getContext("2d"),V={s:30,ox:0,oy:0};
+function fit2d(){
+  var r=c2.parentNode.getBoundingClientRect(),dpr=Math.min(devicePixelRatio,2);
+  c2.width=r.width*dpr;c2.height=r.height*dpr;g2.setTransform(dpr,0,0,dpr,0,0);
+  var b=bounds(true),pad=40;
+  V.s=Math.min((r.width-pad*2)/(b.x1-b.x0),(r.height-pad*2)/(b.y1-b.y0));
+  V.ox=pad-b.x0*V.s+((r.width-pad*2)-(b.x1-b.x0)*V.s)/2;
+  V.oy=pad-b.y0*V.s+((r.height-pad*2)-(b.y1-b.y0)*V.s)/2;
+  draw2d();
+}
+function W2S(p){return{x:p.x*V.s+V.ox,y:p.y*V.s+V.oy};}
+function S2W(x,y){return{x:(x-V.ox)/V.s,y:(y-V.oy)/V.s};}
+function segDist(px,py,ax,ay,bx,by){
+  var dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+  var t=l2?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l2)):0;
+  var qx=ax+t*dx,qy=ay+t*dy;
+  return Math.hypot(px-qx,py-qy);
+}
+function labelSpot(poly){
+  var x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  poly.forEach(function(q){x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);
+    x1=Math.max(x1,q.x);y1=Math.max(y1,q.y);});
+  var best=null,bd=-1,N=18;
+  for(var i=1;i<N;i++)for(var j=1;j<N;j++){
+    var px=x0+(x1-x0)*i/N, py=y0+(y1-y0)*j/N;
+    if(!inPoly({x:px,y:py},poly))continue;
+    var d=Infinity;
+    for(var k=0;k<poly.length;k++){
+      var a=poly[k],b=poly[(k+1)%poly.length];
+      d=Math.min(d,segDist(px,py,a.x,a.y,b.x,b.y));
     }
-    d.addEventListener('pointerdown', e => {
-      surukle = { el:d, x:e.clientX, tasindi:false };
-      d.setPointerCapture(e.pointerId);
-      d.classList.add('tasiniyor');
-    });
-    d.addEventListener('pointermove', e => {
-      if(!surukle || surukle.el !== d) return;
-      if(!surukle.tasindi && Math.abs(e.clientX - surukle.x) < 10) return;
-      surukle.tasindi = true;
-      const alt = document.elementFromPoint(e.clientX, e.clientY);
-      const hedef = alt && alt.closest ? alt.closest('.kucuk') : null;
-      if(hedef && hedef !== d && hedef.parentElement === d.parentElement){
-        const once = hedef.compareDocumentPosition(d) & Node.DOCUMENT_POSITION_FOLLOWING;
-        hedef.parentElement.insertBefore(d, once ? hedef : hedef.nextSibling);
+    if(d>bd){bd=d;best={x:px,y:py};}
+  }
+  return best?{p:best,r:bd}:null;
+}
+function bboxOf(p){
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};
+  p.forEach(function(q){b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);
+    b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  return b;
+}
+/* iki odanın gerçekten kesişen alanı var mı — ortak duvar sayılmaz */
+function polysOverlap(p1,p2){
+  var a=bboxOf(p1), b=bboxOf(p2);
+  var x0=Math.max(a.x0,b.x0), x1=Math.min(a.x1,b.x1);
+  var y0=Math.max(a.y0,b.y0), y1=Math.min(a.y1,b.y1);
+  if(x1-x0<0.3||y1-y0<0.3)return false;
+  var step=0.25, hit=0;
+  for(var x=x0+step/2;x<x1;x+=step)
+    for(var y=y0+step/2;y<y1;y+=step)
+      if(inPoly({x:x,y:y},p1)&&inPoly({x:x,y:y},p2)){
+        hit++;
+        if(hit*step*step>0.5)return true;
       }
-    });
-    d.addEventListener('pointerup', () => {
-      if(!surukle || surukle.el !== d) return;
-      d.classList.remove('tasiniyor');
-      if(surukle.tasindi){
-        const eskiAktif = aktif >= 0 ? foto[aktif] : null;
-        const yeni = [...$('serit').children].map(el => el._f);
-        foto.length = 0; foto.push(...yeni);
-        aktif = eskiAktif ? foto.indexOf(eskiAktif) : -1;
-        seritCiz();
-      } else {
-        aktif = foto.indexOf(d._f);
-        seritCiz(); ciz(); ayarlariYukle();
-      }
-      surukle = null;
-    });
-    d.addEventListener('pointercancel', () => {
-      d.classList.remove('tasiniyor'); surukle = null; seritCiz();
-    });
-    $('serit').appendChild(d);
-  });
+  return false;
 }
-
-function ayarlariYukle(){
-  if(aktif < 0) return;
-  $('zoom').value = Math.round(foto[aktif].zoom*100);
-  $('isik').value = foto[aktif].isik;
-}
-
-/* ---------- kadraj hesabı ---------- */
-function oranDeger(f){
-  const v = parseFloat($('oran').value);
-  return v > 0 ? v : f.bit.width / f.bit.height;
-}
-function kadraj(f){
-  const ar = oranDeger(f), W = f.bit.width, H = f.bit.height;
-  const mw = Math.min(W, H*ar), mh = mw/ar;
-  const cw = mw/f.zoom, ch = mh/f.zoom;
-  const x = Math.min(Math.max(f.cx - cw/2, 0), W - cw);
-  const y = Math.min(Math.max(f.cy - ch/2, 0), H - ch);
-  return { x, y, w:cw, h:ch };
-}
-function filtre(f){
-  if(f.isik <= 100) return 'none';
-  const kontrast = 100 + (f.isik-100)*0.18;
-  return 'brightness(' + f.isik + '%) contrast(' + kontrast.toFixed(1) + '%)';
-}
-
-/* ---------- önizleme ---------- */
-let olcek = 1;
-function ciz(){
-  if(aktif < 0) return;
-  const f = foto[aktif], c = $('tuval'), g = c.getContext('2d');
-  const en = Math.min(c.parentElement.clientWidth - 32, 680);
-  olcek = en / f.bit.width;
-  c.width = en; c.height = Math.round(f.bit.height * olcek);
-  g.clearRect(0,0,c.width,c.height);
-  g.filter = filtre(f);
-  g.drawImage(f.bit, 0, 0, c.width, c.height);
-  g.filter = 'none';
-
-  if(f.lekeler.length){
-    const b = document.createElement('canvas');
-    b.width = c.width; b.height = c.height;
-    const bg = b.getContext('2d');
-    bg.filter = 'blur(' + Math.max(6, c.width*0.022) + 'px) ' + (filtre(f)==='none'?'':filtre(f));
-    bg.drawImage(f.bit, 0, 0, b.width, b.height);
-    g.save();
-    g.beginPath();
-    f.lekeler.forEach(l => {
-      if(l.t === 'c'){ g.moveTo((l.x+l.r)*olcek, l.y*olcek); g.arc(l.x*olcek, l.y*olcek, l.r*olcek, 0, 7); }
-      else g.rect(l.x*olcek, l.y*olcek, l.w*olcek, l.h*olcek);
-    });
-    g.clip();
-    g.drawImage(b, 0, 0);
-    g.restore();
+function findOverlaps(){
+  var rs=R(), bad={};
+  for(var i=0;i<rs.length;i++)for(var j=i+1;j<rs.length;j++){
+    if(rs[i].t==="bahce"||rs[j].t==="bahce")continue;
+    if(polysOverlap(rs[i].p,rs[j].p)){bad[i]=true;bad[j]=true;}
   }
-
-  const k = kadraj(f);
-  g.fillStyle = 'rgba(34,48,44,.55)';
-  g.fillRect(0, 0, c.width, k.y*olcek);
-  g.fillRect(0, (k.y+k.h)*olcek, c.width, c.height);
-  g.fillRect(0, k.y*olcek, k.x*olcek, k.h*olcek);
-  g.fillRect((k.x+k.w)*olcek, k.y*olcek, c.width, k.h*olcek);
-  g.strokeStyle = '#fff'; g.lineWidth = 2;
-  g.strokeRect(k.x*olcek+1, k.y*olcek+1, k.w*olcek-2, k.h*olcek-2);
+  return bad;
 }
-window.addEventListener('resize', ciz);
-$('oran').addEventListener('change', ciz);
-$('zoom').addEventListener('input', e => {
-  if(aktif<0) return;
-  foto[aktif].zoom = e.target.value/100; ciz();
-});
-$('isik').addEventListener('input', e => {
-  if(aktif<0) return;
-  foto[aktif].isik = parseInt(e.target.value); ciz();
-});
+function polyPath(p){g2.beginPath();p.forEach(function(q,k){var s=W2S(q);k?g2.lineTo(s.x,s.y):g2.moveTo(s.x,s.y);});g2.closePath();}
 
-/* ---------- fare / parmak ---------- */
-let basili = false, sonX = 0, sonY = 0;
-const tuval = $('tuval');
-tuval.addEventListener('pointerdown', e => {
-  if(aktif<0) return;
-  basili = true; tuval.setPointerCapture(e.pointerId);
-  const p = nokta(e); sonX = p.x; sonY = p.y;
-  if(mod === 'bulanik'){ yeniGrup(foto[aktif]); leke(p); }
-});
-tuval.addEventListener('pointermove', e => {
-  if(!basili || aktif<0) return;
-  const p = nokta(e), f = foto[aktif];
-  if(mod === 'bulanik'){ leke(p); }
-  else {
-    f.cx += (p.x - sonX); f.cy += (p.y - sonY);
-    const k = kadraj(f);
-    f.cx = k.x + k.w/2; f.cy = k.y + k.h/2;
+function draw2d(){
+  var r=c2.parentNode.getBoundingClientRect();
+  g2.clearRect(0,0,r.width,r.height);
+  var b=bounds(true);
+  g2.strokeStyle="#E4E0D7";g2.lineWidth=1;
+  for(var x=Math.floor(b.x0)-2;x<=Math.ceil(b.x1)+2;x++){
+    var a=W2S({x:x,y:b.y0-2}),c=W2S({x:x,y:b.y1+2});
+    g2.beginPath();g2.moveTo(a.x,a.y);g2.lineTo(c.x,c.y);g2.stroke();}
+  for(var y=Math.floor(b.y0)-2;y<=Math.ceil(b.y1)+2;y++){
+    var a2=W2S({x:b.x0-2,y:y}),c3=W2S({x:b.x1+2,y:y});
+    g2.beginPath();g2.moveTo(a2.x,a2.y);g2.lineTo(c3.x,c3.y);g2.stroke();}
+
+  if(fi>0){
+    g2.strokeStyle="#C8C3B8";g2.lineWidth=1.5;g2.setLineDash([5,5]);
+    floors[fi-1].rooms.forEach(function(rm){polyPath(rm.p);g2.stroke();});
+    g2.setLineDash([]);
   }
-  sonX = p.x; sonY = p.y;
-  ciz();
-});
-tuval.addEventListener('pointerup', () => { basili = false; seritCiz(); });
-tuval.addEventListener('pointercancel', () => { basili = false; });
-
-function nokta(e){
-  const r = tuval.getBoundingClientRect();
-  return { x:(e.clientX-r.left)/olcek * (tuval.width/r.width), y:(e.clientY-r.top)/olcek * (tuval.height/r.height) };
-}
-function yeniGrup(f){
-  f.sonGrup = (f.sonGrup || 0) + 1;
-  return f.sonGrup;
-}
-function leke(p){
-  const f = foto[aktif];
-  const r = Math.max(f.bit.width, f.bit.height)*0.035;
-  const s = f.lekeler[f.lekeler.length-1];
-  if(s && s.t === 'c' && s.g === f.sonGrup){
-    const d = Math.hypot(p.x - s.x, p.y - s.y);
-    if(d < r*0.4) return;
-  }
-  f.lekeler.push({ t:'c', g:f.sonGrup, x:p.x, y:p.y, r });
-}
-
-$('m-kadraj').addEventListener('click', () => setMod('kadraj'));
-$('m-bulanik').addEventListener('click', () => setMod('bulanik'));
-function setMod(m){
-  mod = m;
-  $('m-kadraj').classList.toggle('aktif', m==='kadraj');
-  $('m-bulanik').classList.toggle('aktif', m==='bulanik');
-  $('ipuc').textContent = m==='bulanik'
-    ? 'Kapatmak istediğiniz yerin üstünden parmağınızı geçirin. Kadraja dönmek için "Kadrajı kaydır"a basın.'
-    : 'Parmağınızı sürükleyerek kadrajı kaydırın. Bulanıklaştırmak için önce "Bulanıklaştır" düğmesine basın.';
-}
-$('b-geri').addEventListener('click', () => {
-  if(aktif<0) return;
-  const f = foto[aktif];
-  if(!f.lekeler.length) return;
-  const son = f.lekeler[f.lekeler.length-1].g;
-  while(f.lekeler.length && f.lekeler[f.lekeler.length-1].g === son) f.lekeler.pop();
-  ciz(); seritCiz();
-});
-
-/* ---------- ayarı hepsine uygula ---------- */
-$('b-hepsi').addEventListener('click', () => {
-  if(aktif < 0 || foto.length < 2) return;
-  const k = foto[aktif];
-  const ox = k.cx / k.bit.width, oy = k.cy / k.bit.height, z = k.zoom, isik = k.isik;
-  foto.forEach((f, i) => {
-    if(i === aktif) return;
-    f.cx = ox * f.bit.width; f.cy = oy * f.bit.height; f.zoom = z; f.isik = isik;
-    const kk = kadraj(f);
-    f.cx = kk.x + kk.w/2; f.cy = kk.y + kk.h/2;
-  });
-  const b = $('b-hepsi');
-  b.textContent = (foto.length-1) + ' fotoğrafa uygulandı';
-  setTimeout(() => { b.textContent = 'Ayarı hepsine uygula'; }, 2200);
-});
-
-/* ---------- otomatik yüz ---------- */
-$('b-yuz').addEventListener('click', async () => {
-  if(aktif<0) return;
-  const b = $('b-yuz'); b.disabled = true; b.textContent = 'Aranıyor…';
-  try{
-    if(!dedektor){
-      const m = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14');
-      const fs = await m.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
-      dedektor = await m.FaceDetector.createFromOptions(fs, {
-        baseOptions:{ modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite' },
-        runningMode:'IMAGE', minDetectionConfidence:0.35
-      });
+  var bad=findOverlaps();
+  R().forEach(function(rm,i){
+    polyPath(rm.p);
+    g2.fillStyle=TYPES[rm.t].h;g2.fill();
+    if(bad[i]){
+      g2.fillStyle="rgba(176,42,32,0.16)";g2.fill();
+      g2.strokeStyle="#B02A20";g2.lineWidth=3;g2.setLineDash([7,4]);g2.stroke();
+      g2.setLineDash([]);
+    }else{
+      g2.strokeStyle=(selKind==="room"&&sel===i)?"#1F4E5F":"#8F8B81";
+      g2.lineWidth=(selKind==="room"&&sel===i)?3:2;g2.stroke();
     }
-    const f = foto[aktif];
-    const c = document.createElement('canvas');
-    c.width = f.bit.width; c.height = f.bit.height;
-    c.getContext('2d').drawImage(f.bit, 0, 0);
-    const r = dedektor.detect(c);
-    const bulunan = r.detections || [];
-    bulunan.forEach(d => {
-      const bb = d.boundingBox;
-      const pay = Math.max(bb.width, bb.height) * 0.25;
-      f.lekeler.push({ t:'r', g:yeniGrup(f), x:bb.originX-pay, y:bb.originY-pay, w:bb.width+pay*2, h:bb.height+pay*2 });
-    });
-    ciz(); seritCiz();
-    b.textContent = bulunan.length ? bulunan.length + ' yüz bulundu' : 'Yüz bulunamadı';
-  }catch(err){
-    console.warn(err);
-    b.textContent = 'Otomatik arama açılmadı';
-    $('ipuc').textContent = 'Otomatik yüz araması bu cihazda çalışmadı. "Bulanıklaştır" moduyla elle kapatabilirsiniz.';
+    if(mode==="edit")rm.p.forEach(function(q){var s2=W2S(q);
+      g2.beginPath();g2.arc(s2.x,s2.y,5,0,7);g2.fillStyle="#FBFAF7";g2.fill();
+      g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.stroke();});
+  });
+  I().forEach(function(it,i){
+    var cat=byKey(it.k),sc=W2S({x:it.x,y:it.y});
+    var on=(selKind==="item"&&sel===i);
+    var W3=cat.w*V.s, D3=cat.d*V.s;
+    g2.save();g2.translate(sc.x,sc.y);g2.rotate(it.r);
+
+    if(it.k==="kapi"){
+      /* duvarda boşluk */
+      g2.fillStyle="#F4F2ED";
+      g2.fillRect(-W3/2,-5,W3,10);
+      /* kanat ve açılım yayı */
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?2.5:1.6;
+      g2.beginPath();g2.moveTo(-W3/2,0);g2.lineTo(-W3/2,W3);g2.stroke();
+      g2.beginPath();g2.arc(-W3/2,0,W3,0,Math.PI/2);
+      g2.setLineDash([4,3]);g2.lineWidth=1.1;g2.stroke();g2.setLineDash([]);
+      /* boşluğun iki ucundaki duvar bitişi */
+      g2.strokeStyle=on?"#1F4E5F":"#6E6A62";g2.lineWidth=on?2.5:1.6;
+      g2.beginPath();g2.moveTo(-W3/2,-4);g2.lineTo(-W3/2,4);
+      g2.moveTo(W3/2,-4);g2.lineTo(W3/2,4);g2.stroke();
+
+    }else if(it.k==="pencere"){
+      g2.fillStyle="#F4F2ED";
+      g2.fillRect(-W3/2,-5,W3,10);
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?2.2:1.4;
+      g2.beginPath();
+      g2.moveTo(-W3/2,-2.5);g2.lineTo(W3/2,-2.5);
+      g2.moveTo(-W3/2,2.5);g2.lineTo(W3/2,2.5);
+      g2.moveTo(-W3/2,-4);g2.lineTo(-W3/2,4);
+      g2.moveTo(W3/2,-4);g2.lineTo(W3/2,4);
+      g2.stroke();
+
+    }else{
+      g2.fillStyle="rgba(60,58,52,0.45)";
+      g2.fillRect(-W3/2,-D3/2,W3,D3);
+      g2.strokeStyle=on?"#1F4E5F":"#3C3A34";
+      g2.lineWidth=on?3:1.5;
+      g2.strokeRect(-W3/2,-D3/2,W3,D3);
+    }
+    g2.restore();
+  });
+  R().forEach(function(rm){
+    var spot=labelSpot(rm.p); if(!spot)return;
+    var avail=spot.r*2*V.s-12;
+    if(avail<28)return;
+    var cs=W2S(spot.p), fs=13;
+    g2.textAlign="center"; g2.textBaseline="alphabetic";
+    do{ g2.font="600 "+fs+"px "+FONT_UI;
+        if(g2.measureText(rm.n).width<=avail)break; fs--; }while(fs>=9);
+    if(g2.measureText(rm.n).width>avail)return;
+    var nw=g2.measureText(rm.n).width;
+    var as=fs-1, at=area(rm.p).toFixed(1)+" m²", aw=0;
+    g2.font="400 "+as+"px "+FONT_MONO;
+    var showA=(spot.r*2*V.s>54)&&fs>=11&&g2.measureText(at).width<=avail;
+    if(showA)aw=g2.measureText(at).width;
+
+    var bw=Math.max(nw,aw)+14;
+    var bh=showA?(fs+as+13):(fs+9);
+    var bx=cs.x-bw/2, by=cs.y-bh/2;
+    g2.fillStyle="rgba(251,250,247,0.92)";
+    if(g2.roundRect){g2.beginPath();g2.roundRect(bx,by,bw,bh,4);g2.fill();}
+    else g2.fillRect(bx,by,bw,bh);
+
+    g2.textBaseline="top";
+    g2.fillStyle="#1B1A17"; g2.font="600 "+fs+"px "+FONT_UI;
+    g2.fillText(rm.n,cs.x,by+5);
+    if(showA){g2.fillStyle="#5C5952"; g2.font="400 "+as+"px "+FONT_MONO;
+      g2.fillText(at,cs.x,by+fs+8);}
+    g2.textBaseline="alphabetic";
+  });
+
+  if(draft.length){
+    polyPath(draft);
+    g2.strokeStyle="#1F4E5F";g2.lineWidth=2;g2.setLineDash([6,4]);g2.stroke();g2.setLineDash([]);
+    draft.forEach(function(q){var s=W2S(q);
+      g2.beginPath();g2.arc(s.x,s.y,4,0,7);g2.fillStyle="#1F4E5F";g2.fill();});
   }
-  setTimeout(()=>{ b.textContent='Yüzleri bul'; b.disabled=false; }, 2500);
+}
+
+var dragT=null,dragI=-1,dragV=-1,dragOrig=null,dragStart=null;
+function evPos(e){var r=c2.getBoundingClientRect();return S2W(e.clientX-r.left,e.clientY-r.top);}
+c2.addEventListener("pointerdown",function(e){
+  var w=evPos(e);
+  if(mode==="draw"){draft.push({x:snap(w.x),y:snap(w.y)});err("");fit2d();return;}
+  if(mode==="edit"){
+    var rs=R();
+    for(var i=0;i<rs.length;i++)for(var v=0;v<rs[i].p.length;v++){
+      var q=rs[i].p[v];
+      if(Math.abs(q.x-w.x)*V.s<10&&Math.abs(q.y-w.y)*V.s<10){
+        pushUndo();dragT="vert";dragI=i;dragV=v;sel=i;selKind="room";draw2d();return;}}
+    for(var m2=rs.length-1;m2>=0;m2--){
+      if(inPoly(w,rs[m2].p)){
+        pushUndo();dragT="room";dragI=m2;
+        dragOrig=rs[m2].p.map(function(q){return{x:q.x,y:q.y};});
+        dragStart={x:w.x,y:w.y};
+        sel=m2;selKind="room";renderLists();draw2d();return;}
+    }
+  }
+  var its=I();
+  for(var k=its.length-1;k>=0;k--){
+    var cat=byKey(its[k].k),d=its[k],dx=w.x-d.x,dy=w.y-d.y;
+    var ca=Math.cos(-d.r),sa=Math.sin(-d.r),lx=dx*ca-dy*sa,ly=dx*sa+dy*ca;
+    if(Math.abs(lx)<cat.w/2&&Math.abs(ly)<cat.d/2){
+      pushUndo();sel=k;selKind="item";dragT="item";dragI=k;renderLists();draw2d();return;}}
+  if(mode==="furn"&&placeArmed){
+    pushUndo();
+    var kk=document.getElementById("fsel").value;
+    its.push({k:kk,x:snap(w.x),y:snap(w.y),r:0});
+    sel=its.length-1;selKind="item";
+    placeArmed=false; armUI();
+    var ok=document.getElementById("okMsg");
+    if(ok){ok.style.display="block";
+      ok.textContent=byKey(kk).l+" yerleştirildi. Sürükleyerek taşıyabilir, \u002245° döndür\u0022 ile çevirebilirsin.";}
+    renderLists();build3d();fit2d();return;}
+  var rs2=R();
+  for(var m=rs2.length-1;m>=0;m--)if(inPoly(w,rs2[m].p)){
+    sel=m;selKind="room";renderLists();draw2d();return;}
+  sel=null;selKind=null;renderLists();draw2d();
 });
-
-/* ---------- otomatik plaka ---------- */
-function plakaAday(bit){
-  const en = 800;
-  const s = Math.min(1, en / bit.width);
-  const W = Math.round(bit.width*s), H = Math.round(bit.height*s);
-  const c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d', { willReadFrequently:true });
-  g.drawImage(bit, 0, 0, W, H);
-  const d = g.getImageData(0, 0, W, H).data;
-
-  const N = W*H;
-  const gri = new Uint8Array(N), doygunluk = new Uint8Array(N), mavi = new Uint8Array(N);
-  for(let i=0, p=0; p<N; i+=4, p++){
-    const r=d[i], y2=d[i+1], b=d[i+2];
-    gri[p] = (r*0.299 + y2*0.587 + b*0.114) | 0;
-    const mx = Math.max(r,y2,b), mn = Math.min(r,y2,b);
-    doygunluk[p] = mx - mn;
-    mavi[p] = (b > 60 && b-r > 30 && b-y2 > 15) ? 1 : 0;
+c2.addEventListener("pointermove",function(e){
+  if(!dragT)return; var w=evPos(e);
+  if(dragT==="vert")R()[dragI].p[dragV]={x:snap(w.x),y:snap(w.y)};
+  else if(dragT==="room"){
+    var dx=snap(w.x-dragStart.x), dy=snap(w.y-dragStart.y);
+    var moved=dragOrig.map(function(q){return{x:snap(q.x+dx),y:snap(q.y+dy)};});
+    var adj=magnet(moved,dragI);
+    R()[dragI].p=moved.map(function(q){return{x:snap(q.x+adj.x),y:snap(q.y+adj.y)};});
   }
+  else{I()[dragI].x=snap(w.x);I()[dragI].y=snap(w.y);}
+  draw2d();e.preventDefault();
+},{passive:false});
+window.addEventListener("pointerup",function(){if(dragT){dragT=null;renderLists();build3d();fit2d();}});
 
-  const etiket = new Int32Array(N);
-  const yigin = new Int32Array(N);
-  const parlak = new Uint8Array(N);
-  const hepsi = [];
-
-  // Farkli parlaklik esikleriyle birden fazla tarama: golgeli ve acili plakalar
-  // tek esikte kaciyor, bu yuzden dort gecis yapip sonuclari birlestiriyoruz.
-  const esikler = [205, 178, 152, 128];
-  for(let e=0; e<esikler.length; e++){
-    const esik = esikler[e];
-    const dogSiniri = esik < 160 ? 85 : 70;
-    for(let p=0; p<N; p++) parlak[p] = (gri[p] > esik && doygunluk[p] < dogSiniri) ? 1 : 0;
-    etiket.fill(-1);
-    let id = 0;
-    for(let p0=0; p0<N; p0++){
-      if(!parlak[p0] || etiket[p0] >= 0) continue;
-      let n = 0; yigin[n++] = p0; etiket[p0] = id;
-      let x0 = p0%W, x1 = x0, y0 = (p0/W)|0, y1 = y0, adet = 0;
-      while(n > 0){
-        const q = yigin[--n]; adet++;
-        const qx = q%W, qy = (q/W)|0;
-        if(qx<x0) x0=qx; if(qx>x1) x1=qx;
-        if(qy<y0) y0=qy; if(qy>y1) y1=qy;
-        if(qx>0   && parlak[q-1] && etiket[q-1]<0){ etiket[q-1]=id; yigin[n++]=q-1; }
-        if(qx<W-1 && parlak[q+1] && etiket[q+1]<0){ etiket[q+1]=id; yigin[n++]=q+1; }
-        if(qy>0   && parlak[q-W] && etiket[q-W]<0){ etiket[q-W]=id; yigin[n++]=q-W; }
-        if(qy<H-1 && parlak[q+W] && etiket[q+W]<0){ etiket[q+W]=id; yigin[n++]=q+W; }
-      }
-      id++;
-
-      const w = x1-x0+1, h = y1-y0+1;
-      if(h < 7 || w < 18 || w > W*0.62) continue;
-      const ar = w/h;
-      if(ar < 1.7 || ar > 8) continue;
-      if(adet/(w*h) < 0.2) continue;
-
-      let kenar = 0, say = 0;
-      for(let y=y0+1; y<y1; y++){
-        for(let x=x0+1; x<x1; x++){
-          const p = y*W+x;
-          if(Math.abs(gri[p]-gri[p-1]) > 32) kenar++;
-          say++;
+/* ---------- zemin dokuları ---------- */
+var TEXCACHE={};
+function mkTex(kind){
+  if(TEXCACHE[kind])return TEXCACHE[kind];
+  var S=512,c=document.createElement("canvas");c.width=S;c.height=S;
+  var g=c.getContext("2d");
+  if(kind==="wood"){
+    g.fillStyle="#C9A87C";g.fillRect(0,0,S,S);
+    var pw=S/4;
+    for(var i=0;i<4;i++){
+      var off=(i%2)*pw/2;
+      for(var j=-1;j<5;j++){
+        var y=j*pw*2+off, hgt=pw*2-3;
+        var v=200+Math.floor(Math.random()*38);
+        g.fillStyle="rgb("+v+","+Math.floor(v*0.82)+","+Math.floor(v*0.60)+")";
+        g.fillRect(i*pw+1.5,y,pw-3,hgt);
+        g.strokeStyle="rgba(120,88,54,0.20)";g.lineWidth=1;
+        for(var k=0;k<5;k++){
+          var gy=y+Math.random()*hgt;
+          g.beginPath();g.moveTo(i*pw+3,gy);
+          g.bezierCurveTo(i*pw+pw*0.3,gy+2,i*pw+pw*0.6,gy-2,i*pw+pw-3,gy);
+          g.stroke();
         }
       }
-      if(!say) continue;
-      const yogunluk = kenar/say;
-      if(yogunluk < 0.045) continue;
-
-      let m = 0, mt = 0;
-      const bant = Math.max(1, Math.round(w*0.16));
-      for(let y=y0; y<=y1; y++)
-        for(let x=x0; x<x0+bant; x++){ m += mavi[y*W+x]; mt++; }
-      const maviOran = mt ? m/mt : 0;
-
-      // 4.5:1 civari Turk plakasi oranina yakinlik puani
-      const oranPuani = 1 - Math.min(1, Math.abs(ar-4.5)/3.5);
-
-      hepsi.push({
-        x:x0/s, y:y0/s, w:w/s, h:h/s,
-        puan: yogunluk*2 + oranPuani*0.6 + (maviOran > 0.12 ? 0.8 : 0)
-      });
+    }
+  }else if(kind==="tile"){
+    g.fillStyle="#D9D6CE";g.fillRect(0,0,S,S);
+    var t=S/4;
+    for(var a=0;a<4;a++)for(var b=0;b<4;b++){
+      var w=228+Math.floor(Math.random()*18);
+      g.fillStyle="rgb("+w+","+(w-3)+","+(w-10)+")";
+      g.fillRect(a*t+2,b*t+2,t-4,t-4);
+    }
+  }else{
+    g.fillStyle="#8FAE72";g.fillRect(0,0,S,S);
+    for(var n=0;n<2600;n++){
+      var gv=110+Math.floor(Math.random()*70);
+      g.fillStyle="rgba("+Math.floor(gv*0.72)+","+gv+","+Math.floor(gv*0.55)+",0.55)";
+      g.fillRect(Math.random()*S,Math.random()*S,2,4);
     }
   }
-
-  // Ayni plakayi farkli esiklerde birden fazla bulduysak tekini birak
-  hepsi.sort((a,b) => b.puan - a.puan);
-  const secilen = [];
-  for(const k of hepsi){
-    const cakisiyor = secilen.some(v => {
-      const gx = Math.max(0, Math.min(k.x+k.w, v.x+v.w) - Math.max(k.x, v.x));
-      const gy = Math.max(0, Math.min(k.y+k.h, v.y+v.h) - Math.max(k.y, v.y));
-      const kesisim = gx*gy;
-      return kesisim > 0.25 * Math.min(k.w*k.h, v.w*v.h);
-    });
-    if(!cakisiyor) secilen.push(k);
-    if(secilen.length >= 6) break;
-  }
-  return secilen;
+  var tx=new THREE.CanvasTexture(c);
+  tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(0.5,0.5);tx.anisotropy=8;
+  TEXCACHE[kind]=tx;return tx;
 }
+var TEXOF={salon:"wood",yatak:"wood",hol:"wood",mutfak:"tile",banyo:"tile",balkon:"tile",bahce:"grass",kiler:"tile",giyinme:"wood",calisma:"wood",ebeveyn:"wood",cocuk:"wood",oturma:"wood",teras:"tile",camasir:"tile"};
 
-$('b-plaka').addEventListener('click', () => {
-  if(aktif < 0) return;
-  const b = $('b-plaka'); b.disabled = true; b.textContent = 'Aranıyor…';
-  setTimeout(() => {
-    const f = foto[aktif];
-    let bulunan = [];
-    try{ bulunan = plakaAday(f.bit); }catch(err){ console.warn(err); }
-    bulunan.forEach(p => {
-      const pay = p.h * 0.35;
-      f.lekeler.push({ t:'r', g:yeniGrup(f), x:p.x-pay, y:p.y-pay, w:p.w+pay*2, h:p.h+pay*2 });
-    });
-    ciz(); seritCiz();
-    b.textContent = bulunan.length ? bulunan.length + ' aday işaretlendi' : 'Plaka bulunamadı';
-    if(!bulunan.length) $('ipuc').textContent = 'Plaka bulunamadı. "Bulanıklaştır" moduyla elle kapatabilirsiniz.';
-    setTimeout(() => { b.textContent = 'Plakaları bul'; b.disabled = false; }, 2500);
-  }, 30);
-});
+/* ---------- 3D ---------- */
+var wrap=document.getElementById("wrap3d"),scene,cam,ortho,activeCam,ren,grp;
+var topView=false,planW=12,planD=10,sceneR=8;
+function fitDist(r,aspect){
+  var fov=38*Math.PI/180;
+  var dV=r/Math.sin(fov/2);
+  var fovH=2*Math.atan(Math.tan(fov/2)*aspect);
+  var dH=r/Math.sin(fovH/2);
+  return Math.max(dV,dH)*1.04;
+}
+var th=Math.PI*0.25,ph=Math.PI*0.34,rad=22,tgt=new THREE.Vector3(0,0,0);
+var loader=new THREE.GLTFLoader(),cache={},missing={},localModels={};
+function modelURL(k){return localModels[k]||(MODEL_DIR+k+".glb");}
 
-/* ---------- üretim ---------- */
-async function uret(f){
-  const k = kadraj(f);
-  const uzun = parseInt($('kenar').value);
-  const s = uzun / Math.max(k.w, k.h);
-  const W = Math.round(k.w*s), H = Math.round(k.h*s);
+function init3d(){
+  scene=new THREE.Scene();
+  cam=new THREE.PerspectiveCamera(38,1,0.1,600);
+  ortho=new THREE.OrthographicCamera(-10,10,10,-10,0.1,600);
+  activeCam=cam;
+  ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+  ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.setClearColor(0xF4F2ED,1);
+  wrap.appendChild(ren.domElement);
+  scene.add(new THREE.HemisphereLight(0xffffff,0xBFB9AC,0.95));
+  var dl=new THREE.DirectionalLight(0xffffff,0.55);dl.position.set(9,15,7);scene.add(dl);
+  grp=new THREE.Group();scene.add(grp);
+  size3d();loop();
+}
+function size3d(w,h){
+  var r=wrap.getBoundingClientRect();
+  w=w||r.width;h=h||r.height;
+  cam.aspect=w/h;cam.updateProjectionMatrix();
+  var asp=w/h, halfW, halfD;
+  if(asp>=1){halfD=sceneR*1.04; halfW=halfD*asp;}
+  else{halfW=sceneR*1.04; halfD=halfW/asp;}
+  ortho.left=-halfW;ortho.right=halfW;ortho.top=halfD;ortho.bottom=-halfD;
+  ortho.updateProjectionMatrix();
+  ren.setSize(w,h,false);}
+function loop(){requestAnimationFrame(loop);
+  if(topView){
+    ortho.position.set(tgt.x,tgt.y+60,tgt.z+0.001);
+    ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
+    activeCam=ortho;
+  }else{
+    cam.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));
+    cam.lookAt(tgt);activeCam=cam;
+  }
+  ren.render(scene,activeCam);}
+var d3=false,px=0,py=0;
+wrap.addEventListener("pointerdown",function(e){d3=true;px=e.clientX;py=e.clientY;});
+window.addEventListener("pointermove",function(e){if(!d3)return;
+  th-=(e.clientX-px)*0.008;ph=Math.max(0.15,Math.min(1.45,ph-(e.clientY-py)*0.006));
+  px=e.clientX;py=e.clientY;});
+window.addEventListener("pointerup",function(){d3=false;});
+wrap.addEventListener("wheel",function(e){rad=Math.max(5,Math.min(120,rad+e.deltaY*0.02));e.preventDefault();},{passive:false});
 
-  const c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d');
-  g.imageSmoothingQuality = 'high';
-  g.filter = filtre(f);
-  g.drawImage(f.bit, k.x, k.y, k.w, k.h, 0, 0, W, H);
-  g.filter = 'none';
-
-  if(f.lekeler.length){
-    const b = document.createElement('canvas'); b.width = W; b.height = H;
-    const bg = b.getContext('2d');
-    bg.filter = 'blur(' + Math.max(8, W*0.025) + 'px) ' + (filtre(f)==='none'?'':filtre(f));
-    bg.drawImage(f.bit, k.x, k.y, k.w, k.h, 0, 0, W, H);
-    g.save(); g.beginPath();
-    f.lekeler.forEach(l => {
-      if(l.t === 'c'){
-        const x=(l.x-k.x)*s, y=(l.y-k.y)*s, r=l.r*s;
-        g.moveTo(x+r, y); g.arc(x, y, r, 0, 7);
-      } else {
-        g.rect((l.x-k.x)*s, (l.y-k.y)*s, l.w*s, l.h*s);
+var labelMode="no";
+function nameMarker(nm,ar,sizeM){
+  var W=1024,H=320,c=document.createElement("canvas");c.width=W;c.height=H;
+  var g=c.getContext("2d");
+  var big=Math.max(68,Math.min(118,sizeM*25)), small=big*0.70;
+  g.font="600 "+big+"px "+FONT_UI; var w1=g.measureText(nm).width;
+  var at=ar.toFixed(1)+" m²";
+  g.font="500 "+small+"px "+FONT_MONO; var w2=g.measureText(at).width;
+  var bw=Math.min(W-12,Math.max(w1,w2)+64), bh=big+small+52;
+  var bx=(W-bw)/2, by=(H-bh)/2;
+  g.fillStyle="rgba(250,248,244,0.93)";
+  if(g.roundRect){g.beginPath();g.roundRect(bx,by,bw,bh,16);g.fill();
+    g.strokeStyle="rgba(120,116,108,0.35)";g.lineWidth=3;g.stroke();}
+  else g.fillRect(bx,by,bw,bh);
+  g.textAlign="center";g.textBaseline="top";
+  g.fillStyle="#1B1A17";g.font="600 "+big+"px "+FONT_UI;
+  g.fillText(nm,W/2,by+18);
+  g.fillStyle="#55524B";g.font="500 "+small+"px "+FONT_MONO;
+  g.fillText(at,W/2,by+big+26);
+  var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
+  var sc=Math.max(2.8,Math.min(6.6,sizeM*1.3));
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(sc,sc*(H/W)),
+    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.renderOrder=6;
+  return m;
+}
+function numberMarker(no){
+  var S=256,c=document.createElement("canvas");c.width=S;c.height=S;
+  var g=c.getContext("2d");
+  g.beginPath();g.arc(S/2,S/2,S/2-8,0,7);
+  g.fillStyle="rgba(248,246,242,0.95)";g.fill();
+  g.strokeStyle="#1F4E5F";g.lineWidth=10;g.stroke();
+  g.fillStyle="#1B1A17";g.textAlign="center";g.textBaseline="middle";
+  g.font="600 "+(no>9?110:130)+"px "+FONT_UI;
+  g.fillText(String(no),S/2,S/2+4);
+  var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(0.95,0.95),
+    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.renderOrder=5;
+  return m;
+}
+function fitModel(obj,cat){
+  var cd=capDims(cat);
+  var box=new THREE.Box3().setFromObject(obj),sz=new THREE.Vector3();box.getSize(sz);
+  obj.scale.setScalar(Math.min(cat.w/(sz.x||1),cd.h/(sz.y||1),cat.d/(sz.z||1)));
+  var b2=new THREE.Box3().setFromObject(obj),ct=new THREE.Vector3();b2.getCenter(ct);
+  obj.position.x-=ct.x;obj.position.z-=ct.z;obj.position.y-=b2.min.y;
+  return obj;
+}
+function capDims(cat){
+  var e=cat.e||0, h=cat.h, top=e+h;
+  if(top<=WALL_H)return {e:e,h:h};
+  var f=WALL_H/top;
+  return {e:e*f, h:h*f};
+}
+function proxy(cat){
+  var cd=capDims(cat);
+  var g=new THREE.Group();
+  if(cat.k==="agac"){
+    var th2=cat.h*0.62;
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.18,th2*0.42,8),
+      new THREE.MeshLambertMaterial({color:0x8A6B4A}));
+    tr.position.y=th2*0.21; g.add(tr);
+    var cn=new THREE.Mesh(new THREE.SphereGeometry(cat.w*0.46,14,10),
+      new THREE.MeshLambertMaterial({color:cat.c}));
+    cn.position.y=th2*0.66; cn.scale.y=1.15; g.add(cn);
+    return g;
+  }
+  var m=new THREE.Mesh(new THREE.BoxGeometry(cat.w,cd.h,cat.d),
+    new THREE.MeshLambertMaterial({color:cat.c,transparent:cat.k==="pencere",opacity:cat.k==="pencere"?0.55:1}));
+  m.position.y=cd.h/2; g.add(m); return g;
+}
+function addItem(it,cx,cy,yb){
+  var cat=byKey(it.k),holder=new THREE.Group();
+  holder.position.set(it.x-cx,yb+0.08+capDims(cat).e,it.y-cy);holder.rotation.y=-it.r;
+  grp.add(holder);
+  if(it.k==="kapi"||it.k==="pencere")return;   /* duvar boşluğu olarak çiziliyor */
+  if(missing[it.k]){holder.add(proxy(cat));return;}
+  if(cache[it.k]){holder.add(fitModel(cache[it.k].clone(true),cat));return;}
+  var ph2=proxy(cat);holder.add(ph2);
+  loader.load(modelURL(it.k),function(gl){
+    cache[it.k]=gl.scene;holder.remove(ph2);holder.add(fitModel(gl.scene.clone(true),cat));
+  },undefined,function(){missing[it.k]=true;});
+}
+var legendData=[];
+function edgeKey(a,b){
+  var r=function(v){return Math.round(v*20)/20;};
+  var p1=r(a.x)+","+r(a.y), p2=r(b.x)+","+r(b.y);
+  return p1<p2 ? p1+"|"+p2 : p2+"|"+p1;
+}
+/* duvar üzerindeki kapı/pencere boşluklarını [t0,t1] olarak döndür */
+function gapSpans(a,b,len,items,kind){
+  var dx=(b.x-a.x)/len, dy=(b.y-a.y)/len, out=[];
+  items.forEach(function(it){
+    if(kind&&it.k!==kind)return;
+    if(it.k!=="kapi"&&it.k!=="pencere")return;
+    var vx=it.x-a.x, vy=it.y-a.y;
+    var t=vx*dx+vy*dy;                  /* duvar boyunca konum (m) */
+    var dist=Math.abs(vx*dy-vy*dx);     /* duvara dik uzaklık */
+    if(dist>0.35)return;
+    var w=byKey(it.k).w/2+0.04;
+    var t0=Math.max(0,(t-w)/len), t1=Math.min(1,(t+w)/len);
+    if(t1>t0)out.push([t0,t1]);
+  });
+  out.sort(function(p,q){return p[0]-q[0];});
+  return out;
+}
+/* boşluklar çıkarıldıktan sonra duvarın kalan parçaları */
+function keepSpans(a,b,len,items){
+  var gaps=gapSpans(a,b,len,items,null), keep=[], cur=0;
+  gaps.forEach(function(g){
+    if(g[0]>cur)keep.push([cur,g[0]]);
+    cur=Math.max(cur,g[1]);
+  });
+  if(cur<1)keep.push([cur,1]);
+  return keep;
+}
+function doorArc(it,cx,cy,yb){
+  var w=byKey("kapi").w, pts=[];
+  for(var i=0;i<=18;i++){
+    var a=i/18*Math.PI/2;
+    pts.push(new THREE.Vector3(-w/2+Math.cos(a)*w,0,Math.sin(a)*w));
+  }
+  pts.push(new THREE.Vector3(-w/2,0,0));
+  pts.push(new THREE.Vector3(-w/2+w,0,0));
+  var g=new THREE.BufferGeometry().setFromPoints(pts);
+  var l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6E6A62,transparent:true,opacity:0.75}));
+  l.position.set(it.x-cx,yb+0.11,it.y-cy);l.rotation.y=-it.r;l.renderOrder=4;
+  return l;
+}
+function build3d(){
+  while(grp.children.length)grp.remove(grp.children[0]);
+  legendData=[];var lno=0;
+  var showAll=document.getElementById("allChk").checked;
+  var b=bounds(true),cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2;
+  floors.forEach(function(f,idx){
+    if(!showAll&&idx!==fi)return;
+    var yb=idx*FLOOR_H, wallSeen={};
+    f.rooms.forEach(function(rm){
+      var sh=new THREE.Shape();
+      rm.p.forEach(function(q,i){i?sh.lineTo(q.x-cx,q.y-cy):sh.moveTo(q.x-cx,q.y-cy);});
+      var geo=new THREE.ExtrudeGeometry(sh,{depth:0.08,bevelEnabled:false});geo.rotateX(Math.PI/2);
+      var fl=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({
+        map:mkTex(TEXOF[rm.t]||"wood"),color:0xFFFFFF,side:THREE.DoubleSide}));
+      fl.position.y=yb;grp.add(fl);
+      if(rm.t!=="bahce")for(var i=0;i<rm.p.length;i++){
+        var a=rm.p[i],c2=rm.p[(i+1)%rm.p.length];
+        var dx=c2.x-a.x,dy=c2.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+        if(len<0.05)continue;
+        var key=edgeKey(a,c2);
+        if(wallSeen[key])continue;      /* ortak duvarı iki kez çizme */
+        wallSeen[key]=true;
+        var ang=Math.atan2(dy,dx);
+        keepSpans(a,c2,len,f.items).forEach(function(sp){
+          var segLen=(sp[1]-sp[0])*len;
+          if(segLen<0.06)return;
+          var mt=(sp[0]+sp[1])/2;
+          var mx=a.x+dx*mt, my=a.y+dy*mt;
+          var wl=new THREE.Mesh(new THREE.BoxGeometry(segLen,WALL_H,TH),
+            new THREE.MeshLambertMaterial({color:0x97938A}));
+          wl.position.set(mx-cx,yb+WALL_H/2,my-cy);
+          wl.rotation.y=-ang; grp.add(wl);
+        });
+        /* pencere varsa boşluğa saydam panel koy */
+        gapSpans(a,c2,len,f.items,"pencere").forEach(function(sp){
+          var segLen=(sp[1]-sp[0])*len; if(segLen<0.1)return;
+          var mt=(sp[0]+sp[1])/2, mx=a.x+dx*mt, my=a.y+dy*mt;
+          var ph2=WALL_H-0.35;
+          var pn=new THREE.Mesh(new THREE.BoxGeometry(segLen,ph2,TH*0.6),
+            new THREE.MeshLambertMaterial({color:0xBBD3DC,transparent:true,opacity:0.55}));
+          pn.position.set(mx-cx,yb+0.35+ph2/2,my-cy);
+          pn.rotation.y=-ang; grp.add(pn);
+        });
       }
+      lno++;legendData.push({no:lno,n:rm.n,a:area(rm.p),f:f.n,t:rm.t});
+      var sp0=labelSpot(rm.p),ct=sp0?sp0.p:centroid(rm.p);
+      var sp=(labelMode==="name")
+        ? nameMarker(rm.n,area(rm.p),sp0?sp0.r*2:Math.sqrt(area(rm.p)))
+        : numberMarker(lno);
+      sp.position.set(ct.x-cx,yb+0.14,ct.y-cy);grp.add(sp);
     });
-    g.clip(); g.drawImage(b, 0, 0); g.restore();
+    f.items.forEach(function(it){
+      addItem(it,cx,cy,yb);
+      if(it.k==="kapi")grp.add(doorArc(it,cx,cy,yb));
+    });
+  });
+  renderLegend();
+  planW=b.x1-b.x0;planD=b.y1-b.y0;
+  var bb=new THREE.Box3().setFromObject(grp);
+  if(isFinite(bb.min.x)){
+    var sph=bb.getBoundingSphere(new THREE.Sphere());
+    sceneR=Math.max(sph.radius,3);
+    tgt.set(sph.center.x,sph.center.y,sph.center.z);
+    var r0=wrap.getBoundingClientRect();
+    rad=fitDist(sceneR,(r0.width||600)/(r0.height||400));
   }
-
-  const hedef = parseInt($('hedef').value) * 1024;
-  let alt = 0.4, ust = 0.94, iyi = null;
-  for(let i=0; i<7; i++){
-    const q = (alt+ust)/2;
-    const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', q));
-    if(blob.size > hedef){ ust = q; } else { iyi = blob; alt = q; }
-  }
-  return iyi || await new Promise(res => c.toBlob(res, 'image/jpeg', 0.4));
+  size3d();
 }
 
-function onekAl(){
-  return ($('onek').value || 'ilan').trim().replace(/[^\wçğıöşüÇĞİÖŞÜ-]/g,'-');
-}
-async function hepsiniUret(){
-  const onek = onekAl(), cikti = [];
-  for(let i=0;i<foto.length;i++){
-    $('durum').textContent = (i+1) + ' / ' + foto.length + ' hazırlanıyor…';
-    const blob = await uret(foto[i]);
-    cikti.push({ ad: onek + '-' + String(i+1).padStart(2,'0') + '.jpg', blob });
-  }
-  return cikti;
+function renderLegend(){
+  var el=document.getElementById("legend");if(!el)return;
+  if(!legendData.length){el.innerHTML="";return;}
+  var multi=legendData.some(function(d){return d.f!==legendData[0].f;});
+  var h="",last=null;
+  legendData.forEach(function(d){
+    if(multi&&d.f!==last){h+='<div class="kf">'+d.f+'</div>';last=d.f;}
+    h+='<div><span class="no">'+d.no+'</span> '+d.n+
+       (d.a>=1?' · '+d.a.toFixed(1)+' m²':'')+'</div>';
+  });
+  el.innerHTML=h;
 }
 
-$('b-indir').addEventListener('click', async () => {
-  if(!foto.length) return;
-  const b = $('b-indir'); b.disabled = true;
-  const cikti = await hepsiniUret();
-  $('durum').textContent = 'Zip paketleniyor…';
-  const zip = new JSZip();
-  cikti.forEach(x => zip.file(x.ad, x.blob));
-  const paket = await zip.generateAsync({type:'blob'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(paket);
-  a.download = onekAl() + '-fotograflar.zip';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  $('durum').textContent = foto.length + ' fotoğraf indirildi.';
-  $('bitti').classList.remove('gizli');
-  b.disabled = false;
-});
+/* ---------- otomatik döşeme ---------- */
+function autoFurnish(rm){
+  var list=AUTO[rm.t]||[];if(!list.length){err("Bu oda tipi için hazır yerleşim yok.");return;}
+  pushUndo();
+  var b={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};
+  rm.p.forEach(function(q){b.x0=Math.min(b.x0,q.x);b.y0=Math.min(b.y0,q.y);
+    b.x1=Math.max(b.x1,q.x);b.y1=Math.max(b.y1,q.y);});
+  var placed=[],n=0;
+  list.forEach(function(k){
+    var cat=byKey(k),best=null;
+    for(var gy=b.y0+0.6;gy<b.y1-0.4;gy+=0.4)for(var gx=b.x0+0.6;gx<b.x1-0.4;gx+=0.4){
+      if(!inPoly({x:gx,y:gy},rm.p))continue;
+      var rr=Math.max(cat.w,cat.d)/2+0.15,ok=true;
+      for(var i=0;i<placed.length;i++){
+        var p=placed[i],dd=Math.hypot(p.x-gx,p.y-gy);
+        if(dd<rr+Math.max(byKey(p.k).w,byKey(p.k).d)/2+0.15){ok=false;break;}}
+      if(ok){best={x:snap(gx),y:snap(gy),k:k};break;}
+    }
+    if(best){placed.push(best);I().push({k:k,x:best.x,y:best.y,r:0});n++;}
+  });
+  err(n?"":"Oda bu eşyalar için dar kaldı.");
+  renderLists();build3d();draw2d();
+}
 
-$('b-telefon').addEventListener('click', async () => {
-  if(!foto.length) return;
-  const b = $('b-telefon'); b.disabled = true;
-  const cikti = await hepsiniUret();
-  $('durum').textContent = 'Dosyalar indiriliyor…';
-  for(const x of cikti){
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(x.blob);
-    a.download = x.ad;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    await new Promise(r => setTimeout(r, 400));
+/* ---------- listeler ---------- */
+function renderTabs(){
+  var t=document.getElementById("tabs");t.innerHTML="";
+  floors.forEach(function(f,i){
+    var b=document.createElement("button");b.className="ghost";b.textContent=f.n;
+    b.setAttribute("aria-pressed",String(i===fi));
+    b.onclick=function(){fi=i;sel=null;selKind=null;draft=[];err("");
+      renderTabs();renderLists();build3d();fit2d();};
+    t.appendChild(b);
+  });
+  document.getElementById("floorName").textContent=floors[fi].n;
+}
+function renderLists(){
+  var bad2=findOverlaps();
+  var rl=document.getElementById("rlist");rl.innerHTML="";
+  if(!R().length)rl.innerHTML='<li class="empty">Bu katta henüz oda yok.</li>';
+  R().forEach(function(rm,i){
+    var li=document.createElement("li");if(selKind==="room"&&sel===i)li.className="on";
+    if(bad2[i])li.classList.add("bad");
+    li.innerHTML='<span class="sw" style="background:'+TYPES[rm.t].h+'"></span>'+
+      '<span class="nm">'+rm.n+'</span><span class="dm">'+area(rm.p).toFixed(1)+' m²</span>';
+    var e=document.createElement("button");e.textContent="✎";e.title="Adını değiştir";
+    e.setAttribute("aria-label",rm.n+" odasının adını değiştir");
+    e.onclick=function(ev){ev.stopPropagation();
+      var v2=prompt("Oda adı:",rm.n);
+      if(v2&&v2.trim()){pushUndo();rm.n=v2.trim();renderLists();build3d();draw2d();}};
+    li.appendChild(e);
+    var b=document.createElement("button");b.textContent="×";
+    b.setAttribute("aria-label",rm.n+" odasını sil");
+    b.onclick=function(ev){ev.stopPropagation();pushUndo();R().splice(i,1);sel=null;selKind=null;
+      renderLists();build3d();fit2d();};
+    li.appendChild(b);li.onclick=function(){sel=i;selKind="room";renderLists();draw2d();};
+    rl.appendChild(li);
+  });
+  var badN=Object.keys(bad2).length;
+  document.getElementById("total").textContent=netOf(R()).toFixed(1)+" m²";
+  var wr=document.getElementById("overlapWarn");
+  if(wr){
+    if(badN){wr.style.display="block";
+      wr.textContent=badN+" oda birbirinin üstüne biniyor. Metrekare toplamı yanlış çıkar, çakışan odaları ayır.";}
+    else wr.style.display="none";
   }
-  $('durum').textContent = cikti.length + ' fotoğraf indirildi.';
-  $('bitti').classList.remove('gizli');
-  b.disabled = false;
-});
+  document.getElementById("grand").textContent=
+    floors.reduce(function(a,f){return a+netOf(f.rooms);},0).toFixed(1)+" m²";
+
+  var fl=document.getElementById("flist");fl.innerHTML="";
+  if(!I().length)fl.innerHTML='<li class="empty">Bu katta henüz eşya yok.</li>';
+  I().forEach(function(it,i){
+    var cat=byKey(it.k),li=document.createElement("li");
+    if(selKind==="item"&&sel===i)li.className="on";
+    li.innerHTML='<span class="nm">'+cat.l+'</span>'+(missing[it.k]?'<span class="dm">yer tutucu</span>':'');
+    var b=document.createElement("button");b.textContent="×";
+    b.setAttribute("aria-label",cat.l+" eşyasını sil");
+    b.onclick=function(ev){ev.stopPropagation();pushUndo();I().splice(i,1);sel=null;selKind=null;
+      renderLists();build3d();draw2d();};
+    li.appendChild(b);li.onclick=function(){sel=i;selKind="item";renderLists();draw2d();};
+    fl.appendChild(li);
+  });
+}
+
+/* ---------- kontroller ---------- */
+function setMode(m){
+  var o=document.getElementById("okMsg"); if(o)o.style.display="none";
+  mode=m;sel=null;selKind=null;placeArmed=false;armUI();
+  [["draw","mDraw","paneDraw"],["edit","mEdit","paneEdit"],["furn","mFurn","paneFurn"]]
+   .forEach(function(x){document.getElementById(x[1]).setAttribute("aria-pressed",String(m===x[0]));
+     document.getElementById(x[2]).hidden=(m!==x[0]);});
+  if(m!=="draw")draft=[];
+  err("");renderLists();draw2d();
+}
+document.getElementById("mDraw").onclick=function(){setMode("draw");};
+document.getElementById("mEdit").onclick=function(){setMode("edit");};
+document.getElementById("mFurn").onclick=function(){setMode("furn");};
+
+document.getElementById("renFloor").onclick=function(){
+  var v2=prompt("Kat adı:",floors[fi].n);
+  if(v2&&v2.trim()){pushUndo();floors[fi].n=v2.trim();
+    err("");renderTabs();renderLists();build3d();}
+};
+document.getElementById("addFloor").onclick=function(){
+  pushUndo();
+  floors.push({n:floors.length+". kat",rooms:[],items:[]});
+  fi=floors.length-1;sel=null;selKind=null;draft=[];err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+document.getElementById("delFloor").onclick=function(){
+  if(floors.length<2){err("Tek kat silinemez.");return;}
+  var f0=floors[fi];
+  if(f0.rooms.length||f0.items.length){
+    if(!confirm('"'+f0.n+'" katı, içindeki '+f0.rooms.length+' oda ve '+
+      f0.items.length+' eşyayla birlikte silinecek. Emin misin?'))return;
+  }
+  pushUndo();
+  floors.splice(fi,1);fi=Math.max(0,fi-1);sel=null;selKind=null;draft=[];err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+document.getElementById("finishBtn").onclick=function(){
+  var n=document.getElementById("rname").value.trim();
+  if(draft.length<3){err("En az üç köşe koy.");return;}
+  if(!n){err("Oda adını yaz.");return;}
+  pushUndo();
+  R().push({n:n,t:curType,p:draft.slice()});
+  draft=[];document.getElementById("rname").value="";err("");
+  renderLists();build3d();fit2d();
+};
+document.getElementById("undoBtn").onclick=function(){draft.pop();err("");fit2d();};
+function numv(id){return parseFloat((document.getElementById(id).value||"").replace(",","."));}
+function renderTypes(){
+  var g=document.getElementById("typeGrid"),su=document.getElementById("typeSum");
+  if(!g)return;
+  if(su){var ct=TYPES[curType];
+    su.innerHTML='<span class="dot" style="background:'+ct.h+'"></span>'+
+      '<span class="cur">'+ct.l+'</span><span class="arw">▾</span>';}
+  g.innerHTML="";
+  TYPE_ORDER.forEach(function(k){
+    var t=TYPES[k]; if(!t)return;
+    var b=document.createElement("button");
+    b.type="button"; b.setAttribute("aria-pressed",String(k===curType));
+    b.innerHTML='<span class="dot" style="background:'+t.h+'"></span><span>'+t.l+'</span>';
+    b.onclick=function(){
+      curType=k; err("");
+      var f=document.getElementById("typeFold");
+      if(f)f.open=false;
+      renderTypes();
+    };
+    g.appendChild(b);
+  });
+}
+document.getElementById("rectBtn").onclick=function(){
+  var n=document.getElementById("rname").value.trim();
+  var w=numv("rw"), d=numv("rd");
+  if(!n){err("Oda adını yaz.");return;}
+  if(!(w>0)||!(d>0)){err("En ve boy sıfırdan büyük olmalı.");return;}
+  var x0=0,y0=0;
+  if(R().length){
+    var mx=-Infinity,my=Infinity;
+    R().forEach(function(rm){rm.p.forEach(function(q){
+      mx=Math.max(mx,q.x); my=Math.min(my,q.y);});});
+    x0=snap(mx+0.6); y0=snap(my);
+  }
+  pushUndo();
+  R().push({n:n,t:curType,
+    p:[{x:x0,y:y0},{x:snap(x0+w),y:y0},{x:snap(x0+w),y:snap(y0+d)},{x:x0,y:snap(y0+d)}]});
+  document.getElementById("rname").value="";
+  document.getElementById("rw").value="";document.getElementById("rd").value="";
+  sel=R().length-1; selKind="room";
+  setMode("edit"); sel=R().length-1; selKind="room";
+  err("");
+  var ok=document.getElementById("okMsg");
+  if(ok){ok.style.display="block";
+    ok.textContent='"'+n+'" eklendi ('+w.toFixed(2)+' × '+d.toFixed(2)+' m). Planda içine basılı tutup sürükleyerek yerine taşı.';}
+  renderLists();build3d();fit2d();
+};
+document.getElementById("rotBtn").onclick=function(){
+  if(selKind!=="item"){err("Önce bir eşya seç.");return;}
+  I()[sel].r+=Math.PI/4;err("");draw2d();build3d();};
+document.getElementById("autoBtn").onclick=function(){
+  if(selKind!=="room"){err("Önce bir oda seç.");return;}
+  autoFurnish(R()[sel]);};
+var MAG=0.35;
+function magnet(poly,skipIdx){
+  var xs=[],ys=[],rs=R();
+  rs.forEach(function(rm,i){ if(i===skipIdx)return;
+    rm.p.forEach(function(q){xs.push(q.x);ys.push(q.y);}); });
+  if(!xs.length)return {x:0,y:0};
+  var b=bboxOf(poly), best={x:0,y:0}, dx=MAG, dy=MAG;
+  [b.x0,b.x1].forEach(function(v){
+    xs.forEach(function(t){var d=t-v;
+      if(Math.abs(d)<Math.abs(dx)){dx=d;best.x=d;}});});
+  [b.y0,b.y1].forEach(function(v){
+    ys.forEach(function(t){var d=t-v;
+      if(Math.abs(d)<Math.abs(dy)){dy=d;best.y=d;}});});
+  if(Math.abs(best.x)>=MAG)best.x=0;
+  if(Math.abs(best.y)>=MAG)best.y=0;
+  return best;
+}
+function roomCenter(poly){
+  var x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  poly.forEach(function(q){x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);
+    x1=Math.max(x1,q.x);y1=Math.max(y1,q.y);});
+  return {x:(x0+x1)/2,y:(y0+y1)/2};
+}
+document.getElementById("rotRoomBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
+  var rm=R()[sel], c=roomCenter(rm.p);
+  rm.p=rm.p.map(function(q){
+    return {x:snap(c.x-(q.y-c.y)), y:snap(c.y+(q.x-c.x))};});
+  err("");renderLists();build3d();fit2d();
+};
+document.getElementById("mirrorBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
+  var rm=R()[sel], c=roomCenter(rm.p);
+  rm.p=rm.p.map(function(q){return {x:snap(2*c.x-q.x), y:q.y};}).reverse();
+  err("");renderLists();build3d();fit2d();
+};
+document.getElementById("retypeBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  pushUndo();
+  R()[sel].t=curType;
+  err('Oda tipi "'+TYPES[curType].l+'" olarak değiştirildi.');
+  renderLists();build3d();draw2d();
+};
+var NOTCH=[["sol-ust","Sol üst"],["sag-ust","Sağ üst"],["sag-alt","Sağ alt"],["sol-alt","Sol alt"]];
+var curNotch="sag-ust";
+function renderNotch(){
+  var g=document.getElementById("notchGrid"); if(!g)return;
+  g.innerHTML="";
+  NOTCH.forEach(function(x){
+    var b=document.createElement("button");b.type="button";
+    b.setAttribute("aria-pressed",String(x[0]===curNotch));
+    b.textContent=x[1];
+    b.onclick=function(){curNotch=x[0];renderNotch();err("");};
+    g.appendChild(b);
+  });
+}
+document.getElementById("notchBtn").onclick=function(){
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  var rm=R()[sel];
+  if(rm.p.length!==4){err("Bu araç sadece dikdörtgen odalarda çalışır.");return;}
+  var w=parseFloat((document.getElementById("nw").value||"").replace(",","."));
+  var d=parseFloat((document.getElementById("nd").value||"").replace(",","."));
+  var b=bboxOf(rm.p), W2=b.x1-b.x0, D2=b.y1-b.y0;
+  if(!(w>0)||!(d>0)){err("Çıkıntı en ve boyunu yaz.");return;}
+  if(w>=W2||d>=D2){err("Çıkıntı odadan küçük olmalı.");return;}
+  var x0=b.x0,y0=b.y0,x1=b.x1,y1=b.y1,P;
+  if(curNotch==="sag-ust")
+    P=[{x:x0,y:y0},{x:snap(x1-w),y:y0},{x:snap(x1-w),y:snap(y0+d)},{x:x1,y:snap(y0+d)},{x:x1,y:y1},{x:x0,y:y1}];
+  else if(curNotch==="sol-ust")
+    P=[{x:snap(x0+w),y:y0},{x:x1,y:y0},{x:x1,y:y1},{x:x0,y:y1},{x:x0,y:snap(y0+d)},{x:snap(x0+w),y:snap(y0+d)}];
+  else if(curNotch==="sag-alt")
+    P=[{x:x0,y:y0},{x:x1,y:y0},{x:x1,y:snap(y1-d)},{x:snap(x1-w),y:snap(y1-d)},{x:snap(x1-w),y:y1},{x:x0,y:y1}];
+  else
+    P=[{x:x0,y:y0},{x:x1,y:y0},{x:x1,y:y1},{x:snap(x0+w),y:y1},{x:snap(x0+w),y:snap(y1-d)},{x:x0,y:snap(y1-d)}];
+  pushUndo(); rm.p=P; err("");
+  var ok=document.getElementById("okMsg");
+  if(ok){ok.style.display="block";
+    ok.textContent=rm.n+" artık L şeklinde. Yeni alan "+area(P).toFixed(1)+" m². Çıkan boşluğa balkonu ayrı oda olarak ekleyebilirsin.";}
+  renderLists();build3d();fit2d();
+};
+document.getElementById("allChk").onchange=function(){build3d();};
+document.getElementById("topBtn").onclick=function(){
+  topView=!topView;
+  this.setAttribute("aria-pressed",String(topView));
+  this.textContent=topView?"İzometrik görünüm":"Üstten görünüm";
+  size3d();
+};
+document.getElementById("clearBtn").onclick=function(){
+  if(!confirm("Tüm katlar, odalar ve eşyalar silinecek. Emin misin?"))return;
+  pushUndo();
+  floors=[{n:"Zemin kat",rooms:[],items:[]}];fi=0;draft=[];sel=null;selKind=null;err("");
+  renderTabs();renderLists();build3d();fit2d();};
+document.getElementById("rname").addEventListener("input",function(){err("");});
+
+function armUI(){
+  var b=document.getElementById("placeBtn"), h=document.getElementById("furnHint");
+  if(!b)return;
+  b.textContent=placeArmed?"Plana tıkla…":"Plana yerleştir";
+  b.setAttribute("aria-pressed",String(placeArmed));
+  if(h)h.textContent=placeArmed
+    ? "Şimdi plan üzerinde eşyanın geleceği yere tıkla."
+    : "Listeden eşyayı seç, \u0022Plana yerleştir\u0022 de, sonra plana tıkla. Bir tane eklenir.";
+}
+document.getElementById("placeBtn").onclick=function(){
+  placeArmed=!placeArmed; err(""); armUI();
+};
+var fs=document.getElementById("fsel");
+CATALOG.forEach(function(it){var o=document.createElement("option");o.value=it.k;o.textContent=it.l;fs.appendChild(o);});
+fs.onchange=function(){placeArmed=true;err("");armUI();};
+
+document.getElementById("saveBtn").onclick=function(){
+  var blob=new Blob([JSON.stringify({v:4,name:val("projName"),floors:floors},null,1)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=fileBase()+".json";a.click();};
+document.getElementById("loadBtn").onclick=function(){document.getElementById("fileIn").click();};
+document.getElementById("fileIn").onchange=function(e){
+  var f=e.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var d=JSON.parse(rd.result);
+      if(!d.floors||!d.floors.length)throw 0;
+      floors=d.floors;fi=0;draft=[];sel=null;selKind=null;err("");
+      document.getElementById("projName").value=d.name||"";
+      renderTabs();renderLists();build3d();fit2d();
+    }catch(x){err("Dosya okunamadı. Bu araçtan kaydedilmiş bir proje dosyası seç.");}
+  };
+  rd.readAsText(f);e.target.value="";
+};
+
+document.getElementById("sampleBtn").onclick=function(){
+  pushUndo();
+  floors=[
+   {n:"Zemin kat",rooms:[
+     {n:"Salon",t:"salon",p:[{x:0,y:0},{x:4.2,y:0},{x:4.2,y:3.2},{x:5.8,y:3.2},{x:5.8,y:5.4},{x:0,y:5.4}]},
+     {n:"Mutfak",t:"mutfak",p:[{x:0,y:5.4},{x:4.2,y:5.4},{x:4.2,y:8.4},{x:0,y:8.4}]},
+     {n:"Hol",t:"hol",p:[{x:4.2,y:0},{x:5.8,y:0},{x:5.8,y:3.2},{x:4.2,y:3.2}]},
+     {n:"WC",t:"banyo",p:[{x:5.8,y:0},{x:8.0,y:0},{x:8.0,y:2.0},{x:5.8,y:2.0}]},
+     {n:"Yatak odası",t:"yatak",p:[{x:5.8,y:5.4},{x:10.2,y:5.4},{x:10.2,y:8.4},{x:5.8,y:8.4}]},
+     {n:"Bahçe",t:"bahce",p:[{x:-4.5,y:-1.6},{x:0,y:-1.6},{x:0,y:8.4},{x:-4.5,y:8.4}]},
+     {n:"Balkon",t:"balkon",p:[{x:0,y:-1.6},{x:4.2,y:-1.6},{x:4.2,y:0},{x:0,y:0}]}
+   ],items:[
+     {k:"koltuk-takimi",x:1.6,y:2.2,r:0},{k:"sehpa",x:1.6,y:3.6,r:0},
+     {k:"tv-unitesi",x:1.6,y:4.9,r:0},{k:"yemek-masasi",x:2.1,y:6.8,r:0},
+     {k:"mutfak-tezgahi",x:0.6,y:6.0,r:Math.PI/2},
+     {k:"merdiven",x:6.9,y:3.9,r:0},{k:"kapi",x:5.0,y:0,r:0},
+     {k:"pencere",x:2.1,y:-1.6,r:0},{k:"agac",x:-2.4,y:2.0,r:0},{k:"agac",x:-2.4,y:6.0,r:0}
+   ]},
+   {n:"1. kat",rooms:[
+     {n:"Ebeveyn yatak odası",t:"yatak",p:[{x:0,y:0},{x:5.0,y:0},{x:5.0,y:4.4},{x:0,y:4.4}]},
+     {n:"Çocuk odası",t:"yatak",p:[{x:5.8,y:5.4},{x:10.2,y:5.4},{x:10.2,y:8.4},{x:5.8,y:8.4}]},
+     {n:"Banyo",t:"banyo",p:[{x:0,y:5.4},{x:4.2,y:5.4},{x:4.2,y:8.4},{x:0,y:8.4}]},
+     {n:"Hol",t:"hol",p:[{x:5.0,y:0},{x:8.0,y:0},{x:8.0,y:5.4},{x:0,y:5.4},{x:0,y:4.4},{x:5.0,y:4.4}]}
+   ],items:[
+     {k:"cift-yatak",x:2.4,y:1.8,r:0},{k:"gardirop",x:4.5,y:3.2,r:Math.PI/2},
+     {k:"tek-yatak",x:7.4,y:6.6,r:0},{k:"kuvet",x:1.2,y:6.2,r:0},
+     {k:"klozet",x:3.6,y:7.6,r:0},{k:"merdiven",x:6.9,y:3.9,r:0}
+   ]}
+  ];
+  fi=0;draft=[];sel=null;selKind=null;err("");
+  renderTabs();renderLists();build3d();fit2d();
+};
+
+/* ---------- künye ---------- */
+var logoData=null, logoImg=null;
+function val(id){return document.getElementById(id).value.trim();}
+function slug(t){
+  var map={"ç":"c","ğ":"g","ı":"i","İ":"i","ö":"o","ş":"s","ü":"u",
+           "Ç":"c","Ğ":"g","Ö":"o","Ş":"s","Ü":"u"};
+  return (t||"").replace(/[çğıİöşüÇĞÖŞÜ]/g,function(m){return map[m];})
+    .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,50);
+}
+function fileBase(){var s2=slug(val("projName"));return s2?s2+"-3dkatplan":"3dkatplan-plan";}
+function saveBrand(){
+  try{localStorage.setItem("kp_brand",JSON.stringify({
+    n:val("bName"),p:val("bPhone"),o:val("bOffice"),l:logoData,
+    on:document.getElementById("brandOn").checked}));}catch(e){}
+}
+function loadBrand(){
+  try{
+    var d=JSON.parse(localStorage.getItem("kp_brand")||"null"); if(!d)return;
+    document.getElementById("bName").value=d.n||"";
+    document.getElementById("bPhone").value=d.p||"";
+    document.getElementById("bOffice").value=d.o||"";
+    document.getElementById("brandOn").checked=d.on!==false;
+    if(d.l){logoData=d.l;logoImg=new Image();logoImg.src=d.l;}
+  }catch(e){}
+}
+["bName","bPhone","bOffice"].forEach(function(id){
+  document.getElementById(id).addEventListener("input",saveBrand);});
+document.getElementById("brandOn").onchange=saveBrand;
+document.getElementById("bLogo").onchange=function(e){
+  var f=e.target.files[0]; if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){logoData=rd.result;logoImg=new Image();
+    logoImg.onload=function(){err("");};logoImg.src=logoData;saveBrand();};
+  rd.readAsDataURL(f);
+};
+document.getElementById("logoClr").onclick=function(){
+  logoData=null;logoImg=null;document.getElementById("bLogo").value="";saveBrand();err("");};
+
+function renderTo(W,H,fill){
+  fill=fill||1;
+  var oldR=sceneR; sceneR=sceneR*fill;
+  size3d(W,H);
+  if(!topView){
+    var r2=fitDist(sceneR,W/H);
+    cam.position.set(tgt.x+r2*Math.sin(ph)*Math.sin(th),
+                     tgt.y+r2*Math.cos(ph),
+                     tgt.z+r2*Math.sin(ph)*Math.cos(th));
+    cam.lookAt(tgt); ren.render(scene,cam);
+  }else{
+    ortho.position.set(tgt.x,tgt.y+60,tgt.z+0.001);
+    ortho.up.set(0,0,-1);ortho.lookAt(tgt.x,tgt.y,tgt.z);
+    ren.render(scene,ortho);
+  }
+  var d=ren.domElement.toDataURL("image/png");
+  sceneR=oldR; size3d(); return d;
+}
+
+/* İLAN SÜRÜMÜ — yatay, tam ekran, sadece plan */
+function exportIlan(){
+  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  err("");
+  var W=1600,H=1200;
+  labelMode="name"; build3d();
+  var shot=renderTo(W,H,0.84);
+  labelMode="no"; build3d();
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement("canvas");c.width=W;c.height=H;
+    var g=c.getContext("2d");
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);
+    g.drawImage(img,0,0,W,H);
+
+    var t=floors.reduce(function(a2,f){return a2+netOf(f.rooms);},0);
+    var nr=floors.reduce(function(a2,f){return a2+f.rooms.length;},0);
+    var big="Toplam net alan  "+t.toFixed(1)+" m²";
+    var sub=nr+" hacim · "+floors.length+" kat";
+    var note="Ölçüler yaklaşıktır. Resmi metrekare için tapu ve proje esas alınmalıdır.";
+    g.font="600 46px "+FONT_MONO; var bw1=g.measureText(big).width;
+    g.font="400 28px "+FONT_UI;   var bw2=g.measureText(sub).width;
+    g.font="400 22px "+FONT_UI;   var bw3=g.measureText(note).width;
+    var pw=Math.max(bw1,bw2,bw3)+56, phh=170, px=52, py=H-phh-46;
+    g.fillStyle="rgba(250,248,244,0.90)";
+    if(g.roundRect){g.beginPath();g.roundRect(px,py,pw,phh,10);g.fill();
+      g.strokeStyle="rgba(120,116,108,0.28)";g.lineWidth=2;g.stroke();}
+    else g.fillRect(px,py,pw,phh);
+    g.textBaseline="top";
+    g.fillStyle="#1B1A17";g.font="600 46px "+FONT_MONO;g.fillText(big,px+28,py+22);
+    g.fillStyle="#55524B";g.font="400 28px "+FONT_UI;g.fillText(sub,px+28,py+82);
+    g.fillStyle="#8A867E";g.font="400 22px "+FONT_UI;g.fillText(note,px+28,py+126);
+    g.textBaseline="alphabetic";
+
+    var a=document.createElement("a");
+    a.download=fileBase()+"-ilan.png";a.href=c.toDataURL("image/png");a.click();
+  };
+  img.src=shot;
+}
+
+/* PAYLAŞIM SÜRÜMÜ — dikey, künye ve oda listesiyle */
+function exportPaylasim(){
+  if(!floors.some(function(f){return f.rooms.length;})){err("Önce bir oda çiz.");return;}
+  err("");
+  var W=1080,H=1350,IH=800,PAD=70;
+  var shot=renderTo(W,IH);
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+    g.fillStyle="#F4F2ED";g.fillRect(0,0,W,H);g.drawImage(img,0,122,W,IH);
+
+    g.fillStyle="#1B1A17";g.font="600 52px "+FONT_UI;
+    g.fillText(val("projName")||(floors.length>1?"Dubleks kat planı":"Kat planı"),PAD,100);
+    g.textAlign="right";g.fillStyle="#8F8B81";g.font="500 30px "+FONT_UI;
+    g.fillText("3dkatplan.com",W-PAD,100);g.textAlign="left";
+
+    var LY=958,cols=legendData.length>6?2:1, colW=(W-PAD*2)/cols;
+    legendData.forEach(function(d,i){
+      var cxi=i%cols, ryi=Math.floor(i/cols);
+      var x=PAD+cxi*colW, y=LY+ryi*33;
+      g.fillStyle="#1F4E5F";g.font="600 26px "+FONT_UI;g.fillText(String(d.no),x,y);
+      g.fillStyle="#1B1A17";g.font="400 26px "+FONT_UI;g.fillText(d.n,x+34,y);
+      g.fillStyle="#5C5952";g.font="400 24px "+FONT_MONO;
+      g.textAlign="right";g.fillText(d.a.toFixed(1)+" m²",x+colW-40,y);g.textAlign="left";
+    });
+
+    var t=floors.reduce(function(a,f){return a+netOf(f.rooms);},0);
+    var nr=floors.reduce(function(a,f){return a+f.rooms.length;},0);
+    g.strokeStyle="#DCD7CD";g.lineWidth=2;
+    g.beginPath();g.moveTo(PAD,1148);g.lineTo(W-PAD,1148);g.stroke();
+    g.fillStyle="#1B1A17";g.font="500 38px "+FONT_MONO;
+    g.fillText(t.toFixed(1)+" m² net  ·  "+nr+" hacim  ·  "+floors.length+" kat",PAD,1194);
+    g.fillStyle="#8A867E";g.font="400 21px "+FONT_UI;
+    g.fillText("Ölçüler yaklaşıktır. Resmi metrekare için tapu ve proje esas alınmalıdır.",PAD,1222);
+
+    var on=document.getElementById("brandOn").checked;
+    var nm=val("bName"),tel=val("bPhone"),ofs=val("bOffice");
+    if(on){
+      var y=1242;
+      if(nm){g.fillStyle="#1B1A17";g.font="600 36px "+FONT_UI;g.fillText(nm,PAD,y);y+=46;}
+      var l2=[ofs,tel].filter(Boolean).join("  ·  ");
+      if(l2){g.fillStyle="#5C5952";g.font="400 30px "+FONT_UI;g.fillText(l2,PAD,y);}
+      if(logoImg&&logoImg.width){
+        var BW=170,BH=96,bx=W-PAD-BW,by=1180;
+        var sc=Math.min(BW/logoImg.width,BH/logoImg.height);
+        g.drawImage(logoImg,bx+(BW-logoImg.width*sc)/2,by+(BH-logoImg.height*sc)/2,
+                    logoImg.width*sc,logoImg.height*sc);
+      }
+    }
+    g.fillStyle="#8F8B81";g.font="400 24px "+FONT_UI;
+    g.fillText("3dkatplan.com · armagankocabas.com",PAD,1318);
+
+    var a=document.createElement("a");
+    a.download=fileBase()+"-paylasim.png";a.href=c.toDataURL("image/png");a.click();
+  };
+  img.src=shot;
+}
+
+document.getElementById("pngBtn").onclick=exportIlan;
+document.getElementById("pngBrandBtn").onclick=exportPaylasim;
+
+/* ---------- model klasörü ---------- */
+document.getElementById("modelBtn").onclick=function(){document.getElementById("dirIn").click();};
+document.getElementById("dirIn").onchange=function(e){
+  var fl=e.target.files,n=0;
+  for(var i=0;i<fl.length;i++){
+    var nm=fl[i].name; if(!/\.glb$/i.test(nm))continue;
+    localModels[nm.replace(/\.glb$/i,"")]=URL.createObjectURL(fl[i]); n++;
+  }
+  cache={}; missing={};
+  document.getElementById("modelInfo").textContent=
+    n?(n+" model yüklendi."):"Klasörde .glb dosyası bulunamadı.";
+  err(""); renderLists(); build3d();
+};
+
+/* ---------- geri alma ---------- */
+var undoStack=[];
+function pushUndo(){
+  try{ undoStack.push(JSON.stringify(floors));
+       if(undoStack.length>25)undoStack.shift();
+       document.getElementById("undoAllBtn").disabled=false; }catch(e){}
+}
+document.getElementById("undoAllBtn").onclick=function(){
+  if(!undoStack.length){err("Geri alınacak bir şey yok.");return;}
+  floors=JSON.parse(undoStack.pop());
+  if(fi>=floors.length)fi=floors.length-1;
+  sel=null;selKind=null;draft=[];err("");
+  this.disabled=!undoStack.length;
+  renderTabs();renderLists();build3d();fit2d();
+};
+
+
+/* ---------- tanıtım turu ---------- */
+var TOUR=[
+ {s:"#projName",t:"Portföy adı",
+  d:"Buraya dairenin adını yaz. İndireceğin dosyalar bu adı taşır, on portföy sonra karıştırmazsın. Boş bırakabilirsin."},
+ {s:"#typeFold",t:"Oda tipi",
+  d:"Tıklayınca on beş oda tipi açılır. Seçtiğin tip odanın rengini, zemin dokusunu ve otomatik döşemede gelecek eşyaları belirler."},
+ {s:"#rectBtn",t:"Ölçüyle oda ekle",
+  d:"Oda adını, enini ve boyunu yaz, bu düğmeye bas. Oda dikdörtgen olarak eklenir. Çizim yapmana gerek yok."},
+ {s:"#mEdit",t:"Düzenle modu",
+  d:"Eklediğin odayı yerine taşımak için buraya geç. Odanın içine basılı tutup sürükle. Köşedeki noktayı sürüklersen ölçüsü değişir."},
+ {s:"#mFurn",t:"Eşya modu",
+  d:"Mobilya, kapı, pencere ve merdiven ekler. Hızlı yol için odayı seçip \u0022Seçili odayı döşe\u0022 dersen araç eşyaları kendi yerleştirir."},
+ {s:"#addFloor",t:"Dubleks daireler",
+  d:"Kat ekle dersen üst katı açarsın. Üst kattayken alt kat soluk çizgiyle görünür, hizalamayı ona göre yaparsın."},
+ {s:"#topBtn",t:"Görünümü değiştir",
+  d:"Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar."},
+ {s:"#pngBtn",t:"İlan görseli",
+  d:"Yatay, tam ekran, sadece plan. Marka, telefon ve site adresi yoktur — ilan portalları bunları istemiyor. Sahibinden ve Hepsiemlak için bunu kullan."},
+ {s:"#pngBrandBtn",t:"Paylaşım görseli",
+  d:"Dikey format, oda listesi ve künyenle birlikte. WhatsApp, Instagram ve basılı broşür için."},
+ {s:"#saveBtn",t:"Projeyi kaydet",
+  d:"Çalışmanı .json olarak indirir. Sonra \u0022Proje aç\u0022 ile geri yükleyip devam edersin. Tarayıcı kapanınca çalışman kaybolur, tek yedek bu."}
+];
+var tourI=0,tourHl=null,tourBox=null;
+function tourEnd(){
+  if(tourHl){tourHl.remove();tourHl=null;}
+  if(tourBox){tourBox.remove();tourBox=null;}
+  window.removeEventListener("resize",tourShow);
+  try{localStorage.setItem("kp_tour","1");}catch(e){}
+}
+function tourShow(){
+  var st=TOUR[tourI], el=document.querySelector(st.s);
+  if(!el){tourI++; if(tourI<TOUR.length)return tourShow(); return tourEnd();}
+  el.scrollIntoView({block:"center",behavior:"smooth"});
+  setTimeout(function(){
+    var r=el.getBoundingClientRect(), sy=window.scrollY, sx=window.scrollX, pad=6;
+    tourHl.style.top=(r.top+sy-pad)+"px"; tourHl.style.left=(r.left+sx-pad)+"px";
+    tourHl.style.width=(r.width+pad*2)+"px"; tourHl.style.height=(r.height+pad*2)+"px";
+    tourBox.innerHTML='<h4>'+st.t+'</h4><p>'+st.d+'</p>'+
+      '<div class="row"><span class="step">'+(tourI+1)+' / '+TOUR.length+'</span>'+
+      '<button class="ghost" id="tSkip">Kapat</button>'+
+      (tourI>0?'<button class="ghost" id="tPrev">Geri</button>':'')+
+      '<button id="tNext">'+(tourI===TOUR.length-1?"Bitir":"İleri")+'</button></div>';
+    var bw=tourBox.offsetWidth, bh=tourBox.offsetHeight;
+    var top=r.bottom+sy+14, left=r.left+sx;
+    if(top+bh>sy+window.innerHeight-10) top=Math.max(sy+10,r.top+sy-bh-14);
+    if(left+bw>sx+window.innerWidth-10) left=Math.max(sx+10,sx+window.innerWidth-bw-10);
+    tourBox.style.top=top+"px"; tourBox.style.left=left+"px";
+    document.getElementById("tSkip").onclick=tourEnd;
+    document.getElementById("tNext").onclick=function(){
+      tourI++; if(tourI>=TOUR.length)return tourEnd(); tourShow();};
+    var pv=document.getElementById("tPrev");
+    if(pv)pv.onclick=function(){tourI--;tourShow();};
+  },320);
+}
+function tourStart(){
+  tourEnd(); tourI=0;
+  tourHl=document.createElement("div"); tourHl.id="tourHl";
+  tourBox=document.createElement("div"); tourBox.id="tourBox";
+  tourBox.setAttribute("role","dialog");
+  document.body.appendChild(tourHl); document.body.appendChild(tourBox);
+  window.addEventListener("resize",tourShow);
+  tourShow();
+}
+document.getElementById("tourStart").onclick=tourStart;
+try{ if(!localStorage.getItem("kp_tour")) setTimeout(tourStart,900); }catch(e){}
+
+window.addEventListener("resize",function(){fit2d();size3d();});
+loadBrand();
+
+renderTypes();init3d();renderTabs();renderLists();
+function reflow(){fit2d();size3d();}
+if(document.fonts&&document.fonts.load){
+  Promise.all([document.fonts.load("600 60px 'IBM Plex Sans'"),
+               document.fonts.load("500 40px 'IBM Plex Mono'"),
+               document.fonts.load("400 32px 'IBM Plex Sans'")])
+    .then(function(){build3d();reflow();}).catch(function(){});
+}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reflow).catch(function(){});
+window.addEventListener("load",reflow);
+requestAnimationFrame(function(){requestAnimationFrame(reflow);});
+setTimeout(reflow,400);
+setTimeout(reflow,1200);document.getElementById("sampleBtn").click();
 </script>
-</body>
-</html>
