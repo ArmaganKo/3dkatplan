@@ -1,1393 +1,837 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="color-scheme" content="only light" />
-<meta name="google-site-verification" content="6Avpd7JI4WCGRJ4Oog9OIHw2NKKH-edtHVHRvax0Mi4" />
-<meta name="description" content="Parselini 3 boyutlu görüntüle, drone turu videosunu otomatik oluştur ve paylaş. Arsa ve arazi satışını hızlandır." />
-<link rel="icon" type="image/png" href="logo-192.png" />
-<link rel="apple-touch-icon" href="logo-192.png" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Parsel Tur" />
-<meta property="og:title" content="Parsel Tur — Arsanı 3D drone videosuna çevir" />
-<meta property="og:description" content="Parselini 3 boyutlu görüntüle, drone turu videosunu otomatik oluştur ve paylaş." />
-<meta property="og:url" content="https://www.parseltur.com/" />
-<meta property="og:image" content="https://www.parseltur.com/kapak.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta name="twitter:card" content="summary_large_image" />
-<title>Parsel Tur · Arsanı 3D Drone Videosuna Çevir</title>
-
-<!-- Bağlantı ön-ısıtması (daha hızlı açılış) -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-<link rel="preconnect" href="https://server.arcgisonline.com" crossorigin />
-<link rel="preconnect" href="https://elevation-tiles-prod.s3.amazonaws.com" crossorigin />
-<link rel="dns-prefetch" href="https://server.arcgisonline.com" />
-
-<!-- MapLibre & Turf -->
-<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/turf.min.js"></script>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İlan Fotoğrafı Hazırla — boyut küçültme, plaka kapatma, toplu kırpma</title>
+<meta name="description" content="Sahibinden ve diğer portallar için ilan fotoğrafı boyutu küçültme, plaka ve yüz sansürleme, fotoğraftan konum silme, toplu 4:3 kırpma. Ücretsiz ve üyeliksiz.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#2C6355">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ilanfotosu.com/">
+<meta property="og:title" content="İlan Fotosu — ilan fotoğrafı hazırlama aracı">
+<meta property="og:description" content="İlan fotoğraflarını portal ölçüsüne kırpın, plaka ve yüzleri kapatın, dosya boyutunu küçültün, konum bilgisini silin. Ücretsiz ve üyeliksiz.">
+<meta property="og:image" content="https://ilanfotosu.com/logo.png">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-  :root{
-    --bg:#eaeef3; --panel:#ffffff; --line:#e3e8ef;
-    --gold:#0d9488; --gold-soft:#0f766e; --txt:#1f2a37; --muted:#6b7785;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;color-scheme:only light}
-  
-  /* İlk açılışta harita hafif flulu başlayacak */
-  #map{position:absolute;inset:0; filter: blur(10px); transform: scale(1.05); transition: filter 1.2s ease, transform 1.2s ease;}
-  #map.ready{filter: blur(0); transform: scale(1);}
+:root{
+  --yesil:#3B8574; --yesil-koyu:#2C6355; --yesil-acik:#E8F1EE;
+  --gri:#F4F5F5; --cizgi:#DFE2E1; --metin:#22302C; --soluk:#6B7A75;
+  --uyari-bg:#FFF6E4; --uyari-cizgi:#F0DDB4; --uyari-metin:#8A5A00;
+}
+*{box-sizing:border-box}
+body{margin:0;padding-top:30px;background:#fff;color:var(--metin);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased}
 
-  /* Açılış animasyonu (GSAP yerine saf CSS) */
-  #toggle{transition:left .25s ease, opacity .45s ease}
-  .badge{transition:opacity .45s ease, transform .45s ease}
-  #card{transition:opacity .45s ease, transform .45s ease}
-  #cta{opacity:0; transform:translateX(-50%) translateY(20px); transition:opacity .45s ease, transform .45s ease}
-  body.loaded #panel{opacity:1; transform:translateX(0)}
-  body.loaded #toggle{opacity:1}
-  body.loaded .badge{opacity:1; transform:translateX(-50%)}
-  body.loaded #card{opacity:1; transform:translateY(0)}
-  body.loaded #cta{opacity:1; transform:translateX(-50%) translateY(0)}
+#serit-ag{position:fixed;top:0;left:0;right:0;height:30px;background:var(--yesil-koyu);
+  display:flex;align-items:center;gap:14px;padding:0 12px;overflow-x:auto;z-index:50;
+  font-size:12.5px;white-space:nowrap;-webkit-overflow-scrolling:touch}
+#serit-ag span{color:#BFD8D0;flex:none}
+#serit-ag a{color:#fff;text-decoration:none;flex:none;opacity:.85}
+#serit-ag a:hover{opacity:1;text-decoration:underline}
+#serit-ag a.burada{opacity:1;font-weight:700;text-decoration:none;cursor:default}
 
-  /* Panel Animasyon Başlangıç Değerleri */
-  #panel{
-    position:absolute;top:0;left:0;height:100%;width:330px;z-index:5;
-    background:linear-gradient(180deg,#ffffff 0%,#f5f8fb 100%);
-    border-right:1px solid var(--line);display:flex;flex-direction:column;
-    transition:transform .25s ease, opacity .4s ease;box-shadow:8px 0 30px rgba(0,0,0,.4);
-    opacity: 0; transform: translateX(-40px);
-  }
-  #panel.closed{transform:translateX(-330px) !important}
-  .brand{padding:18px 20px 14px;border-bottom:1px solid var(--line)}
-  .brand .name{font-size:17px;font-weight:700;letter-spacing:.3px}
-  .brand .name b{color:var(--gold)}
-  .brand .sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase}
-  .scroll{overflow-y:auto;padding:16px 20px 28px;flex:1}
-  .scroll::-webkit-scrollbar{width:7px}
-  .scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.kap{max-width:720px;margin:0 auto;padding:20px 16px 130px}
 
-  .grp{margin-bottom:20px}
-  .grp h3{font-size:11px;color:var(--gold-soft);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+header{padding:8px 0 20px;border-bottom:1px solid var(--cizgi);margin-bottom:22px}
+.ev{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{display:block;width:62px;height:auto;flex:none}
+h1.marka{font-size:21px;font-weight:800;letter-spacing:-.4px;color:var(--yesil-koyu);margin:0}
+.slogan{margin-top:8px}
+@media(max-width:520px){.logo{width:54px}h1.marka{font-size:19px}}
+.slogan{font-size:15px;color:var(--soluk);margin-top:4px}
 
-  .btn{display:block;width:100%;padding:11px 14px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;text-align:center}
-  .btn.primary{background:linear-gradient(135deg,var(--gold),#0f766e);color:#ffffff}
-  .btn.primary:hover{filter:brightness(1.08)}
-  .btn.ghost{background:#f1f5f9;color:var(--txt);border:1px solid var(--line)}
-  .btn.ghost:hover{background:#e6edf4}
-  .btn+.btn{margin-top:8px}
-  .row{display:flex;gap:8px}
-  .row .btn{flex:1}
+.adim{margin-bottom:22px}
+.adim-bas{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.adim-no{width:26px;height:26px;border-radius:50%;background:var(--yesil);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none}
+.adim-bas h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.kart{background:var(--gri);border:1px solid var(--cizgi);border-radius:14px;padding:16px}
 
-  label.fld{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:#e2e8f0;outline:none;cursor:pointer}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
-  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
-  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:#e2e8f0}
-  input[type=color]{width:42px;height:30px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;padding:2px}
-  .inline{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .inline span{font-size:12px;color:var(--muted)}
-  textarea{width:100%;height:90px;background:#f7f9fc;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:12px;padding:9px;resize:vertical;font-family:monospace}
-  .hint{font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px}
-  .hint a{color:var(--gold-soft)}
-  .switch{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--txt);cursor:pointer;margin:8px 0}
-  .switch input{accent-color:var(--gold);width:16px;height:16px}
+#birak{border:2px dashed var(--cizgi);border-radius:14px;padding:30px 18px;text-align:center;
+  background:var(--gri);cursor:pointer}
+#birak.uzerinde{border-color:var(--yesil);background:var(--yesil-acik)}
+#birak p{margin:0;font-size:15px;color:var(--soluk)}
+#birak b{display:block;color:var(--yesil-koyu);font-size:16px;margin-bottom:4px}
 
-  /* Toggle button */
-  #toggle{position:absolute;top:14px;left:344px;z-index:6;background:var(--panel);border:1px solid var(--line);color:var(--gold);width:40px;height:40px;border-radius:9px;cursor:pointer;font-size:18px;transition:left .25s ease; opacity: 0;}
-  #panel.closed ~ #toggle{left:14px}
+label{display:block;font-size:13px;color:var(--soluk);margin-bottom:5px}
+select,input[type=text],input[type=number]{width:100%;padding:11px 12px;border:1px solid var(--cizgi);
+  border-radius:10px;background:#fff;font-size:16px;color:var(--metin);font-family:inherit}
+select:focus,input:focus{outline:2px solid var(--yesil);outline-offset:1px;border-color:var(--yesil)}
+.ikili{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.ikili:last-child{margin-bottom:0}
+@media(max-width:520px){.ikili{grid-template-columns:1fr}}
 
-  /* Marketing overlay on map */
-  #card{
-    position:absolute;right:16px;bottom:32px;z-index:4;width:248px;
-    background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
-    border:1px solid rgba(13,148,136,.35);border-radius:14px;padding:16px 18px;
-    box-shadow:0 10px 40px rgba(0,0,0,.5);
-    opacity: 0; transform: translateY(20px);
-  }
-  #card.hide{display:none}
-  #card .tag{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
-  #card .ada{font-size:20px;font-weight:700;margin:5px 0 2px}
-  #card .area{font-size:13px;color:var(--gold-soft);font-weight:600}
-  #card hr{border:none;border-top:1px solid var(--line);margin:11px 0}
-  #card .who{font-size:13.5px;font-weight:700}
-  #card .role{font-size:11px;color:var(--muted);margin-top:2px}
-  #card .web{font-size:11px;color:var(--gold-soft);margin-top:6px}
+.serit{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.kucuk{position:relative;flex:none;width:78px;height:78px;border-radius:10px;overflow:hidden;
+  border:2px solid transparent;cursor:grab;background:var(--gri);touch-action:pan-x}
+.kucuk.secili{border-color:var(--yesil)}
+.kucuk.tasiniyor{opacity:.55;transform:scale(.94)}
+.kucuk img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.kucuk .no{position:absolute;left:3px;top:3px;background:rgba(34,48,44,.78);color:#fff;
+  font-size:11px;font-weight:700;border-radius:5px;padding:1px 5px}
+.kucuk .isaret{position:absolute;right:3px;top:3px;background:var(--yesil);color:#fff;
+  font-size:11px;border-radius:5px;padding:1px 4px}
 
-  .badge{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:4;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:30px;padding:7px 16px;font-size:12px;color:var(--muted); opacity: 0; transform: translate(-50%, -10px);}
-  .badge b{color:var(--gold-soft)}
+#tuval{width:100%;display:block;border-radius:12px;background:var(--gri);touch-action:none}
+.arac{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.arac button{flex:1 1 auto;min-width:104px}
 
-  @media(max-width:680px){
-    #panel{width:86vw}#panel.closed{transform:translateX(-90vw) !important}
-    #toggle{left:calc(86vw + 14px)}#panel.closed ~ #toggle{left:14px}
-    #card{display:none}.badge{display:none}
-  }
+button{padding:12px 14px;border-radius:11px;font-size:14.5px;font-weight:600;
+  font-family:inherit;cursor:pointer;background:#fff;color:var(--yesil-koyu);
+  border:1.5px solid var(--yesil)}
+button:hover{background:var(--yesil-acik)}
+button.aktif{background:var(--yesil);color:#fff}
+button.ana{background:var(--yesil);color:#fff;border-color:var(--yesil);width:100%;
+  padding:16px;font-size:16px;font-weight:700;margin-bottom:10px}
+button.ana:hover{background:var(--yesil-koyu)}
+button.sade{border-color:var(--cizgi);color:var(--soluk)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:2px solid var(--yesil-koyu);outline-offset:2px}
+
+.kaydir{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--soluk)}
+.kaydir span{flex:none;width:96px}
+input[type=range]{flex:1;accent-color:var(--yesil)}
+
+.ipuc{font-size:13px;color:var(--soluk);margin-top:8px}
+.uyari{background:var(--uyari-bg);border:1px solid var(--uyari-cizgi);border-left:4px solid var(--uyari-metin);
+  border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--uyari-metin);margin-top:10px}
+
+#durum{font-size:13.5px;color:var(--soluk);margin-top:10px;text-align:center;min-height:20px}
+#bitti{margin-top:14px;background:var(--yesil-acik);border:1px solid var(--cizgi);
+  border-radius:14px;padding:16px;font-size:14.5px}
+#bitti b{display:block;font-size:16px;color:var(--yesil-koyu);margin-bottom:6px}
+#bitti a{color:var(--yesil-koyu);font-weight:700}
+
+details{background:var(--gri);border:1px solid var(--cizgi);border-radius:14px;padding:14px 16px;margin-top:10px}
+summary{cursor:pointer;font-weight:600;font-size:15px;color:var(--yesil-koyu)}
+details p,details li{font-size:14px;color:var(--soluk)}
+details ol,details ul{padding-left:18px;margin:10px 0 0}
+h2.sss{font-size:17px;margin:26px 0 10px;letter-spacing:-.2px}
+
+footer{margin-top:32px;padding-top:18px;border-top:1px solid var(--cizgi);font-size:13px;color:var(--soluk)}
+footer a{color:var(--yesil-koyu)}
+.telif{margin-top:16px;padding-top:14px;border-top:1px solid var(--cizgi);
+  font-size:12.5px;line-height:1.7}
+.telif a.site{font-weight:700;font-size:14px}
+.gizli{display:none !important}
 </style>
 </head>
 <body>
 
-<div id="map"></div>
+<nav id="serit-ag">
+  <span>Ücretsiz emlak araçları:</span>
+  <a href="https://parseltur.com">Parsel videosu</a>
+  <a href="https://gunesalirmi.com">Güneş alır mı?</a>
+  <a href="https://3dkatplan.com">3D kat planı</a>
+  <a href="/" class="burada">İlan fotoğrafı</a>
+  <a href="/pdf/">PDF küçültme</a>
+</nav>
 
-<div class="badge">🚁 <b>Parsel Tur</b> · uydu + 3D arazi modeli</div>
-<div id="recBadge">● Kaydediliyor…</div>
-<div id="ovPreview" class="bl"><img id="ovPreviewImg" alt="" /><div class="txt"><span class="nm" id="ovPreviewName"></span><span class="ph" id="ovPreviewPhone"></span></div></div>
+<div class="kap">
 
-<aside id="panel">
-  <div class="brand">
-    <a class="brand-row" href="/" title="Ana sayfa" style="text-decoration:none;cursor:pointer">
-      <img class="brand-av" src="logo.png" alt="Parsel Tur logosu" />
+<header>
+  <a href="/" class="ev" aria-label="İlan Fotosu ana sayfa">
+    <img src="logo.png" class="logo" width="620" height="535"
+         alt="İlan Fotosu — emlak ilanı fotoğrafı hazırlama aracı">
+    <h1 class="marka">İlan fotoğrafı hazırla</h1>
+  </a>
+  <div class="slogan">Boyutu küçült, plakayı ve yüzü kapat, konum bilgisini sil, portal ölçüsüne kırp</div>
+</header>
+
+<div class="adim">
+  <div class="adim-bas"><div class="adim-no">1</div><h2>Fotoğrafları ekleyin</h2></div>
+  <div id="birak">
+    <p><b>Fotoğrafları buraya bırakın</b>ya da dokunup galeriden seçin. Aynı anda birden fazla seçebilirsiniz. iPhone'un HEIC dosyaları da açılır.</p>
+  </div>
+  <input type="file" id="dosya" accept="image/*,.heic,.heif" multiple class="gizli">
+  <div class="serit" id="serit"></div>
+</div>
+
+<div class="adim" id="a-ayar">
+  <div class="adim-bas"><div class="adim-no">2</div><h2>Çıktı ayarları</h2></div>
+  <div class="kart">
+    <div class="ikili">
       <div>
-        <div class="name">Parsel <b>Tur</b></div>
-        <div class="sub">Arsanı 3D drone videosuna çevir</div>
+        <label for="oran">En-boy oranı</label>
+        <select id="oran">
+          <option value="1.3333">4:3 — önerilen</option>
+          <option value="1.7778">16:9 — geniş</option>
+          <option value="1.5">3:2</option>
+          <option value="1">1:1 — kare</option>
+          <option value="0">Orijinal oran</option>
+        </select>
       </div>
-    </a>
-  </div>
-  <div class="scroll">
-
-    <button class="btn ghost" id="helpBtn" style="margin-bottom:16px">❓ Nasıl kullanılır?</button>
-
-    <div class="grp">
-      <h3>1 · Parsel Yükle</h3>
-      <button class="btn primary" id="loadFile">📁 GeoJSON Dosyası Seç</button>
-      <input type="file" id="fileInput" accept=".geojson,.json" multiple hidden />
-      <button class="btn ghost" id="demoBtn">▶ Örnek Parseli Göster</button>
-      <p class="hint">
-        TKGM <a href="https://parselsorgu.tkgm.gov.tr/" target="_blank" rel="noopener">Parsel Sorgu</a>'da
-        parseli bul → <b>GeoJSON</b> seç → indir → buraya yükle.<br>
-        <span style="opacity:.85">Yüklediğiniz dosya yalnızca tarayıcınızda işlenir, sunucuya gönderilmez. Verinin kullanımından kullanıcı sorumludur.</span>
-      </p>
+      <div>
+        <label for="kenar">Uzun kenar (piksel)</label>
+        <select id="kenar">
+          <option value="1600">1600 — önerilen</option>
+          <option value="1200">1200</option>
+          <option value="1920">1920</option>
+          <option value="800">800</option>
+        </select>
+      </div>
     </div>
-
-    <div class="grp">
-      <h3>2 · Görünüm & Video Ayarları</h3>
-      <label class="fld">Arazi abartısı (yükseklik) · <span id="exagVal">1.5×</span></label>
-      <input type="range" id="exag" min="0" max="3" step="0.1" value="1.5" />
-      <label class="fld">Harita kaynağı</label>
-      <select id="imgSrc">
-        <option value="esri" selected>Uydu — standart (varsayılan)</option>
-        <option value="clarity">Uydu HD — daha net, daha çok yakınlaşır</option>
-        <option value="topo">Topoğrafik (yollar + isimler)</option>
-      </select>
-      <label class="switch" style="margin-top:6px"><input type="checkbox" id="terrainChk" checked /> <span>⛰ 3D arazi (yakın planda otomatik kapanır)</span></label>
-      <label class="fld">Eğim (pitch) · <span id="pitchVal">65°</span></label>
-      <input type="range" id="pitch" min="0" max="85" step="1" value="65" />
-      <button class="btn ghost" id="fitBtn" style="margin-top:14px">🎯 Parsele Odaklan</button>
-      
-      <label class="fld">Kamera Hareket Tarzı</label>
-      <select id="tourType">
-        <option value="classic" selected>Klasik Dönüş (Sabit)</option>
-        <option value="helix">Helis (Dönerek Uzaklaş/Yüksel)</option>
-        <option value="dive">Dalış (Dönerek Yakınlaş)</option>
-      </select>
-
-      <label class="fld">Video süresi</label>
-      <select id="recLen">
-        <option value="15">15 saniye</option>
-        <option value="30">30 saniye</option>
-        <option value="57" selected>57 saniye (Sahibinden)</option>
-        <option value="90">90 saniye</option>
-      </select>
-
-      <label class="fld">Video formatı (en-boy)</label>
-      <select id="ratioSel">
-        <option value="16:9" selected>Yatay 16:9 (YouTube / Sahibinden)</option>
-        <option value="9:16">Dikey 9:16 (Reels / Story)</option>
-        <option value="1:1">Kare 1:1 (Gönderi)</option>
-      </select>
-      
-      <button class="btn ghost" id="orbitBtn" style="margin-top:8px">🚁 Drone Turu Başlat</button>
-      <button class="btn primary" id="recordBtn" style="margin-top:8px">🎬 Video Kaydet (otomatik tur)</button>
+    <div class="ikili">
+      <div>
+        <label for="hedef">Hedef dosya boyutu (KB)</label>
+        <input type="number" id="hedef" value="500" min="80" max="4000" step="50">
+      </div>
+      <div>
+        <label for="onek">Dosya adı öneki</label>
+        <input type="text" id="onek" value="ilan" placeholder="ilan">
+      </div>
     </div>
-
-    <div class="grp">
-      <h3>Videoya Danışman Bilgisi</h3>
-      <label class="fld">Danışman adı (videoya yazılır)</label>
-      <input type="text" id="ovName" placeholder="Örn. Ad Soyad" value="" />
-      <label class="fld">Telefon / not (isteğe bağlı)</label>
-      <input type="text" id="ovPhone" placeholder="0532 000 00 00" />
-      <label class="fld">Köşe</label>
-      <select id="ovCorner">
-        <option value="bl" selected>Sol alt</option>
-        <option value="br">Sağ alt</option>
-      </select>
-      <div class="inline" style="margin-top:10px"><span>Kart arka planı</span><input type="color" id="ovBg" value="#0d9488" /></div>
-      <label class="fld">Danışman fotoğrafı (isteğe bağlı)</label>
-      <button class="btn ghost" id="ovPhotoBtn">📷 Fotoğraf Seç</button>
-      <input type="file" id="ovPhotoInput" accept="image/*" hidden />
-      <label class="switch" style="margin-top:10px"><input type="checkbox" id="ovToggle" checked /> Videoda göster</label>
-      <p class="hint">Yazdığın isim videonun üstüne kalıcı olarak gömülür — indirdikten sonra düzenleme gerekmez.</p>
-    </div>
-
-    <div class="grp">
-      <h3>3 · Parsel Stili</h3>
-      <div class="inline"><span>Dolgu rengi</span><input type="color" id="fillColor" value="#14b8a6" /></div>
-      <label class="fld">Dolgu opaklığı · <span id="opVal">0.35</span></label>
-      <input type="range" id="opacity" min="0" max="1" step="0.05" value="0.35" />
-      <div class="inline" style="margin-top:6px"><span>Çizgi rengi</span><input type="color" id="lineColor" value="#ff4d6d" /></div>
-      <label class="fld">Çizgi kalınlığı · <span id="lwVal">3px</span></label>
-      <input type="range" id="lineWidth" min="1" max="8" step="0.5" value="3" />
-      <label class="switch" style="margin-top:10px"><input type="checkbox" id="traceChk" checked /> <span>✨ Lazer sınır çizimi (tur boyunca sınırı çizerek tamamlar)</span></label>
-    </div>
-
-    <div class="grp">
-      <h3>3b · Hisse / Bölüm Vurgulama</h3>
-      <p class="hint" style="margin-top:0">Parselin içinde bir bölümü (örn. hisseye karşılık gelen fiilî kısmı) elle çizip farklı renkte vurgula. Haritaya <b>tıklayarak köşe ekle</b>, <b>çift tıkla bitir</b>.</p>
-      <div class="inline"><span>Vurgu rengi</span><input type="color" id="hlColor" value="#f59e0b" /></div>
-      <button class="btn ghost" id="hlDraw" style="margin-top:8px">✏️ Bölüm Çiz</button>
-      <button class="btn ghost" id="hlClear" style="margin-top:8px">🗑 Vurguyu Temizle</button>
-      <p class="hint" id="hlInfo" style="display:none"></p>
-      <p class="hint" style="opacity:.8">Not: Hisse konumu temsilîdir; hisseli mülkiyette pay, resmî olarak parselin tamamına aittir. Bu vurgu resmî sınır değildir.</p>
-    </div>
-
-    <div class="grp">
-      <h3>3c · Yakındaki Ana Yollar</h3>
-      <p class="hint" style="margin-top:0">Parselin çevresindeki ana yolları saydam ışıklı bant olarak göster. Yollar da video boyunca ilerleyerek çizilir.</p>
-      <label class="switch"><input type="checkbox" id="roadChk" /> <span>🛣 Ana yolları göster</span></label>
-      <label class="fld">Arama yarıçapı</label>
-      <select id="roadRadius">
-        <option value="600">600 m (yakın çevre)</option>
-        <option value="1200" selected>1,2 km (önerilen)</option>
-        <option value="2500">2,5 km (geniş)</option>
-      </select>
-      <div class="inline" style="margin-top:8px"><span>Yol rengi</span><input type="color" id="roadColor" value="#38bdf8" /></div>
-      <button class="btn ghost" id="roadLoad" style="margin-top:8px">🔄 Yolları Getir / Yenile</button>
-      <p class="hint" id="roadInfo" style="display:none"></p>
-      <p class="hint" style="opacity:.8">Yol verisi © OpenStreetMap katkıcıları (ODbL lisansı). Konum ve güzergâhlar temsilîdir; resmî yol projesi değildir.</p>
-    </div>
-
-    <div class="grp">
-      <h3>4 · Pazarlama Kartı</h3>
-      <label class="switch"><input type="checkbox" id="cardToggle" checked /> Kartı göster</label>
-      <label class="fld">Ada / Parsel etiketi</label>
-      <textarea id="adaText" style="height:38px">Örnek Parsel</textarea>
-      <p class="hint">Kart, ekran görüntüsü veya ekran kaydı (drone turu) alırken sunum için kullanılır.</p>
-    </div>
-
-    <div class="grp">
-      <h3>Veya GeoJSON yapıştır</h3>
-      <textarea id="pasteBox" placeholder='{"type":"Feature", ...}'></textarea>
-      <button class="btn ghost" id="pasteBtn" style="margin-top:8px">Yapıştırılanı Yükle</button>
-    </div>
-
-    <p class="copyr">Parsel Tur bağımsız bir araçtır; TKGM, Çevre ve Şehircilik Bakanlığı veya herhangi bir resmi kurumla bağlantılı/yetkili değildir. Yüklenen veriler kullanıcıya aittir ve kullanımından kullanıcı sorumludur. Buradaki 3 boyutlu görüntüler ve videolar yalnızca tanıtım ve bilgilendirme amaçlıdır; resmi ölçü, sınır, alan veya belge niteliği taşımaz. Resmi ve bağlayıcı bilgi için TKGM esastır.<br><a href="gizlilik.html" style="color:var(--gold-soft)">Gizlilik &amp; KVKK</a> · Parsel Tur · parseltur.com<br>Diğer ücretsiz araçlar: <a href="https://ilanfotosu.com" target="_blank" rel="noopener" style="color:var(--gold-soft)">ilanfotosu.com</a> · <a href="https://3dkatplan.com" target="_blank" rel="noopener" style="color:var(--gold-soft)">3dkatplan.com</a> · <a href="https://gunesalirmi.com" target="_blank" rel="noopener" style="color:var(--gold-soft)">gunesalirmi.com</a><br><a href="https://armagankocabas.com" target="_blank" rel="noopener" style="color:var(--gold-soft)">armagankocabas.com</a><br>Tüm hakları saklıdır © 2026 Armağan Kocabaş · Parsel Tur</p>
-
-  </div>
-</aside>
-
-<button id="toggle">≡</button>
-
-<div id="card">
-  <div class="tag">Satılık Arsa</div>
-  <div class="ada" id="cardAda">Örnek Parsel</div>
-  <div class="area" id="cardArea">— m²</div>
-  <hr/>
-  <div class="who-row">
-    <img class="avatar" id="cardAv" src="" alt="" style="display:none" />
-    <div class="avatar initials" id="cardAvPh">🏷️</div>
-    <div>
-      <div class="who" id="cardWho">Danışman kartınız</div>
-      <div class="role" id="cardRole">Adınızı soldan ekleyin, videoya işlensin</div>
-      <div class="web">parseltur.com</div>
+    <div class="uyari">
+      Fotoğraflar yeniden kodlanırken içindeki konum (GPS) ve cihaz bilgisi otomatik silinir.
+      Böylece evin koordinatı fotoğrafın içinde portala gitmez.
     </div>
   </div>
 </div>
 
-<!-- Lead yakalama CTA + form -->
-<button id="cta">📲 Mülkünüzü Sat / Kirala — Ücretsiz Destek İste</button>
+<div class="adim gizli" id="a-duzen">
+  <div class="adim-bas"><div class="adim-no">3</div><h2>Kadraj, aydınlık ve bulanıklaştırma</h2></div>
+  <div class="kart">
+    <canvas id="tuval"></canvas>
 
-<div id="modal">
-  <div class="modal-box">
-    <button id="modalClose">✕</button>
-    <div class="modal-tag">Parsel Tur</div>
-    <h2>Mülkünüz için ücretsiz destek</h2>
-    <p class="modal-sub">Mülkünüzü <b>satmak veya kiralamak</b> istiyorsanız, profesyonel tanıtımı ve satış süreci için iletişime geçin:</p>
-    <a class="btn primary" style="display:flex;justify-content:center;text-decoration:none;margin-top:6px" href="mailto:armagankocabas@gmail.com?subject=Parsel%20Tur%20%C3%BCzerinden%20m%C3%BClk%20deste%C4%9Fi&body=Merhaba%2C%20m%C3%BClk%C3%BCm%C3%BC%20satmak%2Fkiralamak%20istiyorum.">✉️ E-posta: armagankocabas@gmail.com</a>
-    <a class="btn ghost" style="display:flex;justify-content:center;text-decoration:none;margin-top:10px" href="https://www.instagram.com/rmx.armagankocabas/" target="_blank" rel="noopener">📸 Instagram: @rmx.armagankocabas</a>
-    <p class="hint" style="text-align:center;margin-top:12px">Bu site kişisel verilerinizi toplamaz; iletişim tamamen sizin tercihinizdedir.</p>
+    <div class="kaydir">
+      <span>Yakınlaştır</span>
+      <input type="range" id="zoom" min="100" max="300" value="100">
+    </div>
+    <div class="kaydir">
+      <span>Aydınlık</span>
+      <input type="range" id="isik" min="100" max="150" value="100">
+    </div>
+
+    <div class="arac">
+      <button id="m-kadraj" class="aktif">Kadrajı kaydır</button>
+      <button id="m-bulanik">Bulanıklaştır</button>
+      <button id="b-yuz" class="sade">Yüzleri bul</button>
+      <button id="b-plaka" class="sade">Plakaları bul</button>
+      <button id="b-geri" class="sade">Geri al</button>
+      <button id="b-hepsi" class="sade">Ayarı hepsine uygula</button>
+    </div>
+    <p class="ipuc" id="ipuc">Parmağınızı sürükleyerek kadrajı kaydırın. Bulanıklaştırmak için önce "Bulanıklaştır" düğmesine basın.</p>
   </div>
 </div>
 
-<!-- Fotoğraf düzenleme penceresi -->
-<div id="photoEdit">
-  <div class="modal-box" style="max-width:330px">
-    <button id="photoEditClose">✕</button>
-    <div class="modal-tag">Parsel Tur</div>
-    <h2>Fotoğrafı ayarla</h2>
-    <p class="modal-sub">Sürükleyerek konumla, kaydırıcıyla yakınlaştır. Daire içinde nasıl görünüyorsa videoda öyle çıkar.</p>
-    <div class="crop-wrap"><canvas id="cropCanvas" width="260" height="260"></canvas></div>
-    <label class="fld">Yakınlaştır</label>
-    <input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" />
-    <button class="btn primary" id="cropApply" style="margin-top:14px">Uygula</button>
-    <button class="btn ghost" id="cropRemove" style="margin-top:8px">Fotoğrafı Kaldır</button>
+<div class="adim gizli" id="a-indir">
+  <div class="adim-bas"><div class="adim-no">4</div><h2>İndirin</h2></div>
+  <button class="ana" id="b-indir">Hepsini zip olarak indir</button>
+  <button class="ana" id="b-telefon" style="background:#fff;color:var(--yesil-koyu)">Fotoğrafları tek tek indir</button>
+  <div id="durum"></div>
+  <div id="bitti" class="gizli">
+    <b>Fotoğraflar hazır.</b>
+    İlanı tamamlamak için kat planı da eklemek ister misiniz? Ölçüleri girin,
+    <a href="https://3dkatplan.com">3dkatplan.com</a> ilana koyacağınız 3 boyutlu kat planını üretsin.
   </div>
 </div>
 
-<style>
-  #cta{
-    position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:7;
-    background:linear-gradient(135deg,var(--gold),#0f766e);color:#ffffff;
-    border:none;border-radius:40px;padding:14px 26px;font-size:14px;font-weight:700;
-    cursor:pointer;box-shadow:0 8px 30px rgba(13,148,136,.4);transition:.15s
-  }
-  #cta:hover{filter:brightness(1.08);transform:translateX(-50%) translateY(-2px)}
-  #modal{position:absolute;inset:0;z-index:20;background:rgba(31,42,55,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
-  #modal.open{display:flex}
-  .modal-box{position:relative;width:100%;max-width:400px;max-height:86vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 24px 20px;box-shadow:0 20px 60px rgba(31,42,55,.25)}
-  .modal-box h2{font-size:20px;margin:6px 0 8px}
-  .modal-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
-  .modal-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:6px}
-  .modal-box input[type=text],.modal-box input[type=tel]{width:100%;background:#f7f9fc;border:1px solid var(--line);border-radius:9px;color:var(--txt);font-size:14px;padding:11px}
-  .kvkk{display:flex;align-items:flex-start;gap:9px;margin-top:13px;font-size:11.5px;color:var(--muted);line-height:1.5;cursor:pointer}
-  .kvkk input{margin-top:2px;width:16px;height:16px;flex-shrink:0;accent-color:var(--gold)}
-  .kvkk a{color:var(--gold-soft);font-weight:600}
-  #modalClose{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer}
-  @media(max-width:680px){#cta{font-size:12.5px;padding:12px 18px;width:calc(100% - 32px);bottom:16px}}
-  .who-row{display:flex;align-items:center;gap:12px}
-  .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0}
-  .avatar.initials{display:flex;align-items:center;justify-content:center;background:#eaf3f1;color:var(--gold);font-weight:700;font-size:17px;letter-spacing:1px}
-  .brand-row{display:flex;align-items:center;gap:12px;color:inherit}
-  a.brand-row:hover .name{opacity:.85}
-  .brand-av{width:46px;height:46px;object-fit:contain}
-  .copyr{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.5;margin-top:6px;padding-top:14px;border-top:1px solid var(--line)}
-  #recBadge{display:none;position:absolute;left:50%;top:56px;transform:translateX(-50%);z-index:8;background:#e11d48;color:#fff;font-size:12.5px;font-weight:700;padding:7px 16px;border-radius:30px;box-shadow:0 6px 20px rgba(225,29,72,.45)}
+<h2 class="sss">Sık sorulan sorular</h2>
 
-  /* Mobil yönlendirme çubuğu */
-  #mobileBar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;background:#0f766e;color:#fff;padding:12px 14px;font-size:13.5px;line-height:1.5;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
-  #mobileBar b{color:#fff}
-  #mobileBar .row{display:flex;gap:8px;margin-top:9px}
-  #mobileBar button{flex:1;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer}
-  #mobileBar .share{background:#fff;color:#0f766e}
-  #mobileBar .close{background:rgba(255,255,255,.18);color:#fff;flex:0 0 auto;padding:10px 14px}
+<details>
+  <summary>Nasıl kullanılır?</summary>
+  <ol>
+    <li>Fotoğrafları ekleyin. Şeritteki küçük görsellere dokunarak aralarında geçiş yapar, basılı tutup sürükleyerek sıralarını değiştirirsiniz. Baştaki fotoğraf kapak olur; dosya adlarındaki numaralar da bu sıraya göre verilir.</li>
+    <li>Oranı seçin. Portallar yatay fotoğrafı sever; 4:3 çoğu ilan sitesinde kırpılmadan görünür.</li>
+    <li>Kadrajı parmağınızla kaydırın, gerekirse yakınlaştırın. Oda loşsa aydınlık çubuğunu biraz sağa çekin. "Bulanıklaştır" moduna geçip yüzün ya da plakanın üstünden geçin.</li>
+    <li>Aynı evin fotoğrafları benzer çekildiği için bir tanesinin kadrajını ve aydınlığını ayarlayıp "Ayarı hepsine uygula" demek çoğu zaman yeterli olur.</li>
+    <li>Hepsini tek zip dosyası olarak indirin ya da fotoğrafları tek tek indirin.</li>
+  </ol>
+  <p>Hiçbir fotoğraf sunucuya yüklenmez. Tüm işlem kendi tarayıcınızda yapılır, sayfayı kapattığınızda hiçbir iz kalmaz.</p>
+</details>
 
-  /* İlk kullanım ipucu */
-  #firstTip{display:none;position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:30;background:#152230;color:#fff;padding:14px 18px;border-radius:14px;font-size:13.5px;line-height:1.7;box-shadow:0 12px 34px rgba(0,0,0,.35);max-width:min(92vw,420px)}
-  #firstTip b{color:#5eead4}
-  #firstTip .ok{margin-top:10px;width:100%;border:none;border-radius:8px;background:#0d9488;color:#fff;font-weight:700;padding:9px;cursor:pointer}
-  .scroll input[type=text],.scroll select{width:100%;background:#f7f9fc;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:13px;padding:9px;margin-top:2px}
-  .scroll select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7785' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 11px center;cursor:pointer}
-  /* Videoya gömülecek danışman etiketi (canlı önizleme) */
-  #ovPreview{position:absolute;bottom:22px;z-index:4;display:flex;align-items:center;gap:11px;background:linear-gradient(135deg,rgba(13,148,136,.94),rgba(15,118,110,.94));color:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:62%}
-  #ovPreview.bl{left:18px}#ovPreview.br{right:18px}
-  #ovPreview.hide{display:none}
-  #ovPreviewImg{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.8);display:none;flex-shrink:0}
-  #ovPreviewImg.show{display:block}
-  #ovPreview .nm{font-weight:700;font-size:15px;line-height:1.2}
-  #ovPreview .ph{display:block;font-weight:500;font-size:12px;opacity:.92;margin-top:2px}
-  
-  /* Fotoğraf Düzenleme Alanı Overlay Sabitlemeleri (DÜZELTİLEN YER) */
-  #photoEdit{position:absolute;inset:0;z-index:25;background:rgba(31,42,55,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
-  #photoEdit.open{display:flex}
-  
-  .crop-wrap{display:flex;justify-content:center;margin:12px 0 4px}
-  #cropCanvas{width:260px;height:260px;border-radius:12px;background:#0c1322;touch-action:none;cursor:grab}
-  #cropCanvas:active{cursor:grabbing}
-</style>
+<details>
+  <summary>Sahibinden fotoğraf boyutu küçültme nasıl yapılır?</summary>
+  <p>Sahibinden.com'a yüklediğiniz fotoğraflar 800x600 pikselin üzerindeyse site bunları
+  otomatik olarak küçültür, dosya sınırı ise fotoğraf başına 10 MB'tır. Telefonla çekilen
+  bir fotoğraf çoğu zaman 4-8 MB olduğu için yükleme yavaşlar, sıkıştırma da sitenin
+  insafına kalır.</p>
+  <p>Bu araçta hedef dosya boyutunu KB cinsinden yazarsınız, araç kaliteyi kendisi ayarlayıp
+  o boyutun altında kalan bir fotoğraf üretir. 500 KB çoğu ilan için yeterlidir ve
+  hem yükleme hızlanır hem netlik korunur. Sahibinden fotoğraf boyutu küçültme işini
+  başka bir program kurmadan, doğrudan tarayıcınızda yaparsınız.</p>
+</details>
 
+<details>
+  <summary>İlan fotoğrafında plaka kapatma ve yüz sansürleme nasıl yapılır?</summary>
+  <p>İlan fotoğraflarında araç plakası, komşuların yüzü ya da kapı zilindeki isim
+  görünmesi hem rahatsız edici hem gereksiz risktir. Bu araçta üç yolu var:
+  "Yüzleri bul" düğmesi fotoğraftaki yüzleri arayıp üstlerini kapatır,
+  "Plakaları bul" düğmesi plaka görünümlü dikdörtgenleri işaretler,
+  "Bulanıklaştır" modunda ise parmağınızı gezdirdiğiniz her yer bulanıklaşır.</p>
+  <p>Otomatik aramaların ikisi de kesin sonuç vermez; kaçırabilir, fazladan yer de
+  işaretleyebilir. Bu yüzden işaretlenen yerleri gözden geçirin, gereksizini
+  "Geri al" ile kaldırın, atlananı elle kapatın. Plaka kapatma ve yüz sansürleme
+  işinde son karar her zaman sizde olmalı.</p>
+</details>
+
+<details>
+  <summary>Fotoğraftan konum silme neden gerekli?</summary>
+  <p>Telefonla çekilen her fotoğrafın içine çekim yeri, tarihi ve cihaz bilgisi gömülür.
+  Buna EXIF verisi denir. İlanda adresi gizleseniz bile fotoğrafı indiren biri bu bilgiyi
+  okuyup evin koordinatını haritada bulabilir. Boş bir evin adresinin dolaşıma girmesi
+  ev sahibi için ciddi bir güvenlik sorunudur.</p>
+  <p>Bu araç fotoğrafı yeniden kodladığı için fotoğraftan konum silme işlemi kendiliğinden
+  yapılır. Ayrı bir düğmeye basmanıza gerek yoktur; indirdiğiniz dosyaların içinde
+  konum, tarih ve cihaz bilgisi bulunmaz.</p>
+</details>
+
+<details>
+  <summary>Fotoğrafları toplu olarak 4:3 kırpmak mümkün mü?</summary>
+  <p>Evet. Oran listesinden 4:3'ü seçin, bir fotoğrafın kadrajını beğendiğiniz gibi
+  ayarlayın ve "Ayarı hepsine uygula" düğmesine basın. Aynı evin fotoğrafları benzer
+  açıyla çekildiği için tek ayar çoğu zaman hepsine oturur. 4:3 fotoğraf kırpma toplu
+  yapıldığında ilan sayfasında bütün görseller aynı yükseklikte durur, ilan derli toplu görünür.</p>
+  <p>Kadrajı kaçan fotoğraf olursa şeritten ona geçip tek tek düzeltebilirsiniz.
+  16:9, 3:2 ve kare oranlar için de aynı yol geçerlidir.</p>
+</details>
+
+<details>
+  <summary>iPhone ile çekilen HEIC fotoğraflar açılır mı?</summary>
+  <p>Açılır. Telefondan seçtiğinizde iOS çoğu zaman kendisi JPEG'e çevirir.
+  Bilgisayara aktardığınız .heic dosyalarını sürükleyip bıraktığınızda ise araç
+  dönüştürmeyi kendisi yapar, ilk HEIC dosyasında birkaç saniye sürebilir.
+  Çıktılar her durumda JPEG olarak iner, portallar bu formatı sorunsuz kabul eder.</p>
+</details>
+
+<footer>
+  Ücretsiz ve üyeliksizdir. Tüm işlem tarayıcınızda yapılır, sunucuya fotoğraf gönderilmez.<br>
+  Diğer ücretsiz araçlar:
+  <a href="https://parseltur.com">parseltur.com</a> ·
+  <a href="https://gunesalirmi.com">gunesalirmi.com</a> ·
+  <a href="https://3dkatplan.com">3dkatplan.com</a> ·
+  <a href="/pdf/">PDF küçültme</a>
+
+  <div class="telif">
+    <a href="https://www.armagankocabas.com" class="site">www.armagankocabas.com</a>
+    <div>Armağan Kocabaş — İstanbul lüks konut uzmanı, RE/MAX Eksen</div>
+    <div>&copy; <span id="yil"></span> Armağan Kocabaş. Tüm hakları saklıdır.</div>
+  </div>
+</footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-/* ---------- Arayüzü hemen göster (haritayı bekleme) ---------- */
-try{ document.body.classList.add('loaded'); }catch(e){}
+const $ = id => document.getElementById(id);
+$('yil').textContent = new Date().getFullYear();
+const foto = [];
+let aktif = -1;
+let mod = 'kadraj';
+let dedektor = null;
+let heicHazir = null;
 
-/* ---------- Harita kurulumu (uydu + 3D arazi) ---------- */
-const map = new maplibregl.Map({
-  container:'map',
-  preserveDrawingBuffer:true,
-  pixelRatio: Math.min(window.devicePixelRatio||1, 2),
-  maxPitch:85,
-  pitch:65,
-  bearing:-20,
-  zoom:15,
-  center:[29.05,41.02], // İstanbul varsayılan
-  style:{
-    version:8,
-    sources:{
-      satellite:{
-        type:'raster',
-        tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-        tileSize:256, maxzoom:18,
-        attribution:'Görüntü © Esri'
-      },
-      terrain:{
-        type:'raster-dem',
-        tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-        encoding:'terrarium', tileSize:256, maxzoom:15
-      }
-    },
-    layers:[{id:'sat',type:'raster',source:'satellite'}],
-    terrain:{source:'terrain',exaggeration:1.5},
-    sky:{}
+/* ---------- dosya alma ---------- */
+$('birak').addEventListener('click', () => $('dosya').click());
+$('dosya').addEventListener('change', e => ekle(e.target.files));
+['dragenter','dragover'].forEach(t => $('birak').addEventListener(t, e => {
+  e.preventDefault(); $('birak').classList.add('uzerinde');
+}));
+['dragleave','drop'].forEach(t => $('birak').addEventListener(t, e => {
+  e.preventDefault(); $('birak').classList.remove('uzerinde');
+}));
+$('birak').addEventListener('drop', e => ekle(e.dataTransfer.files));
+
+function heicMi(f){
+  return /image\/(heic|heif)/i.test(f.type) || /\.(heic|heif)$/i.test(f.name);
+}
+function betikYukle(src){
+  return new Promise((ok, hata) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = hata;
+    document.head.appendChild(s);
+  });
+}
+async function heicCevir(f){
+  if(!heicHazir){
+    heicHazir = betikYukle('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js');
   }
-});
-map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-right');
-try{
-  map.getCanvas().addEventListener('webglcontextlost', e=>{
-    e.preventDefault();
-    alert('Görüntü motoru belleği doldu (harita siyah kalabilir). Sayfayı yenileyip tekrar deneyin; diğer sekmeleri kapatmak da yardımcı olur.');
-  }, false);
-}catch(e){}
-map.addControl(new maplibregl.FullscreenControl(),'top-right');
-
-let hasParcel=false;
-
-map.on('load',()=>{
-  try{
-    if(typeof map.setSky==='function'){
-      map.setSky({
-        'sky-color':'#74a3d6','sky-horizon-blend':0.5,
-        'horizon-color':'#cfe0f0','horizon-fog-blend':0.6,
-        'fog-color':'#dfeaf5','fog-ground-blend':0.4
-      });
-    }
-    
-    // Haritayı flu halden netleştir
-    document.getElementById('map').classList.add('ready');
-    
-    // KUSURSUZ VE EŞ ZAMANLI AÇILIŞ ANIMASYONU
-    // Harita hazır olunca arayüz zaten görünür; sadece netleştir
-    document.body.classList.add('loaded');
-
-  }catch(e){ console.warn('sky atlandı',e); }
-});
-window.addEventListener('error',e=>console.warn('yakalandı:',e.message));
-
-/* ---------- GeoJSON normalize + yükle ---------- */
-function toFeatureCollection(data){
-  let fc;
-  if(data.type==='FeatureCollection') fc = data;
-  else if(data.type==='Feature') fc = {type:'FeatureCollection',features:[data]};
-  else if(data.type==='GeometryCollection') fc = {type:'FeatureCollection',
-    features:(data.geometries||[]).map(g=>({type:'Feature',properties:{},geometry:g}))};
-  else fc = {type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:data}]};
-
-  // boş geometrileri ayıkla
-  fc = {type:'FeatureCollection', features:(fc.features||[]).filter(f=>f && f.geometry)};
-
-  // Koordinat sistemi kontrolü: TKGM bazı dosyaları metre bazlı (Web Mercator / EPSG:3857) verir
-  let looksMeters=false;
-  const scan = (co)=>{
-    if(looksMeters) return;
-    if(typeof co[0]==='number'){ if(Math.abs(co[0])>180 || Math.abs(co[1])>90) looksMeters=true; return; }
-    co.forEach(scan);
-  };
-  try{ fc.features.forEach(f=>{ if(f.geometry && f.geometry.coordinates) scan(f.geometry.coordinates); }); }catch(e){}
-
-  if(looksMeters){
-    const toWgs = (co)=>{
-      if(typeof co[0]==='number'){
-        const lon = co[0]*180/20037508.34;
-        let lat = co[1]*180/20037508.34;
-        lat = 180/Math.PI*(2*Math.atan(Math.exp(lat*Math.PI/180))-Math.PI/2);
-        return [lon,lat];
-      }
-      return co.map(toWgs);
-    };
-    fc.features.forEach(f=>{ try{ f.geometry.coordinates = toWgs(f.geometry.coordinates); }catch(e){} });
-  }
-  return fc;
+  await heicHazir;
+  const blob = await heic2any({ blob:f, toType:'image/jpeg', quality:0.92 });
+  return Array.isArray(blob) ? blob[0] : blob;
 }
 
-function loadParcel(geojson){
-  let fc;
-  try{ fc = toFeatureCollection(geojson); }
-  catch(e){ alert('GeoJSON okunamadı. Dosyayı kontrol et.'); return; }
-  if(!fc.features || !fc.features.length){ alert('Bu dosyada parsel bulunamadı.'); return; }
+async function ekle(list){
+  const dizi = [...list];
+  if(dizi.some(heicMi)) $('birak').querySelector('b').textContent = 'HEIC dosyaları dönüştürülüyor…';
+  for(const f of dizi){
+    if(!f.type.startsWith('image/') && !heicMi(f)) continue;
+    try{
+      const kaynak = heicMi(f) ? await heicCevir(f) : f;
+      const bit = await createImageBitmap(kaynak, { imageOrientation:'from-image' });
+      foto.push({ ad:f.name, bit, cx:bit.width/2, cy:bit.height/2, zoom:1, isik:100, lekeler:[] });
+    }catch(err){ console.warn('Okunamadı:', f.name, err); }
+  }
+  $('birak').querySelector('b').textContent = 'Fotoğrafları buraya bırakın';
+  if(foto.length){
+    if(aktif < 0) aktif = 0;
+    $('a-duzen').classList.remove('gizli');
+    $('a-indir').classList.remove('gizli');
+    seritCiz(); ciz(); ayarlariYukle();
+  }
+}
 
-  if(map.getLayer('parcel-fill')) map.removeLayer('parcel-fill');
-  if(map.getLayer('parcel-line')) map.removeLayer('parcel-line');
-  if(map.getSource('parcel')) map.removeSource('parcel');
-  if(map.getLayer('trace-glow2')) map.removeLayer('trace-glow2');
-  if(map.getLayer('trace-glow')) map.removeLayer('trace-glow');
-  if(map.getLayer('trace-line')) map.removeLayer('trace-line');
-  if(map.getLayer('trace-core')) map.removeLayer('trace-core');
-  if(map.getSource('trace')) map.removeSource('trace');
+/* ---------- şerit ---------- */
+let surukle = null;
 
-  map.addSource('parcel',{type:'geojson',data:fc});
-  map.addLayer({id:'parcel-fill',type:'fill',source:'parcel',
-    paint:{'fill-color':fillColor.value,'fill-opacity':parseFloat(opacity.value)}});
-  map.addLayer({id:'parcel-line',type:'line',source:'parcel',
-    paint:{'line-color':lineColor.value,'line-width':parseFloat(lineWidth.value)}});
+function seritCiz(){
+  $('serit').innerHTML = '';
+  foto.forEach((f, i) => {
+    const d = document.createElement('div');
+    d.className = 'kucuk' + (i===aktif ? ' secili' : '');
+    d._f = f;
+    const c = document.createElement('canvas');
+    c.width = 78; c.height = 78;
+    const x = c.getContext('2d');
+    const s = Math.max(78/f.bit.width, 78/f.bit.height);
+    const w = f.bit.width*s, h = f.bit.height*s;
+    x.drawImage(f.bit, (78-w)/2, (78-h)/2, w, h);
+    const im = document.createElement('img'); im.src = c.toDataURL(); im.draggable = false;
+    d.appendChild(im);
+    const n = document.createElement('span'); n.className='no'; n.textContent = i+1;
+    d.appendChild(n);
+    if(f.lekeler.length){
+      const s2 = document.createElement('span'); s2.className='isaret'; s2.textContent='●';
+      d.appendChild(s2);
+    }
+    d.addEventListener('pointerdown', e => {
+      surukle = { el:d, x:e.clientX, tasindi:false };
+      d.setPointerCapture(e.pointerId);
+      d.classList.add('tasiniyor');
+    });
+    d.addEventListener('pointermove', e => {
+      if(!surukle || surukle.el !== d) return;
+      if(!surukle.tasindi && Math.abs(e.clientX - surukle.x) < 10) return;
+      surukle.tasindi = true;
+      const alt = document.elementFromPoint(e.clientX, e.clientY);
+      const hedef = alt && alt.closest ? alt.closest('.kucuk') : null;
+      if(hedef && hedef !== d && hedef.parentElement === d.parentElement){
+        const once = hedef.compareDocumentPosition(d) & Node.DOCUMENT_POSITION_FOLLOWING;
+        hedef.parentElement.insertBefore(d, once ? hedef : hedef.nextSibling);
+      }
+    });
+    d.addEventListener('pointerup', () => {
+      if(!surukle || surukle.el !== d) return;
+      d.classList.remove('tasiniyor');
+      if(surukle.tasindi){
+        const eskiAktif = aktif >= 0 ? foto[aktif] : null;
+        const yeni = [...$('serit').children].map(el => el._f);
+        foto.length = 0; foto.push(...yeni);
+        aktif = eskiAktif ? foto.indexOf(eskiAktif) : -1;
+        seritCiz();
+      } else {
+        aktif = foto.indexOf(d._f);
+        seritCiz(); ciz(); ayarlariYukle();
+      }
+      surukle = null;
+    });
+    d.addEventListener('pointercancel', () => {
+      d.classList.remove('tasiniyor'); surukle = null; seritCiz();
+    });
+    $('serit').appendChild(d);
+  });
+}
 
-  // Lazer çizim hazırlığı: her parselin dış sınırını çizgi olarak sakla
-  traceLines = [];
+function ayarlariYukle(){
+  if(aktif < 0) return;
+  $('zoom').value = Math.round(foto[aktif].zoom*100);
+  $('isik').value = foto[aktif].isik;
+}
+
+/* ---------- kadraj hesabı ---------- */
+function oranDeger(f){
+  const v = parseFloat($('oran').value);
+  return v > 0 ? v : f.bit.width / f.bit.height;
+}
+function kadraj(f){
+  const ar = oranDeger(f), W = f.bit.width, H = f.bit.height;
+  const mw = Math.min(W, H*ar), mh = mw/ar;
+  const cw = mw/f.zoom, ch = mh/f.zoom;
+  const x = Math.min(Math.max(f.cx - cw/2, 0), W - cw);
+  const y = Math.min(Math.max(f.cy - ch/2, 0), H - ch);
+  return { x, y, w:cw, h:ch };
+}
+function filtre(f){
+  if(f.isik <= 100) return 'none';
+  const kontrast = 100 + (f.isik-100)*0.18;
+  return 'brightness(' + f.isik + '%) contrast(' + kontrast.toFixed(1) + '%)';
+}
+
+/* ---------- önizleme ---------- */
+let olcek = 1;
+function ciz(){
+  if(aktif < 0) return;
+  const f = foto[aktif], c = $('tuval'), g = c.getContext('2d');
+  const en = Math.min(c.parentElement.clientWidth - 32, 680);
+  olcek = en / f.bit.width;
+  c.width = en; c.height = Math.round(f.bit.height * olcek);
+  g.clearRect(0,0,c.width,c.height);
+  g.filter = filtre(f);
+  g.drawImage(f.bit, 0, 0, c.width, c.height);
+  g.filter = 'none';
+
+  if(f.lekeler.length){
+    const b = document.createElement('canvas');
+    b.width = c.width; b.height = c.height;
+    const bg = b.getContext('2d');
+    bg.filter = 'blur(' + Math.max(6, c.width*0.022) + 'px) ' + (filtre(f)==='none'?'':filtre(f));
+    bg.drawImage(f.bit, 0, 0, b.width, b.height);
+    g.save();
+    g.beginPath();
+    f.lekeler.forEach(l => {
+      if(l.t === 'c'){ g.moveTo((l.x+l.r)*olcek, l.y*olcek); g.arc(l.x*olcek, l.y*olcek, l.r*olcek, 0, 7); }
+      else g.rect(l.x*olcek, l.y*olcek, l.w*olcek, l.h*olcek);
+    });
+    g.clip();
+    g.drawImage(b, 0, 0);
+    g.restore();
+  }
+
+  const k = kadraj(f);
+  g.fillStyle = 'rgba(34,48,44,.55)';
+  g.fillRect(0, 0, c.width, k.y*olcek);
+  g.fillRect(0, (k.y+k.h)*olcek, c.width, c.height);
+  g.fillRect(0, k.y*olcek, k.x*olcek, k.h*olcek);
+  g.fillRect((k.x+k.w)*olcek, k.y*olcek, c.width, k.h*olcek);
+  g.strokeStyle = '#fff'; g.lineWidth = 2;
+  g.strokeRect(k.x*olcek+1, k.y*olcek+1, k.w*olcek-2, k.h*olcek-2);
+}
+window.addEventListener('resize', ciz);
+$('oran').addEventListener('change', ciz);
+$('zoom').addEventListener('input', e => {
+  if(aktif<0) return;
+  foto[aktif].zoom = e.target.value/100; ciz();
+});
+$('isik').addEventListener('input', e => {
+  if(aktif<0) return;
+  foto[aktif].isik = parseInt(e.target.value); ciz();
+});
+
+/* ---------- fare / parmak ---------- */
+let basili = false, sonX = 0, sonY = 0;
+const tuval = $('tuval');
+tuval.addEventListener('pointerdown', e => {
+  if(aktif<0) return;
+  basili = true; tuval.setPointerCapture(e.pointerId);
+  const p = nokta(e); sonX = p.x; sonY = p.y;
+  if(mod === 'bulanik'){ yeniGrup(foto[aktif]); leke(p); }
+});
+tuval.addEventListener('pointermove', e => {
+  if(!basili || aktif<0) return;
+  const p = nokta(e), f = foto[aktif];
+  if(mod === 'bulanik'){ leke(p); }
+  else {
+    f.cx += (p.x - sonX); f.cy += (p.y - sonY);
+    const k = kadraj(f);
+    f.cx = k.x + k.w/2; f.cy = k.y + k.h/2;
+  }
+  sonX = p.x; sonY = p.y;
+  ciz();
+});
+tuval.addEventListener('pointerup', () => { basili = false; seritCiz(); });
+tuval.addEventListener('pointercancel', () => { basili = false; });
+
+function nokta(e){
+  const r = tuval.getBoundingClientRect();
+  return { x:(e.clientX-r.left)/olcek * (tuval.width/r.width), y:(e.clientY-r.top)/olcek * (tuval.height/r.height) };
+}
+function yeniGrup(f){
+  f.sonGrup = (f.sonGrup || 0) + 1;
+  return f.sonGrup;
+}
+function leke(p){
+  const f = foto[aktif];
+  const r = Math.max(f.bit.width, f.bit.height)*0.035;
+  const s = f.lekeler[f.lekeler.length-1];
+  if(s && s.t === 'c' && s.g === f.sonGrup){
+    const d = Math.hypot(p.x - s.x, p.y - s.y);
+    if(d < r*0.4) return;
+  }
+  f.lekeler.push({ t:'c', g:f.sonGrup, x:p.x, y:p.y, r });
+}
+
+$('m-kadraj').addEventListener('click', () => setMod('kadraj'));
+$('m-bulanik').addEventListener('click', () => setMod('bulanik'));
+function setMod(m){
+  mod = m;
+  $('m-kadraj').classList.toggle('aktif', m==='kadraj');
+  $('m-bulanik').classList.toggle('aktif', m==='bulanik');
+  $('ipuc').textContent = m==='bulanik'
+    ? 'Kapatmak istediğiniz yerin üstünden parmağınızı geçirin. Kadraja dönmek için "Kadrajı kaydır"a basın.'
+    : 'Parmağınızı sürükleyerek kadrajı kaydırın. Bulanıklaştırmak için önce "Bulanıklaştır" düğmesine basın.';
+}
+$('b-geri').addEventListener('click', () => {
+  if(aktif<0) return;
+  const f = foto[aktif];
+  if(!f.lekeler.length) return;
+  const son = f.lekeler[f.lekeler.length-1].g;
+  while(f.lekeler.length && f.lekeler[f.lekeler.length-1].g === son) f.lekeler.pop();
+  ciz(); seritCiz();
+});
+
+/* ---------- ayarı hepsine uygula ---------- */
+$('b-hepsi').addEventListener('click', () => {
+  if(aktif < 0 || foto.length < 2) return;
+  const k = foto[aktif];
+  const ox = k.cx / k.bit.width, oy = k.cy / k.bit.height, z = k.zoom, isik = k.isik;
+  foto.forEach((f, i) => {
+    if(i === aktif) return;
+    f.cx = ox * f.bit.width; f.cy = oy * f.bit.height; f.zoom = z; f.isik = isik;
+    const kk = kadraj(f);
+    f.cx = kk.x + kk.w/2; f.cy = kk.y + kk.h/2;
+  });
+  const b = $('b-hepsi');
+  b.textContent = (foto.length-1) + ' fotoğrafa uygulandı';
+  setTimeout(() => { b.textContent = 'Ayarı hepsine uygula'; }, 2200);
+});
+
+/* ---------- otomatik yüz ---------- */
+$('b-yuz').addEventListener('click', async () => {
+  if(aktif<0) return;
+  const b = $('b-yuz'); b.disabled = true; b.textContent = 'Aranıyor…';
   try{
-    fc.features.forEach(f=>{
-      if(!f.geometry) return;
-      const ln = turf.polygonToLine(f);
-      const feats = ln.type==='FeatureCollection' ? ln.features : [ln];
-      feats.forEach(l=>{
-        if(l.geometry.type==='MultiLineString'){
-          l.geometry.coordinates.forEach(c=>{
-            const single={type:'Feature',properties:{},geometry:{type:'LineString',coordinates:c}};
-            traceLines.push({line:single,len:turf.length(single)});
-          });
-        } else {
-          traceLines.push({line:l,len:turf.length(l)});
+    if(!dedektor){
+      const m = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14');
+      const fs = await m.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+      dedektor = await m.FaceDetector.createFromOptions(fs, {
+        baseOptions:{ modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite' },
+        runningMode:'IMAGE', minDetectionConfidence:0.35
+      });
+    }
+    const f = foto[aktif];
+    const c = document.createElement('canvas');
+    c.width = f.bit.width; c.height = f.bit.height;
+    c.getContext('2d').drawImage(f.bit, 0, 0);
+    const r = dedektor.detect(c);
+    const bulunan = r.detections || [];
+    bulunan.forEach(d => {
+      const bb = d.boundingBox;
+      const pay = Math.max(bb.width, bb.height) * 0.25;
+      f.lekeler.push({ t:'r', g:yeniGrup(f), x:bb.originX-pay, y:bb.originY-pay, w:bb.width+pay*2, h:bb.height+pay*2 });
+    });
+    ciz(); seritCiz();
+    b.textContent = bulunan.length ? bulunan.length + ' yüz bulundu' : 'Yüz bulunamadı';
+  }catch(err){
+    console.warn(err);
+    b.textContent = 'Otomatik arama açılmadı';
+    $('ipuc').textContent = 'Otomatik yüz araması bu cihazda çalışmadı. "Bulanıklaştır" moduyla elle kapatabilirsiniz.';
+  }
+  setTimeout(()=>{ b.textContent='Yüzleri bul'; b.disabled=false; }, 2500);
+});
+
+/* ---------- otomatik plaka ---------- */
+function plakaAday(bit){
+  const en = 800;
+  const s = Math.min(1, en / bit.width);
+  const W = Math.round(bit.width*s), H = Math.round(bit.height*s);
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d', { willReadFrequently:true });
+  g.drawImage(bit, 0, 0, W, H);
+  const d = g.getImageData(0, 0, W, H).data;
+
+  const N = W*H;
+  const gri = new Uint8Array(N), doygunluk = new Uint8Array(N), mavi = new Uint8Array(N);
+  for(let i=0, p=0; p<N; i+=4, p++){
+    const r=d[i], y2=d[i+1], b=d[i+2];
+    gri[p] = (r*0.299 + y2*0.587 + b*0.114) | 0;
+    const mx = Math.max(r,y2,b), mn = Math.min(r,y2,b);
+    doygunluk[p] = mx - mn;
+    mavi[p] = (b > 60 && b-r > 30 && b-y2 > 15) ? 1 : 0;
+  }
+
+  const etiket = new Int32Array(N);
+  const yigin = new Int32Array(N);
+  const parlak = new Uint8Array(N);
+  const hepsi = [];
+
+  // Farkli parlaklik esikleriyle birden fazla tarama: golgeli ve acili plakalar
+  // tek esikte kaciyor, bu yuzden dort gecis yapip sonuclari birlestiriyoruz.
+  const esikler = [205, 178, 152, 128];
+  for(let e=0; e<esikler.length; e++){
+    const esik = esikler[e];
+    const dogSiniri = esik < 160 ? 85 : 70;
+    for(let p=0; p<N; p++) parlak[p] = (gri[p] > esik && doygunluk[p] < dogSiniri) ? 1 : 0;
+    etiket.fill(-1);
+    let id = 0;
+    for(let p0=0; p0<N; p0++){
+      if(!parlak[p0] || etiket[p0] >= 0) continue;
+      let n = 0; yigin[n++] = p0; etiket[p0] = id;
+      let x0 = p0%W, x1 = x0, y0 = (p0/W)|0, y1 = y0, adet = 0;
+      while(n > 0){
+        const q = yigin[--n]; adet++;
+        const qx = q%W, qy = (q/W)|0;
+        if(qx<x0) x0=qx; if(qx>x1) x1=qx;
+        if(qy<y0) y0=qy; if(qy>y1) y1=qy;
+        if(qx>0   && parlak[q-1] && etiket[q-1]<0){ etiket[q-1]=id; yigin[n++]=q-1; }
+        if(qx<W-1 && parlak[q+1] && etiket[q+1]<0){ etiket[q+1]=id; yigin[n++]=q+1; }
+        if(qy>0   && parlak[q-W] && etiket[q-W]<0){ etiket[q-W]=id; yigin[n++]=q-W; }
+        if(qy<H-1 && parlak[q+W] && etiket[q+W]<0){ etiket[q+W]=id; yigin[n++]=q+W; }
+      }
+      id++;
+
+      const w = x1-x0+1, h = y1-y0+1;
+      if(h < 7 || w < 18 || w > W*0.62) continue;
+      const ar = w/h;
+      if(ar < 1.7 || ar > 8) continue;
+      if(adet/(w*h) < 0.2) continue;
+
+      let kenar = 0, say = 0;
+      for(let y=y0+1; y<y1; y++){
+        for(let x=x0+1; x<x1; x++){
+          const p = y*W+x;
+          if(Math.abs(gri[p]-gri[p-1]) > 32) kenar++;
+          say++;
         }
+      }
+      if(!say) continue;
+      const yogunluk = kenar/say;
+      if(yogunluk < 0.045) continue;
+
+      let m = 0, mt = 0;
+      const bant = Math.max(1, Math.round(w*0.16));
+      for(let y=y0; y<=y1; y++)
+        for(let x=x0; x<x0+bant; x++){ m += mavi[y*W+x]; mt++; }
+      const maviOran = mt ? m/mt : 0;
+
+      // 4.5:1 civari Turk plakasi oranina yakinlik puani
+      const oranPuani = 1 - Math.min(1, Math.abs(ar-4.5)/3.5);
+
+      hepsi.push({
+        x:x0/s, y:y0/s, w:w/s, h:h/s,
+        puan: yogunluk*2 + oranPuani*0.6 + (maviOran > 0.12 ? 0.8 : 0)
       });
+    }
+  }
+
+  // Ayni plakayi farkli esiklerde birden fazla bulduysak tekini birak
+  hepsi.sort((a,b) => b.puan - a.puan);
+  const secilen = [];
+  for(const k of hepsi){
+    const cakisiyor = secilen.some(v => {
+      const gx = Math.max(0, Math.min(k.x+k.w, v.x+v.w) - Math.max(k.x, v.x));
+      const gy = Math.max(0, Math.min(k.y+k.h, v.y+v.h) - Math.max(k.y, v.y));
+      const kesisim = gx*gy;
+      return kesisim > 0.25 * Math.min(k.w*k.h, v.w*v.h);
     });
-  }catch(e){ traceLines=[]; }
-
-  map.addSource('trace',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-  const _lw = parseFloat(lineWidth.value);
-  map.addLayer({id:'trace-glow2',type:'line',source:'trace',
-    paint:{'line-color':lineColor.value,'line-width':_lw*7,'line-opacity':0.16,'line-blur':6}});
-  map.addLayer({id:'trace-glow',type:'line',source:'trace',
-    paint:{'line-color':lineColor.value,'line-width':_lw*3.4,'line-opacity':0.4,'line-blur':3}});
-  map.addLayer({id:'trace-line',type:'line',source:'trace',
-    paint:{'line-color':lineColor.value,'line-width':_lw*1.4,'line-opacity':0.95,'line-blur':0.8}});
-  map.addLayer({id:'trace-core',type:'line',source:'trace',
-    paint:{'line-color':'#ffffff','line-width':Math.max(_lw*0.5,1),'line-opacity':0.9,'line-blur':0.4}});
-
-  hasParcel=true;
-
-  // alan hesabı
-  let area=0;
-  try{ fc.features.forEach(f=>{ if(f.geometry) area += turf.area(f); }); }catch(e){}
-  const m2 = Math.round(area);
-  cardArea.textContent = m2 ? m2.toLocaleString('tr-TR')+' m²' : '— m²';
-
-  // odaklan + haritayı zorla yeniden çiz (fare oynatmadan görünsün)
-  const focusNow = ()=>{
-    fitToParcel(fc);
-    map.triggerRepaint();
-    map.once('moveend', ()=>map.triggerRepaint());
-  };
-  if(map.isStyleLoaded()) setTimeout(focusNow, 50);
-  else map.once('idle', focusNow);
-  setTimeout(()=>map.triggerRepaint(), 1600);
-}
-
-function fitToParcel(fc){
-  try{
-    const bbox = turf.bbox(fc);
-    const bounds = [[bbox[0],bbox[1]],[bbox[2],bbox[3]]];
-    // Formata göre çerçeve payı: dikeyde parselin sığması için daha fazla boşluk
-    const r = (typeof ratioSel!=='undefined' && ratioSel.value) ? ratioSel.value : '16:9';
-    const pad = r==='9:16' ? {top:150,bottom:150,left:90,right:90}
-              : r==='1:1'  ? {top:110,bottom:110,left:110,right:110}
-              : {top:70,bottom:70,left:120,right:120};
-    const brg = map.getBearing(), tilt = parseFloat(pitch.value);
-    // ÖNEMLİ: zoom'u eğimsiz (pitch:0) hesapla — eğimli hesap aşırı uzaklaştırıyor
-    let cam=null;
-    try{ cam = map.cameraForBounds(bounds,{padding:pad,bearing:brg,pitch:0}); }catch(e){}
-
-    // Küçük parseller için taban zoom: parselin ekranda yeterince büyük görünmesini garanti eder
-    let zFloor = 0;
-    try{
-      const wM = turf.distance([bbox[0],bbox[1]],[bbox[2],bbox[1]],{units:'meters'});
-      const hM = turf.distance([bbox[0],bbox[1]],[bbox[0],bbox[3]],{units:'meters'});
-      const sizeM = Math.max(wM,hM,40);
-      const fill = r==='9:16' ? 0.40 : (r==='1:1' ? 0.48 : 0.52);
-      const cv = map.getCanvas();
-      const px = Math.max(Math.min(cv.clientWidth||900, cv.clientHeight||600)*fill, 120);
-      const lat = (bbox[1]+bbox[3])/2;
-      zFloor = Math.log2(156543.03392*Math.cos(lat*Math.PI/180)/((sizeM*1.28)/px));
-    }catch(e){}
-
-    if(cam && isFinite(cam.zoom)){
-      const zCap = Math.min(imgMaxZoom - 0.4, 18.6);
-      const z = Math.min(Math.max(cam.zoom, zFloor||cam.zoom), zCap);
-      map.easeTo({center:cam.center, zoom:z, pitch:tilt, bearing:brg, duration:1400});
-    }else{
-      map.fitBounds(bounds,{padding:pad,maxZoom:Math.min(imgMaxZoom-0.4,18.6),pitch:tilt,bearing:brg,duration:1400});
-    }
-  }catch(e){}
-}
-
-/* ---------- Örnek parsel ---------- */
-const demo={type:"Feature",properties:{ada:"Örnek Parsel"},geometry:{type:"Polygon",coordinates:[[
-  [29.1942,41.0418],[29.1958,41.0420],[29.1961,41.0408],[29.1945,41.0405],[29.1942,41.0418]
-]]}};
-
-/* ---------- UI bağlantıları ---------- */
-loadFile.onclick=()=>fileInput.click();
-fileInput.onchange=e=>{
-  const files=[...e.target.files]; if(!files.length)return;
-  Promise.all(files.map(f=>new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=()=>{ try{ res(toFeatureCollection(JSON.parse(r.result))); }catch(err){ rej(err); } };
-    r.onerror=rej; r.readAsText(f);
-  }))).then(collections=>{
-    const merged={type:'FeatureCollection',features:[]};
-    collections.forEach(fc=>{ if(fc.features) merged.features.push(...fc.features); });
-    if(!merged.features.length){ alert('Dosyalarda parsel bulunamadı.'); return; }
-    if(files.length>1){ adaText.value=files.length+' parsel'; updateCard(); }
-    loadParcel(merged);
-  }).catch(()=>alert('Dosyalardan biri geçersiz GeoJSON. Lütfen kontrol et.'));
-  e.target.value='';
-};
-demoBtn.onclick=()=>{ adaText.value='Örnek Parsel'; updateCard(); loadParcel(demo); };
-pasteBtn.onclick=()=>{ try{ loadParcel(JSON.parse(pasteBox.value)); }catch(e){ alert('Yapıştırılan metin geçerli GeoJSON değil.'); } };
-
-/* ---------- Harita (uydu) kaynağı seçimi ---------- */
-const IMAGERY = {
-  clarity:{ url:'https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            maxz:19, attr:'Görüntü © Esri' },
-  esri:   { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            maxz:18, attr:'Görüntü © Esri' },
-  topo:   { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-            maxz:18, attr:'Harita © Esri' }
-};
-let imgMaxZoom = 18;   // seçili kaynağın desteklediği en yüksek zoom
-
-function setImagery(key){
-  const cfg = IMAGERY[key] || IMAGERY.clarity;
-  try{
-    const layers = map.getStyle().layers || [];
-    const firstOther = layers.find(l=>l.id!=='sat');
-    if(map.getLayer('sat')) map.removeLayer('sat');
-    if(map.getSource('satellite')) map.removeSource('satellite');
-    map.addSource('satellite',{type:'raster',tiles:[cfg.url],tileSize:256,maxzoom:cfg.maxz,attribution:cfg.attr});
-    map.addLayer({id:'sat',type:'raster',source:'satellite'}, firstOther ? firstOther.id : undefined);
-    imgMaxZoom = cfg.maxz;
-    map.triggerRepaint();
-  }catch(e){}
-}
-imgSrc.onchange = ()=>{ setImagery(imgSrc.value); };
-
-/* ---------- Harita (uydu) kaynağı seçimi sonu ---------- */
-exag.oninput=()=>{ exagVal.textContent=parseFloat(exag.value).toFixed(1)+'×'; terrainLast=0; applyTerrain(); };
-
-// Arazi verisi (DEM) zoom 15'e kadar mevcut; ötesinde esnetildiği için dik
-// yamaçlarda bozulma olur. Yaklaştıkça abartıyı azaltıp, çok yakında tamamen kapatıyoruz.
-let terrainLast = 0, terrainOff = false;
-function applyTerrain(force){
-  // Tur/kayıt sırasında araziye ASLA dokunma — açıp kapatmak siyah bant hatası yapar
-  if(orbiting && !force) return;
-  const now = Date.now();
-  if(!force && now - terrainLast < 300) return;
-  terrainLast = now;
-  try{
-    if(terrainChk && !terrainChk.checked){
-      if(!terrainOff){ map.setTerrain(null); terrainOff=true; }
-      return;
-    }
-    const base = parseFloat(exag.value)||1.5;
-    const z = map.getZoom();
-    // histerezis: 17.3 üstünde kapat, 16.8 altına inince geri aç (sınırda titremesin)
-    if(!terrainOff && z >= 17.3){ map.setTerrain(null); terrainOff=true; return; }
-    if(terrainOff && z > 16.8) return;
-    const f = z<=15.3 ? 1 : Math.max(0.3, 1-(z-15.3)*0.38);
-    map.setTerrain({source:'terrain', exaggeration: Math.max(base*f, 0.15)});
-    terrainOff=false;
-  }catch(e){}
-}
-map.on('zoom', ()=>applyTerrain());
-map.on('zoomend', ()=>applyTerrain(true));
-terrainChk.onchange = ()=>{ terrainLast=0; terrainOff=!terrainChk.checked ? false : terrainOff; applyTerrain(true); };
-pitch.oninput=()=>{ pitchVal.textContent=pitch.value+'°'; map.easeTo({pitch:parseFloat(pitch.value),duration:300}); };
-fitBtn.onclick=()=>{ if(map.getSource('parcel')) fitToParcel(map.getSource('parcel')._data); };
-
-fillColor.oninput=()=>{ if(map.getLayer('parcel-fill')) map.setPaintProperty('parcel-fill','fill-color',fillColor.value); };
-opacity.oninput=()=>{ opVal.textContent=parseFloat(opacity.value).toFixed(2); if(map.getLayer('parcel-fill')) map.setPaintProperty('parcel-fill','fill-opacity',parseFloat(opacity.value)); };
-lineColor.oninput=()=>{
-  if(map.getLayer('parcel-line')) map.setPaintProperty('parcel-line','line-color',lineColor.value);
-  ['trace-glow2','trace-glow','trace-line'].forEach(id=>{
-    if(map.getLayer(id)) map.setPaintProperty(id,'line-color',lineColor.value);
-  });
-};
-lineWidth.oninput=()=>{
-  lwVal.textContent=lineWidth.value+'px';
-  const w=parseFloat(lineWidth.value);
-  if(map.getLayer('parcel-line')) map.setPaintProperty('parcel-line','line-width',w);
-  if(map.getLayer('trace-glow2')) map.setPaintProperty('trace-glow2','line-width',w*7);
-  if(map.getLayer('trace-glow')) map.setPaintProperty('trace-glow','line-width',w*3.4);
-  if(map.getLayer('trace-line')) map.setPaintProperty('trace-line','line-width',w*1.4);
-  if(map.getLayer('trace-core')) map.setPaintProperty('trace-core','line-width',Math.max(w*0.5,1));
-};
-
-/* ---------- Yeni Nesil Sinematik Drone Turu ---------- */
-let orbiting=false,raf;
-const DEG_PER_SEC = 6;   // dönüş hızı (derece/sn) — cihazdan bağımsız, sabit
-
-let tourStart = 0;
-let startBearing = 0;
-let initialZoom = 15;
-let initialPitch = 65;
-
-function orbit(){ 
-  if(!orbiting)return; 
-
-  const mode = document.getElementById('tourType').value;
-  const totalSeconds = parseInt(document.getElementById('recLen').value, 10) || 57;
-  const elapsed = (Date.now() - tourStart) / 1000;        // gerçek geçen süre (sn)
-  const progress = Math.min(elapsed / totalSeconds, 1);   // 0 → 1, tam süreye yayılır
-
-  // dönüş — zamana bağlı (kare hızından bağımsız, hep aynı hızda)
-  map.setBearing(startBearing + elapsed * DEG_PER_SEC);
-
-  if (mode === 'helix') {
-    // dönerek uzaklaş + yüksel (zaten geniş biter)
-    map.setZoom(initialZoom - (progress * 1.3));
-    map.setPitch(Math.max(initialPitch - (progress * 18), 45));
-  } else if (mode === 'dive') {
-    // önce yaklaşır sonra geri açılır: video parseli ve çevresini görerek biter
-    const dz = Math.sin(progress * Math.PI) * 0.9;   // ortada +0.9, başta/sonda 0
-    map.setZoom(Math.min(initialZoom + dz, imgMaxZoom-0.3));
-    map.setPitch(Math.max(initialPitch - (progress * 10), 52));
-  } else {
-    // klasik dönüş — çok hafif yakınlaş, sonra düzelt; hep yukarıdan bakar
-    const dz = Math.sin(progress * Math.PI) * 0.4;   // en fazla +0.4, sonda 0'a döner
-    map.setZoom(initialZoom + dz);
-    map.setPitch(Math.max(initialPitch - (progress * 6), 54));
+    if(!cakisiyor) secilen.push(k);
+    if(secilen.length >= 6) break;
   }
-
-  // Işın videodan önce tamamlansın: 15sn→5sn erken, 30sn→10sn, 57/90sn→15sn erken
-  const early = totalSeconds<=15 ? 5 : (totalSeconds<=30 ? 10 : 15);
-  const traceProgress = Math.min(elapsed / Math.max(totalSeconds - early, 1), 1);
-  updateTrace(traceProgress);
-  updateRoads(traceProgress);
-
-  raf=requestAnimationFrame(orbit); 
+  return secilen;
 }
 
-/* ---------- Lazer sınır çizimi ---------- */
-let traceLines = [];
-const TRACE_LAYERS = ['trace-glow2','trace-glow','trace-line','trace-core'];
-const HLTRACE_LAYERS = ['hltrace-glow2','hltrace-glow','hltrace-line','hltrace-core'];
-function setTraceVisible(on){
-  if(!map.getLayer('parcel-line')) return;
-  map.setPaintProperty('parcel-line','line-opacity', on?0:1);
-  TRACE_LAYERS.forEach(id=>{
-    if(map.getLayer(id)) map.setLayoutProperty(id,'visibility', on?'visible':'none');
-  });
-  // vurgu (hisse) bölümü de aynı şekilde
-  if(map.getLayer('hl-line')) map.setPaintProperty('hl-line','line-opacity', on?0:1);
-  HLTRACE_LAYERS.forEach(id=>{
-    if(map.getLayer(id)) map.setLayoutProperty(id,'visibility', on?'visible':'none');
-  });
-}
-let traceLastUpd = 0;
-function updateTrace(progress){
-  if(!traceChk.checked || !traceLines.length || !map.getSource('trace')) return;
-  const now = Date.now();
-  if(now - traceLastUpd < 55 && progress < 1) return;   // ~18 fps: kayıt akıcı kalsın
-  traceLastUpd = now;
-  const p = Math.min(Math.max(progress,0.0001),1);
-  // dolgu da sıfırdan görünür hale gelsin (video boyunca yavaşça)
-  if(map.getLayer('parcel-fill')) map.setPaintProperty('parcel-fill','fill-opacity', parseFloat(opacity.value)*p);
-  const feats=[];
-  traceLines.forEach(t=>{
-    try{
-      feats.push(turf.lineSliceAlong(t.line, 0, Math.max(t.len*p, 0.0005)));
-    }catch(e){}
-  });
-  map.getSource('trace').setData({type:'FeatureCollection',features:feats});
-  // vurgu bölümü de ışınla çizilsin + dolgusu belirsin
-  if(hlTraceLines.length && map.getSource('hltrace')){
-    if(map.getLayer('hl-fill')) map.setPaintProperty('hl-fill','fill-opacity', 0.45*p);
-    const hf=[];
-    hlTraceLines.forEach(t=>{
-      try{ hf.push(turf.lineSliceAlong(t.line, 0, Math.max(t.len*p, 0.0005))); }catch(e){}
+$('b-plaka').addEventListener('click', () => {
+  if(aktif < 0) return;
+  const b = $('b-plaka'); b.disabled = true; b.textContent = 'Aranıyor…';
+  setTimeout(() => {
+    const f = foto[aktif];
+    let bulunan = [];
+    try{ bulunan = plakaAday(f.bit); }catch(err){ console.warn(err); }
+    bulunan.forEach(p => {
+      const pay = p.h * 0.35;
+      f.lekeler.push({ t:'r', g:yeniGrup(f), x:p.x-pay, y:p.y-pay, w:p.w+pay*2, h:p.h+pay*2 });
     });
-    map.getSource('hltrace').setData({type:'FeatureCollection',features:hf});
-  }
-}
-function resetTrace(){
-  if(map.getSource('trace')) map.getSource('trace').setData({type:'FeatureCollection',features:[]});
-  if(map.getLayer('parcel-fill')) map.setPaintProperty('parcel-fill','fill-opacity', parseFloat(opacity.value));
-  if(map.getSource('hltrace')) map.getSource('hltrace').setData({type:'FeatureCollection',features:[]});
-  if(map.getLayer('hl-fill')) map.setPaintProperty('hl-fill','fill-opacity', 0.45);
-  setTraceVisible(false);
-  resetRoads();
-}
+    ciz(); seritCiz();
+    b.textContent = bulunan.length ? bulunan.length + ' aday işaretlendi' : 'Plaka bulunamadı';
+    if(!bulunan.length) $('ipuc').textContent = 'Plaka bulunamadı. "Bulanıklaştır" moduyla elle kapatabilirsiniz.';
+    setTimeout(() => { b.textContent = 'Plakaları bul'; b.disabled = false; }, 2500);
+  }, 30);
+});
 
-orbitBtn.onclick=()=>{
-  orbiting=!orbiting;
-  orbitBtn.textContent = orbiting ? '⏹ Drone Turunu Durdur' : '🚁 Drone Turu Başlat';
-  if(orbiting){ 
-    tourStart = Date.now();
-    startBearing = map.getBearing();
-    initialZoom = map.getZoom();
-    initialPitch = Math.min(Math.max(parseFloat(pitch.value),58),68);
+/* ---------- üretim ---------- */
+async function uret(f){
+  const k = kadraj(f);
+  const uzun = parseInt($('kenar').value);
+  const s = uzun / Math.max(k.w, k.h);
+  const W = Math.round(k.w*s), H = Math.round(k.h*s);
 
-    // ARAZİ KARARI: tur boyunca değişmeyecek şekilde bir kez ver.
-    // Turun ulaşacağı en yüksek zoom 17.3'ü geçiyorsa arazi kapalı başlar (siyah bant hatası olmaz).
-    try{
-      const mode0 = document.getElementById('tourType').value;
-      const peakZoom = initialZoom + (mode0==='dive' ? 0.9 : (mode0==='helix' ? 0 : 0.4));
-      if(!terrainChk.checked || peakZoom >= 17.3){
-        map.setTerrain(null); terrainOff = true;
-      }else{
-        const base = parseFloat(exag.value)||1.5;
-        const f = initialZoom<=15.3 ? 1 : Math.max(0.3, 1-(initialZoom-15.3)*0.38);
-        map.setTerrain({source:'terrain', exaggeration: Math.max(base*f, 0.15)});
-        terrainOff = false;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high';
+  g.filter = filtre(f);
+  g.drawImage(f.bit, k.x, k.y, k.w, k.h, 0, 0, W, H);
+  g.filter = 'none';
+
+  if(f.lekeler.length){
+    const b = document.createElement('canvas'); b.width = W; b.height = H;
+    const bg = b.getContext('2d');
+    bg.filter = 'blur(' + Math.max(8, W*0.025) + 'px) ' + (filtre(f)==='none'?'':filtre(f));
+    bg.drawImage(f.bit, k.x, k.y, k.w, k.h, 0, 0, W, H);
+    g.save(); g.beginPath();
+    f.lekeler.forEach(l => {
+      if(l.t === 'c'){
+        const x=(l.x-k.x)*s, y=(l.y-k.y)*s, r=l.r*s;
+        g.moveTo(x+r, y); g.arc(x, y, r, 0, 7);
+      } else {
+        g.rect((l.x-k.x)*s, (l.y-k.y)*s, l.w*s, l.h*s);
       }
-    }catch(e){}
-    if(traceChk.checked && traceLines.length){
-      setTraceVisible(true);
-      if(map.getLayer('parcel-fill')) map.setPaintProperty('parcel-fill','fill-opacity',0);
-      updateTrace(0);
-    }
-    if(roadChk.checked && roadLines.length && map.getSource('roads')){
-      map.getSource('roads').setData({type:'FeatureCollection',features:[]});
-      roadLastUpd = 0; updateRoads(0);
-    }
-    map.easeTo({pitch:initialPitch,duration:600}); 
-    orbit(); 
+    });
+    g.clip(); g.drawImage(b, 0, 0); g.restore();
   }
-  else { cancelAnimationFrame(raf); resetTrace(); applyTerrain(true); }
-};
 
-/* ---------- Videoya gömülen danışman etiketi ---------- */
-function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-function textOn(hex){ const c=(hex||'#0d9488').replace('#',''); const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16); return ((0.299*r+0.587*g+0.114*b)/255)>0.62 ? '#152230' : '#ffffff'; }
-function drawOverlay(ctx,w,h){
-  if(!ovToggle.checked) return;
-  const name=(ovName.value||'').trim(), phone=(ovPhone.value||'').trim();
-  const hasImg = ovImgEl && ovImgReady;
-  if(!name && !phone && !hasImg) return;
-  const pad=Math.round(h*0.020), fs=Math.round(h*0.032), fs2=Math.round(h*0.022), margin=Math.round(h*0.03);
-  ctx.font=`700 ${fs}px "Segoe UI",system-ui,sans-serif`;
-  const nameW=name?ctx.measureText(name).width:0;
-  ctx.font=`500 ${fs2}px "Segoe UI",system-ui,sans-serif`;
-  const phoneW=phone?ctx.measureText(phone).width:0;
-  const textW=Math.max(nameW,phoneW);
-  const textH=(name?fs:0)+(phone?Math.round(fs2*1.5):0);
-  const avSize=hasImg?Math.round(h*0.075):0;
-  const gap=hasImg?Math.round(h*0.014):0;
-  const contentH=Math.max(avSize,textH);
-  const boxW=pad*2 + avSize + gap + textW;
-  const boxH=pad*2 + contentH;
-  const x = ovCorner.value==='br' ? (w-boxW-margin) : margin;
-  const y = h-boxH-margin;
-  roundRect(ctx,x,y,boxW,boxH,Math.round(h*0.013)); ctx.fillStyle=ovBg.value; ctx.fill();
-  const tc=textOn(ovBg.value);
-  if(hasImg){
-    const ax=x+pad, ay=y+(boxH-avSize)/2, r=avSize/2;
-    ctx.save(); ctx.beginPath(); ctx.arc(ax+r,ay+r,r,0,Math.PI*2); ctx.clip();
-    ctx.drawImage(ovImgEl,ax,ay,avSize,avSize); ctx.restore();
-    ctx.beginPath(); ctx.arc(ax+r,ay+r,r,0,Math.PI*2); ctx.lineWidth=Math.max(2,h*0.0035); ctx.strokeStyle=tc; ctx.globalAlpha=.85; ctx.stroke(); ctx.globalAlpha=1;
+  const hedef = parseInt($('hedef').value) * 1024;
+  let alt = 0.4, ust = 0.94, iyi = null;
+  for(let i=0; i<7; i++){
+    const q = (alt+ust)/2;
+    const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', q));
+    if(blob.size > hedef){ ust = q; } else { iyi = blob; alt = q; }
   }
-  const tx=x+pad+(hasImg?avSize+gap:0);
-  let ty=y+(boxH-textH)/2;
-  ctx.fillStyle=tc; ctx.textBaseline='top';
-  if(name){ ctx.font=`700 ${fs}px "Segoe UI",system-ui,sans-serif`; ctx.fillText(name,tx,ty); ty+=fs; }
-  if(phone){ ctx.font=`500 ${fs2}px "Segoe UI",system-ui,sans-serif`; ctx.fillText(phone,tx,ty+Math.round(fs2*0.4)); }
+  return iyi || await new Promise(res => c.toBlob(res, 'image/jpeg', 0.4));
 }
 
-/* ---------- Otomatik video kaydı (en-boy oranlı) ---------- */
-let mediaRec, recChunks=[];
-const RATIO_MAP = {'16:9':16/9, '9:16':9/16, '1:1':1};
+function onekAl(){
+  return ($('onek').value || 'ilan').trim().replace(/[^\wçğıöşüÇĞİÖŞÜ-]/g,'-');
+}
+async function hepsiniUret(){
+  const onek = onekAl(), cikti = [];
+  for(let i=0;i<foto.length;i++){
+    $('durum').textContent = (i+1) + ' / ' + foto.length + ' hazırlanıyor…';
+    const blob = await uret(foto[i]);
+    cikti.push({ ad: onek + '-' + String(i+1).padStart(2,'0') + '.jpg', blob });
+  }
+  return cikti;
+}
 
-recordBtn.onclick=()=>{
-  if(!hasParcel){ alert('Önce bir parsel yükle.'); return; }
+$('b-indir').addEventListener('click', async () => {
+  if(!foto.length) return;
+  const b = $('b-indir'); b.disabled = true;
+  const cikti = await hepsiniUret();
+  $('durum').textContent = 'Zip paketleniyor…';
+  const zip = new JSZip();
+  cikti.forEach(x => zip.file(x.ad, x.blob));
+  const paket = await zip.generateAsync({type:'blob'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(paket);
+  a.download = onekAl() + '-fotograflar.zip';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  $('durum').textContent = foto.length + ' fotoğraf indirildi.';
+  $('bitti').classList.remove('gizli');
+  b.disabled = false;
+});
 
-  const mapEl = map.getContainer();
-  const aspect = RATIO_MAP[ratioSel.value] || 16/9;
-
-  // haritayı seçilen orana göre geçici olarak yeniden boyutlandır
-  const saved = {left:mapEl.style.left,top:mapEl.style.top,right:mapEl.style.right,bottom:mapEl.style.bottom,width:mapEl.style.width,height:mapEl.style.height};
-  const restore = ()=>{
-    mapEl.style.left=saved.left; mapEl.style.top=saved.top;
-    mapEl.style.right=saved.right; mapEl.style.bottom=saved.bottom;
-    mapEl.style.width=saved.width; mapEl.style.height=saved.height;
-    map.resize();
-    if(map.getSource('parcel')) fitToParcel(map.getSource('parcel')._data);
-  };
-
-  const margin=30;
-  let availH=window.innerHeight-margin*2, availW=window.innerWidth-margin*2;
-  let bh=availH, bw=bh*aspect;
-  if(bw>availW){ bw=availW; bh=bw/aspect; }
-  mapEl.style.right='auto'; mapEl.style.bottom='auto';
-  mapEl.style.width=Math.round(bw)+'px'; mapEl.style.height=Math.round(bh)+'px';
-  mapEl.style.left=Math.round((window.innerWidth-bw)/2)+'px';
-  mapEl.style.top=Math.round((window.innerHeight-bh)/2)+'px';
-  map.resize();
-  if(map.getSource('parcel')) fitToParcel(map.getSource('parcel')._data);
-
-  recordBtn.disabled=true;
-  recBadge.style.display='block';
-  recBadge.textContent='● Hazırlanıyor…';
-
-  // çerçeve tam otursun diye fit animasyonundan (1400ms) sonra başlat
-  setTimeout(()=>startRecording(restore), 1600);
-};
-
-function startRecording(restore){
-  const mapCanvas = map.getCanvas();
-
-  // Sabit çıktı çözünürlüğü — ekrandan bağımsız, her cihazda aynı kalite
-  const RES_MAP = {'16:9':[1920,1080], '9:16':[1080,1920], '1:1':[1080,1080]};
-  const [W,H] = RES_MAP[ratioSel.value] || [1920,1080];
-  const rc = document.createElement('canvas'); rc.width=W; rc.height=H;
-  const rctx = rc.getContext('2d');
-
-  let compositing=true;
-  let blackChecked=false;
-  (function frame(){
-    if(!compositing) return;
-    try{
-      const w=mapCanvas.width, h=mapCanvas.height;
-      if(w>0 && h>0){
-        // cover-crop: haritayı hedefe taşan şekilde ölçekle, ortala (boşluk kalmaz)
-        const s=Math.max(W/w, H/h), dw=w*s, dh=h*s;
-        rctx.fillStyle='#0b1a1f'; rctx.fillRect(0,0,W,H);
-        rctx.drawImage(mapCanvas, (W-dw)/2, (H-dh)/2, dw, dh);
-        drawOverlay(rctx,W,H);
-      }
-      map.triggerRepaint();   // harita sürekli çizilsin, kare donmasın
-    }catch(e){}
-    requestAnimationFrame(frame);
-  })();
-
-  // 1,5 sn sonra kareyi kontrol et: tamamen siyahsa kullanıcıyı uyar
-  setTimeout(()=>{
-    if(blackChecked) return; blackChecked=true;
-    try{
-      const d = rctx.getImageData(Math.floor(W/2), Math.floor(H/2), 8, 8).data;
-      let sum=0; for(let i=0;i<d.length;i+=4) sum += d[i]+d[i+1]+d[i+2];
-      if(sum < 60){
-        recBadge.textContent='⚠ Görüntü alınamıyor';
-        console.warn('Siyah kare tespit edildi — WebGL bağlamı kaybolmuş olabilir.');
-      }
-    }catch(e){}
-  }, 1500);
-
-  const fail = (msg)=>{ compositing=false; if(restore) restore(); recBadge.style.display='none'; recordBtn.disabled=false; alert(msg); };
-
-  let stream;
-  try{ stream = rc.captureStream(30); }
-  catch(e){ fail('Tarayıcın otomatik kaydı desteklemiyor. Ekran kaydını kullan.'); return; }
-
-  const candidates = ['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm'];
-  let mime=''; for(const t of candidates){ try{ if(MediaRecorder.isTypeSupported(t)){ mime=t; break; } }catch(e){} }
-  const ext = mime.indexOf('mp4')>-1 ? 'mp4' : 'webm';
-  const outType = ext==='mp4' ? 'video/mp4' : 'video/webm';
-
-  try{ mediaRec = new MediaRecorder(stream, mime ? {mimeType:mime,videoBitsPerSecond:16000000} : {videoBitsPerSecond:16000000}); }
-  catch(e){ fail('Kayıt başlatılamadı. Ekran kaydını kullan.'); return; }
-
-  recChunks=[];
-  mediaRec.ondataavailable = e=>{ if(e.data && e.data.size) recChunks.push(e.data); };
-  mediaRec.onstop = ()=>{
-    compositing=false;
-    const blob = new Blob(recChunks,{type:outType});
-    const url = URL.createObjectURL(blob);
+$('b-telefon').addEventListener('click', async () => {
+  if(!foto.length) return;
+  const b = $('b-telefon'); b.disabled = true;
+  const cikti = await hepsiniUret();
+  $('durum').textContent = 'Dosyalar indiriliyor…';
+  for(const x of cikti){
     const a = document.createElement('a');
-    a.href=url; a.download='parsel-tur.'+ext; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-    if(restore) restore();
-  };
-
-  if(!orbiting) orbitBtn.click();
-  mediaRec.start();   // parçasız kayıt: video ileri/geri sarılabilir olur
-  const REC_SECONDS = parseInt(recLen.value,10) || 57;
-  let secs = REC_SECONDS;
-  recBadge.style.display='block';
-  recBadge.textContent='● Kaydediliyor… '+secs+'s';
-  const iv = setInterval(()=>{
-    secs--;
-    recBadge.textContent='● Kaydediliyor… '+secs+'s';
-    if(secs<=0){
-      clearInterval(iv);
-      try{ mediaRec.stop(); }catch(e){}
-      recBadge.style.display='none';
-      recordBtn.disabled = false;
-      if(orbiting) orbitBtn.click();
-    }
-  },1000);
-}
-
-/* ---------- Danışman etiketi canlı önizleme ---------- */
-let ovImgEl=null, ovImgReady=false;
-
-/* Fotoğraf düzenleyici */
-let srcImg=null, cropScale=1, cropBase=1, cropOx=0, cropOy=0;
-const CV=260, cropCtx=cropCanvas.getContext('2d');
-
-ovPhotoBtn.onclick=()=>{ if(srcImg){ photoEdit.classList.add('open'); drawCrop(); } else ovPhotoInput.click(); };
-ovPhotoInput.onchange=e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=()=>{ const im=new Image(); im.onload=()=>{ srcImg=im; initCrop(); photoEdit.classList.add('open'); }; im.src=r.result; };
-  r.readAsDataURL(f);
-  e.target.value='';
-};
-function initCrop(){
-  cropBase = CV / Math.min(srcImg.width, srcImg.height);
-  cropZoom.value=1; cropScale=cropBase;
-  cropOx=(CV-srcImg.width*cropScale)/2; cropOy=(CV-srcImg.height*cropScale)/2;
-  drawCrop();
-}
-function clampCrop(){
-  const iw=srcImg.width*cropScale, ih=srcImg.height*cropScale;
-  cropOx=Math.min(0,Math.max(CV-iw,cropOx));
-  cropOy=Math.min(0,Math.max(CV-ih,cropOy));
-}
-function drawCrop(){
-  if(!srcImg) return;
-  cropCtx.clearRect(0,0,CV,CV);
-  cropCtx.drawImage(srcImg,cropOx,cropOy,srcImg.width*cropScale,srcImg.height*cropScale);
-  cropCtx.save();
-  cropCtx.fillStyle='rgba(12,19,34,.55)';
-  cropCtx.beginPath(); cropCtx.rect(0,0,CV,CV); cropCtx.arc(CV/2,CV/2,CV/2-2,0,Math.PI*2,true); cropCtx.fill('evenodd');
-  cropCtx.restore();
-  cropCtx.beginPath(); cropCtx.arc(CV/2,CV/2,CV/2-2,0,Math.PI*2); cropCtx.strokeStyle='#fff'; cropCtx.lineWidth=2; cropCtx.stroke();
-}
-cropZoom.oninput=()=>{
-  const ns=cropBase*parseFloat(cropZoom.value), c=CV/2, k=ns/cropScale;
-  cropOx=c-(c-cropOx)*k; cropOy=c-(c-cropOy)*k; cropScale=ns; clampCrop(); drawCrop();
-};
-let dragging=false,lastX,lastY;
-cropCanvas.addEventListener('pointerdown',e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; cropCanvas.setPointerCapture(e.pointerId); });
-cropCanvas.addEventListener('pointermove',e=>{ if(!dragging)return; const rc=cropCanvas.getBoundingClientRect(); cropOx+=(e.clientX-lastX)*(CV/rc.width); cropOy+=(e.clientY-lastY)*(CV/rc.height); lastX=e.clientX; lastY=e.clientY; clampCrop(); drawCrop(); });
-cropCanvas.addEventListener('pointerup',()=>dragging=false);
-cropCanvas.addEventListener('pointercancel',()=>dragging=false);
-cropApply.onclick=()=>{
-  const O=440, oc=document.createElement('canvas'); oc.width=O; oc.height=O;
-  const octx=oc.getContext('2d'), ratio=O/CV;
-  octx.drawImage(srcImg, cropOx*ratio, cropOy*ratio, srcImg.width*cropScale*ratio, srcImg.height*cropScale*ratio);
-  const data=oc.toDataURL('image/png'), im=new Image();
-  im.onload=()=>{ ovImgEl=im; ovImgReady=true; ovPreviewImg.src=data; ovPreviewImg.classList.add('show'); ovPhotoBtn.textContent='✓ Fotoğrafı düzenle'; updateOverlayPreview(); };
-  im.src=data;
-  photoEdit.classList.remove('open');
-};
-cropRemove.onclick=()=>{
-  srcImg=null; ovImgEl=null; ovImgReady=false;
-  ovPreviewImg.classList.remove('show'); ovPreviewImg.src='';
-  ovPhotoBtn.textContent='📷 Fotoğraf Seç';
-  photoEdit.classList.remove('open'); updateOverlayPreview();
-};
-photoEditClose.onclick=()=>photoEdit.classList.remove('open');
-photoEdit.onclick=e=>{ if(e.target===photoEdit) photoEdit.classList.remove('open'); };
-
-function updateOverlayPreview(){
-  const name=ovName.value.trim(), phone=ovPhone.value.trim();
-  ovPreview.classList.toggle('hide', !ovToggle.checked || (!name && !phone && !ovImgReady));
-  ovPreview.classList.toggle('br', ovCorner.value==='br');
-  ovPreview.classList.toggle('bl', ovCorner.value==='bl');
-  ovPreview.style.background=ovBg.value;
-  ovPreview.style.color=textOn(ovBg.value);
-  ovPreviewName.textContent=name;
-  ovPreviewPhone.textContent=phone;
-  // Sağ alttaki kartı da güncelle
-  cardWho.textContent = name || 'Danışman kartınız';
-  cardRole.textContent = name ? (phone || 'Gayrimenkul Danışmanı') : 'Adınızı soldan ekleyin, videoya işlensin';
-  if(ovImgReady && ovPreviewImg.src){ cardAv.src=ovPreviewImg.src; cardAv.style.display='block'; cardAvPh.style.display='none'; }
-  else { cardAv.style.display='none'; cardAvPh.style.display='flex'; }
-}
-ovName.oninput=updateOverlayPreview; ovPhone.oninput=updateOverlayPreview;
-ovCorner.onchange=updateOverlayPreview; ovToggle.onchange=updateOverlayPreview;
-ovBg.oninput=updateOverlayPreview;
-updateOverlayPreview();
-
-/* ---------- Yardım penceresi açılışı ---------- */
-helpBtn.onclick=()=>window.open('nasil-yapilir.html','_blank');
-
-/* ---------- Pazarlama kartı ---------- */
-function updateCard(){ cardAda.textContent=adaText.value||'—'; }
-adaText.oninput=updateCard;
-cardToggle.onchange=()=>card.classList.toggle('hide',!cardToggle.checked);
-
-/* ---------- İletişim penceresi ---------- */
-cta.onclick   = ()=> modal.classList.add('open');
-modalClose.onclick = ()=> modal.classList.remove('open');
-modal.onclick = e=>{ if(e.target===modal) modal.classList.remove('open'); };
-
-/* ---------- Panel aç/kapa ---------- */
-toggle.onclick=()=>panel.classList.toggle('closed');
-</script>
-<!-- Mobil yönlendirme -->
-<div id="mobileBar">
-  <b>📱 Telefondan mı girdin?</b> Araç telefonda da çalışır; ama en akıcı 3D ve en kaliteli video <b>bilgisayar + Chrome</b>'da alınır. Linki kendine gönder, bilgisayarda 2 dakikada videon hazır.
-  <div class="row">
-    <button class="share" id="mbShare">🔗 Linki paylaş / kopyala</button>
-    <button class="close" id="mbClose">✕</button>
-  </div>
-</div>
-
-<!-- İlk kullanım ipucu -->
-<div id="firstTip">
-  <b>3 adımda video:</b><br>
-  1️⃣ TKGM <b>Parsel Sorgu</b>'dan parselini bul, <b>GeoJSON</b> indir<br>
-  2️⃣ <b>"GeoJSON Dosyası Seç"</b> ile yükle (adın videoya işlenir)<br>
-  3️⃣ <b>"🎬 Video Kaydet"</b> — MP4 otomatik iner<br>
-  <button class="ok" id="tipOk">Anladım, başlayalım</button>
-</div>
-
-<script>
-/* ---------- Yakındaki ana yollar (OpenStreetMap / Overpass) ---------- */
-let roadLines = [], roadBusy = false;
-
-function roadEnsureLayers(){
-  if(map.getSource('roads')) return;
-  map.addSource('roads',{type:'geojson',data:{type:'FeatureCollection',features:[]},
-    attribution:'Yollar © OpenStreetMap katkıcıları (ODbL)'});
-  const before = map.getLayer('parcel-fill') ? 'parcel-fill' : undefined;
-  // geniş yumuşak hale
-  map.addLayer({id:'road-glow',type:'line',source:'roads',
-    layout:{'line-cap':'round','line-join':'round'},
-    paint:{'line-color':roadColor.value,'line-width':26,'line-opacity':0.18,'line-blur':10}}, before);
-  // saydam bant (yolun içi)
-  map.addLayer({id:'road-band',type:'line',source:'roads',
-    layout:{'line-cap':'round','line-join':'round'},
-    paint:{'line-color':roadColor.value,'line-width':13,'line-opacity':0.42,'line-blur':1.5}}, before);
-  // parlak çekirdek
-  map.addLayer({id:'road-core',type:'line',source:'roads',
-    layout:{'line-cap':'round','line-join':'round'},
-    paint:{'line-color':'#ffffff','line-width':2.2,'line-opacity':0.75,'line-blur':0.6}}, before);
-}
-const ROAD_LAYERS = ['road-glow','road-band','road-core'];
-
-async function fetchRoads(){
-  if(!hasParcel){ alert('Önce bir parsel yükle.'); return; }
-  if(roadBusy) return;
-  roadBusy = true;
-  roadInfo.style.display='block';
-  roadInfo.textContent='Yollar getiriliyor…';
-  try{
-    const c = turf.center(map.getSource('parcel')._data).geometry.coordinates;
-    const r = parseInt(roadRadius.value,10) || 1200;
-    const q = `[out:json][timeout:20];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link)$"](around:${r},${c[1]},${c[0]});out geom;`;
-    const endpoints = [
-      'https://overpass-api.de/api/interpreter',
-      'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter',
-      'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
-    ];
-    let data=null, lastErr=null, tried=0;
-    for(const url of endpoints){
-      tried++;
-      roadInfo.textContent='Yollar getiriliyor… ('+tried+'/'+endpoints.length+' sunucu deneniyor)';
-      // her sunucuya en fazla 15 sn şans ver, takılıp kalmasın
-      const ctrl = new AbortController();
-      const timer = setTimeout(()=>ctrl.abort(), 15000);
-      try{
-        let res = await fetch(url,{method:'POST',body:'data='+encodeURIComponent(q),
-          headers:{'Content-Type':'application/x-www-form-urlencoded'}, signal:ctrl.signal});
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        data = await res.json();
-        clearTimeout(timer);
-        if(data) break;
-      }catch(err){
-        clearTimeout(timer);
-        lastErr=err;
-        // POST olmadıysa aynı sunucuda GET dene
-        try{
-          const ctrl2 = new AbortController();
-          const t2 = setTimeout(()=>ctrl2.abort(), 15000);
-          const res2 = await fetch(url+'?data='+encodeURIComponent(q), {signal:ctrl2.signal});
-          clearTimeout(t2);
-          if(res2.ok){ data = await res2.json(); if(data) break; }
-        }catch(err2){ lastErr=err2; }
-      }
-    }
-    if(!data) throw lastErr || new Error('bağlantı yok');
-
-    const feats=[];
-    (data.elements||[]).forEach(el=>{
-      if(el.type==='way' && el.geometry && el.geometry.length>1){
-        feats.push({type:'Feature',
-          properties:{name: el.tags && (el.tags.ref||el.tags.name) || ''},
-          geometry:{type:'LineString',coordinates: el.geometry.map(p=>[p.lon,p.lat])}});
-      }
-    });
-    if(!feats.length){
-      roadInfo.textContent='Bu yarıçapta ana yol bulunamadı. Yarıçapı büyütmeyi dene.';
-      roadLines=[]; roadBusy=false; return;
-    }
-    // parselin merkezine en yakın nokta = çizimin başlangıç noktası (iki yöne açılır)
-    const ctr = turf.point(c);
-    roadLines = feats.map(f=>{
-      let len=0, anchor=0;
-      try{
-        len = turf.length(f);
-        const np = turf.nearestPointOnLine(f, ctr);
-        anchor = Math.min(Math.max(np.properties.location || 0, 0), len);
-      }catch(e){}
-      return {line:f, len, anchor};
-    }).filter(t=>t.len>0).sort((a,b)=>b.len-a.len).slice(0,30);
-
-    roadEnsureLayers();
-    roadChk.checked = true;
-    setRoadVisible(true);
-    // tur çalışmıyorsa tamamını göster
-    if(!orbiting) map.getSource('roads').setData({type:'FeatureCollection',features:roadLines.map(t=>t.line)});
-    const names=[...new Set(roadLines.map(t=>t.line.properties.name).filter(Boolean))].slice(0,4);
-    roadInfo.innerHTML = roadLines.length+' yol bulundu'+(names.length? ' · '+names.join(', ') : '');
-  }catch(e){
-    roadInfo.innerHTML='Yollar getirilemedi. Tüm sunucular meşgul olabilir — birkaç dakika sonra <b>Yolları Getir</b>e tekrar bas. (Yarıçapı küçültmek de hızlandırır.)';
+    a.href = URL.createObjectURL(x.blob);
+    a.download = x.ad;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    await new Promise(r => setTimeout(r, 400));
   }
-  roadBusy=false;
-}
-
-function setRoadVisible(on){
-  ROAD_LAYERS.forEach(id=>{
-    if(map.getLayer(id)) map.setLayoutProperty(id,'visibility', (on && roadChk.checked) ? 'visible':'none');
-  });
-}
-let roadLastUpd = 0;
-function updateRoads(progress){
-  if(!roadChk.checked || !roadLines.length || !map.getSource('roads')) return;
-  const now = Date.now();
-  if(now - roadLastUpd < 70) return;   // performans için kare atla
-  roadLastUpd = now;
-  const p = Math.min(Math.max(progress,0.0001),1);
-  const feats=[];
-  roadLines.forEach(t=>{
-    try{
-      // en yakın noktadan iki yöne doğru aç
-      const a = t.anchor || 0;
-      const start = Math.max(a - a * p, 0);
-      const end   = Math.min(a + (t.len - a) * p, t.len);
-      const s2 = Math.min(start, Math.max(end - 0.004, 0));
-      const e2 = Math.max(end, Math.min(start + 0.004, t.len));
-      feats.push(turf.lineSliceAlong(t.line, s2, e2));
-    }catch(e){}
-  });
-  map.getSource('roads').setData({type:'FeatureCollection',features:feats});
-}
-function resetRoads(){
-  if(!map.getSource('roads')) return;
-  map.getSource('roads').setData({type:'FeatureCollection',features: roadChk.checked ? roadLines.map(t=>t.line) : []});
-  setRoadVisible(true);
-}
-
-roadLoad.onclick = fetchRoads;
-roadChk.onchange = ()=>{
-  if(roadChk.checked && !roadLines.length){ fetchRoads(); return; }
-  setRoadVisible(true);
-  if(!orbiting) resetRoads();
-};
-roadColor.oninput = ()=>{
-  if(map.getLayer('road-glow')) map.setPaintProperty('road-glow','line-color',roadColor.value);
-  if(map.getLayer('road-band')) map.setPaintProperty('road-band','line-color',roadColor.value);
-};
-
-/* ---------- Hisse / Bölüm Vurgulama (elle çizim) ---------- */
-let hlDrawing=false, hlPts=[], hlTraceLines=[];
-function hlEnsureLayers(){
-  if(!map.getSource('hl')){
-    map.addSource('hl',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({id:'hl-fill',type:'fill',source:'hl',
-      paint:{'fill-color':hlColor.value,'fill-opacity':0.45}});
-    map.addLayer({id:'hl-line',type:'line',source:'hl',
-      paint:{'line-color':hlColor.value,'line-width':3,'line-dasharray':[2,1.2]}});
-  }
-  if(!map.getSource('hltrace')){
-    map.addSource('hltrace',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({id:'hltrace-glow2',type:'line',source:'hltrace',
-      paint:{'line-color':hlColor.value,'line-width':21,'line-opacity':0.16,'line-blur':6}});
-    map.addLayer({id:'hltrace-glow',type:'line',source:'hltrace',
-      paint:{'line-color':hlColor.value,'line-width':10,'line-opacity':0.4,'line-blur':3}});
-    map.addLayer({id:'hltrace-line',type:'line',source:'hltrace',
-      paint:{'line-color':hlColor.value,'line-width':4.2,'line-opacity':0.95,'line-blur':0.8}});
-    map.addLayer({id:'hltrace-core',type:'line',source:'hltrace',
-      paint:{'line-color':'#ffffff','line-width':1.6,'line-opacity':0.9,'line-blur':0.4}});
-  }
-  if(!map.getSource('hlTrace')){
-    map.addSource('hlTrace',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    const w=3;
-    map.addLayer({id:'hlTrace-glow2',type:'line',source:'hlTrace',
-      paint:{'line-color':hlColor.value,'line-width':w*7,'line-opacity':0.16,'line-blur':6}});
-    map.addLayer({id:'hlTrace-glow',type:'line',source:'hlTrace',
-      paint:{'line-color':hlColor.value,'line-width':w*3.4,'line-opacity':0.4,'line-blur':3}});
-    map.addLayer({id:'hlTrace-line',type:'line',source:'hlTrace',
-      paint:{'line-color':hlColor.value,'line-width':w*1.4,'line-opacity':0.95,'line-blur':0.8}});
-    map.addLayer({id:'hlTrace-core',type:'line',source:'hlTrace',
-      paint:{'line-color':'#ffffff','line-width':1.5,'line-opacity':0.9,'line-blur':0.4}});
-  }
-  if(!map.getSource('hlTemp')){
-    map.addSource('hlTemp',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({id:'hlTemp-line',type:'line',source:'hlTemp',
-      paint:{'line-color':hlColor.value,'line-width':2.5,'line-dasharray':[1.5,1.5]}});
-    map.addLayer({id:'hlTemp-pts',type:'circle',source:'hlTemp',
-      paint:{'circle-radius':4.5,'circle-color':'#ffffff','circle-stroke-color':hlColor.value,'circle-stroke-width':2.5}});
-  }
-}
-function hlTempUpdate(){
-  if(!map.getSource('hlTemp')) return;
-  const feats = hlPts.map(c=>({type:'Feature',properties:{},geometry:{type:'Point',coordinates:c}}));
-  if(hlPts.length>1) feats.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:hlPts}});
-  map.getSource('hlTemp').setData({type:'FeatureCollection',features:feats});
-}
-function hlFinish(){
-  if(hlPts.length>=3){
-    const ring=[...hlPts, hlPts[0]];
-    const poly={type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[ring]}};
-    map.getSource('hl').setData({type:'FeatureCollection',features:[poly]});
-    hlTraceLines=[];
-    try{
-      const ln=turf.polygonToLine(poly);
-      const l = ln.type==='FeatureCollection' ? ln.features[0] : ln;
-      hlTraceLines.push({line:l,len:turf.length(l)});
-    }catch(e){}
-    try{
-      const m2=turf.area(poly);
-      hlInfo.style.display='block';
-      hlInfo.innerHTML='Vurgulanan bölüm: <b>'+ (m2>=10000 ? (m2/10000).toFixed(2)+' dönüm ('+Math.round(m2).toLocaleString('tr-TR')+' m²)' : Math.round(m2).toLocaleString('tr-TR')+' m²') +'</b> · temsilîdir';
-    }catch(e){}
-  }
-  hlDrawing=false; hlPts=[];
-  hlTempUpdate();
-  hlDraw.textContent='✏️ Bölüm Çiz';
-  map.getCanvas().style.cursor='';
-  map.doubleClickZoom.enable();
-}
-hlDraw.onclick=()=>{
-  if(!hasParcel){ alert('Önce bir parsel yükle.'); return; }
-  hlEnsureLayers();
-  if(hlDrawing){ hlFinish(); return; }
-  hlDrawing=true; hlPts=[];
-  hlDraw.textContent='✔ Çizimi Bitir (veya çift tıkla)';
-  map.getCanvas().style.cursor='crosshair';
-  map.doubleClickZoom.disable();
-};
-hlClear.onclick=()=>{
-  hlDrawing=false; hlPts=[]; hlTraceLines=[]; hlTempUpdate();
-  if(map.getSource('hl')) map.getSource('hl').setData({type:'FeatureCollection',features:[]});
-  if(map.getSource('hltrace')) map.getSource('hltrace').setData({type:'FeatureCollection',features:[]});
-  hlInfo.style.display='none';
-  hlDraw.textContent='✏️ Bölüm Çiz';
-  map.getCanvas().style.cursor='';
-  map.doubleClickZoom.enable();
-};
-map.on('click', e=>{
-  if(!hlDrawing) return;
-  hlPts.push([e.lngLat.lng, e.lngLat.lat]);
-  hlTempUpdate();
+  $('durum').textContent = cikti.length + ' fotoğraf indirildi.';
+  $('bitti').classList.remove('gizli');
+  b.disabled = false;
 });
-map.on('dblclick', e=>{
-  if(!hlDrawing) return;
-  e.preventDefault();
-  hlFinish();
-});
-hlColor.oninput=()=>{
-  ['hl-fill'].forEach(id=>{ if(map.getLayer(id)) map.setPaintProperty(id,'fill-color',hlColor.value); });
-  ['hl-line','hlTemp-line','hltrace-glow2','hltrace-glow','hltrace-line'].forEach(id=>{ if(map.getLayer(id)) map.setPaintProperty(id,'line-color',hlColor.value); });
-  if(map.getLayer('hlTemp-pts')) map.setPaintProperty('hlTemp-pts','circle-stroke-color',hlColor.value);
-};
-
-/* ---------- Mobil yönlendirme + ilk kullanım ipucu ---------- */
-(function(){
-  var isMobile = window.matchMedia('(max-width: 820px)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  var bar = document.getElementById('mobileBar');
-  var tip = document.getElementById('firstTip');
-
-  if(isMobile && !localStorage.getItem('pt_mobile_ok')){
-    bar.style.display='block';
-  }
-  document.getElementById('mbClose').onclick = function(){
-    bar.style.display='none'; localStorage.setItem('pt_mobile_ok','1');
-  };
-  document.getElementById('mbShare').onclick = function(){
-    var url='https://www.parseltur.com';
-    if(navigator.share){ navigator.share({title:'Parsel Tur',text:'Arsanı 2 dakikada 3D drone videosuna çevir (ücretsiz):',url:url}).catch(function(){}); }
-    else if(navigator.clipboard){ navigator.clipboard.writeText(url); this.textContent='✓ Kopyalandı'; }
-  };
-
-  if(!isMobile && !localStorage.getItem('pt_tip_ok')){
-    tip.style.display='block';
-  }
-  document.getElementById('tipOk').onclick = function(){
-    tip.style.display='none'; localStorage.setItem('pt_tip_ok','1');
-  };
-})();
 </script>
 </body>
 </html>
