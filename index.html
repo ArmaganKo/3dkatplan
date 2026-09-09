@@ -75,7 +75,44 @@ button.ghost{background:transparent;color:var(--accent)}
 button.ghost:hover{background:var(--accent-soft)}
 button.ghost[aria-pressed=true]{background:var(--accent);color:#fff}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px}
+.akis{display:flex;list-style:none;margin:0 0 16px;padding:0;gap:4px;font-size:11.5px;color:var(--soft)}
+.akis li{flex:1;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.akis b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;
+  border-radius:50%;background:var(--accent);color:#fff;font-size:10.5px;flex:none}
+.kat-blok{margin-bottom:18px}
+.kat-alt{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+button.mini{padding:5px 9px;font-size:12px;font-weight:400;background:transparent;
+  color:var(--soft);border:1px solid var(--line);min-height:0}
+button.mini:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.modes button{flex-direction:row;gap:6px;justify-content:center;min-height:44px;font-size:13.5px}
+.modes button b{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+  border-radius:50%;background:var(--line);color:var(--soft);font-size:11px;font-weight:600;flex:none}
+.modes button[aria-pressed=true]{box-shadow:inset 0 -3px 0 rgba(0,0,0,0.18)}
+.modes button[aria-pressed=true] b{background:rgba(255,255,255,0.28);color:#fff}
+.cta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cta button{min-height:50px;font-size:15px;font-weight:600;padding:12px 16px}
+.cta button.alt{background:var(--card);color:var(--accent);border:2px solid var(--accent)}
+.cta button.alt:hover{background:var(--accent-soft)}
+.cta-note{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:var(--soft)}
+.grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grp-t{font-size:12px;font-weight:600;color:var(--soft);margin-right:2px}
+details.adv{margin:0;border-top:1px solid var(--line);padding-top:12px}
+details.adv>summary{font-size:13px}
+article.info details.blok{border-top:1px solid var(--line);padding:14px 0 0;margin:18px 0 0}
+article.info details.blok>summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:8px}
+article.info details.blok>summary::-webkit-details-marker{display:none}
+article.info details.blok>summary::before{content:"▸";color:var(--accent);font-size:12px}
+article.info details.blok[open]>summary::before{content:"▾"}
+@media(max-width:860px){
+  .cta{grid-template-columns:1fr}
+  .grp button,.grp .chk{min-height:44px}
+  button{min-height:44px}
+  .akis{font-size:11px}
+  button.mini{min-height:36px}
+}
+
 .modes button{padding:8px 4px;font-size:13px}
 details.typefold{margin:0;border-top:none;padding-top:0}
 details.typefold>summary{border:1px solid var(--line);border-radius:var(--r);
@@ -195,21 +232,26 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
 <div class="app">
 <section class="panel">
+  <ol class="akis">
+    <li><b>1</b> Oda ekle</li><li><b>2</b> Düzenle</li><li><b>3</b> Eşya</li><li><b>4</b> İndir</li>
+  </ol>
+
   <div class="field"><label for="projName">Portföy adı</label>
     <input id="projName" placeholder="Ataşehir 3+1 bahçe katı"></div>
 
-  <h2>Kat</h2>
-  <div class="tabs" id="tabs"></div>
-  <div class="bar" style="margin-bottom:16px">
-    <button class="ghost" id="addFloor">Kat ekle</button>
-    <button class="ghost" id="delFloor">Katı sil</button>
-    <button class="ghost" id="renFloor">Adını değiştir</button>
+  <div class="kat-blok">
+    <div class="tabs" id="tabs"></div>
+    <div class="kat-alt">
+      <button class="mini" id="addFloor">+ Kat ekle</button>
+      <button class="mini" id="renFloor">Adını değiştir</button>
+      <button class="mini" id="delFloor">Katı sil</button>
+    </div>
   </div>
 
   <div class="modes">
-    <button class="ghost" id="mDraw" aria-pressed="true">Oda çiz</button>
-    <button class="ghost" id="mEdit" aria-pressed="false">Düzenle</button>
-    <button class="ghost" id="mFurn" aria-pressed="false">Eşya</button>
+    <button class="ghost" id="mDraw" aria-pressed="true"><b>1</b> Oda çiz</button>
+    <button class="ghost" id="mEdit" aria-pressed="false"><b>2</b> Düzenle</button>
+    <button class="ghost" id="mFurn" aria-pressed="false"><b>3</b> Eşya</button>
   </div>
 
   <div id="paneDraw">
@@ -288,7 +330,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <ul id="flist"></ul>
 
   <details class="fold">
-    <summary>Görsel künyesi</summary>
+    <summary>Paylaşım görseli bilgileri</summary>
+    <p class="hint" style="margin:10px 0">Bu bilgiler yalnızca sosyal medya ve WhatsApp için hazırlanan paylaşım görseline eklenir. İlan portalı görseline eklenmez.</p>
     <label class="chk" style="margin:10px 0"><input type="checkbox" id="brandOn" checked> Bilgilerimi görsele bas</label>
     <div id="brandFields">
       <div class="field"><label for="bName">Ad soyad</label><input id="bName" placeholder="Adınız Soyadınız"></div>
@@ -296,7 +339,7 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
       <div class="field"><label for="bOffice">Ofis adı</label><input id="bOffice" placeholder="Ofisinizin adı"></div>
       <div class="field"><label for="bLogo">Ofis logosu</label><input type="file" id="bLogo" accept="image/*"></div>
       <div class="bar"><button class="ghost" id="logoClr">Logoyu kaldır</button></div>
-      <p class="hint" style="margin-top:8px">Bu bilgiler yalnızca "Paylaşım görseli"ne basılır. İlan sitelerine yükleyeceğin görselde hiçbir marka, adres veya telefon bulunmaz.</p>
+      
     </div>
   </details>
 
@@ -314,22 +357,34 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <div id="legend"></div>
    </div>
   </div>
-  <div class="bar">
-    <button id="pngBtn">İlan görseli indir (yatay)</button>
-    <button class="ghost" id="pngBrandBtn">Paylaşım görseli indir</button>
-    <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
-    <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
+  <div class="cta">
+    <button id="pngBtn">İlan görseli indir</button>
+    <button id="pngBrandBtn" class="alt">Paylaşım görseli indir</button>
+  </div>
+  <p class="cta-note">İlan görseli 1600 × 1200 yatay, marka ve iletişim bilgisi olmadan — portallar için.
+     Paylaşım görseli 1080 × 1350 dikey, oda listesi ve isteğe bağlı künyenizle — sosyal medya için.</p>
+
+  <div class="grp">
+    <span class="grp-t">Proje</span>
     <button class="ghost" id="saveBtn">Projeyi kaydet</button>
     <button class="ghost" id="loadBtn">Proje aç</button>
-    <button class="ghost" id="sampleBtn">Örnek dubleks</button>
     <button class="ghost" id="undoAllBtn" disabled>Geri al</button>
+    <button class="ghost" id="sampleBtn">Örnek dubleks</button>
     <button class="ghost" id="clearBtn">Temizle</button>
-    <button class="ghost" id="modelBtn">Model klasörünü seç</button>
-    <button class="ghost" id="tourStart">Tanıtım turu</button>
-    <span class="hint" id="modelInfo">Model yok — yer tutucu kütleler gösteriliyor.</span>
-    <input type="file" id="fileIn" accept=".json" hidden>
-    <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
   </div>
+
+  <details class="fold adv">
+    <summary>Gelişmiş</summary>
+    <div class="grp" style="margin-top:10px">
+      <button class="ghost" id="topBtn" aria-pressed="false">Üstten görünüm</button>
+      <label class="chk"><input type="checkbox" id="allChk" checked> Tüm katları göster</label>
+      <button class="ghost" id="modelBtn">Model klasörünü seç</button>
+      <button class="ghost" id="tourStart">Tanıtım turu</button>
+    </div>
+    <p class="hint" id="modelInfo" style="margin-top:8px">Model yok — yer tutucu kütleler gösteriliyor.</p>
+  </details>
+  <input type="file" id="fileIn" accept=".json" hidden>
+  <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
 
   <div class="capraz">
     <b>Kat planı hazır.</b>
@@ -342,31 +397,34 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
     <p><b>Çerçeveden başla.</b> Önce dairenin içten içe toplam enini ve boyunu ölç, sonra oda oda in. Planın oturacağı sınır bu.</p>
     <p><b>Oda eklemek için çizmen gerekmiyor.</b> En ve boy ölçüsünü yaz, oda kendiliğinden oluşsun; sonra sürükleyip yerine taşı.</p>
     <p><b>Toplamı kontrol et.</b> Bir hat üzerindeki oda enleri artı duvar kalınlıkları, dairenin toplam enini vermeli. Vermiyorsa bir ölçüm hatalı.</p>
-    <p><b>Duvar kalınlığını ölçemezsen</b> iç duvarlar için 10, dış duvarlar için 20 santimetre varsay. Türkiye'deki konut stokunun çoğunda bu değerler tutar.</p>
+    <p><b>Duvar kalınlığını ölçemiyorsanız</b>, yalnızca yaklaşık bir başlangıç değeri olarak iç duvarlar için 10 cm, dış duvarlar için 20 cm kabul edebilirsiniz. Resmi ölçü yerine geçmez.</p>
     <p><b>Kapı yönü önemli.</b> Kapıyı koyduktan sonra döndürerek açılım yayını doğru tarafa çevir; plan o zaman mimari çizim gibi okunur.</p>
   </div>
 </section>
 </div>
 
 <article class="info">
-<h2>3D Kat Planı Çıkarma Aracı</h2>
+<details class="blok" open><summary>3D Kat Planı Çıkarma Aracı</summary>
 <p>3dkatplan.com, gayrimenkul danışmanlarının ve ev sahiplerinin bir dairenin kat planını üç boyutlu olarak çıkarması için hazırlandı. Program indirmeniz, üyelik açmanız ya da ücret ödemeniz gerekmiyor. Çizim tamamen tarayıcınızın içinde gerçekleşir; ölçüleriniz hiçbir sunucuya gönderilmez.</p>
 
-<h2>Nasıl Kullanılır</h2>
+</details>
+<details class="blok"><summary>Nasıl Kullanılır</summary>
 <ol>
 <li>Portföy adını yazın. İndireceğiniz dosyalar bu adı taşır.</li>
 <li>Oda adını, tipini, enini ve boyunu yazıp "Ölçüyle oda ekle" deyin. Oda dikdörtgen olarak eklenir. L şeklinde salonlar ve çıkmalar için "Köşe köşe çiz" bölümünü kullanabilirsiniz.</li>
 <li>"Düzenle" moduna geçin. Odanın içine basılı tutup sürükleyerek yerine taşıyın, köşedeki noktaları sürükleyerek ölçüsünü değiştirin. Metrekare anında güncellenir.</li>
 <li>"Eşya" modunda mobilyaları yerleştirin. Hızlı yol için odayı seçip "Seçili odayı döşe" deyin.</li>
 <li>Dubleks daire çiziyorsanız "Kat ekle" ile üst katı açın. Alt kat soluk çizgiyle rehber olarak görünür.</li>
-<li>"İlan görseli indir" ile 1080x1350 ölçüsünde, ilan ve sosyal medya için hazır görseli alın.</li>
+<li>"İlan görseli indir" ile 1600 × 1200 yatay görseli alın; ilan portallarına bu sürüm yüklenir. Sosyal medya için "Paylaşım görseli indir" 1080 × 1350 dikey görsel üretir.</li>
 </ol>
 
-<h2>Ölçüyü Nasıl Almalısınız</h2>
+</details>
+<details class="blok"><summary>Ölçüyü Nasıl Almalısınız</summary>
 <p>Lazermetre kullanın. Önce dairenin içten içe toplam enini ve boyunu ölçün, sonra oda oda inin. Bir hat üzerindeki oda enleri ile duvar kalınlıklarını topladığınızda toplam eni bulmanız gerekir; bulamıyorsanız bir ölçüm hatalıdır. Duvar kalınlığını ölçemezseniz iç duvarlar için 10, dış duvarlar için 20 santimetre varsayabilirsiniz.</p>
 
 
-<h2>Düğmeler Ne İşe Yarıyor</h2>
+</details>
+<details class="blok"><summary>Düğmeler Ne İşe Yarıyor</summary>
 <p>Aracın tüm kontrolleri ve ne yaptıkları.</p>
 
 <h3>Kat bölümü</h3>
@@ -451,7 +509,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <dt>Model klasörünü seç</dt><dd>Kendi bilgisayarındaki üç boyutlu mobilya modellerini yükler. Model yoksa eşyalar doğru ölçüde sade kütleler olarak görünür.</dd>
 </dl>
 
-<h2>İlanda Kullanırken</h2>
+</details>
+<details class="blok"><summary>İlanda Kullanırken</summary>
 <p>Plandaki metrekareyi ilanın resmi metrekare bilgisi olarak kullanmayın. Brüt ve net değerleri tapu ile projeden alın; plan görselini alıcının yerleşimi anlaması için kullanın.</p>
 
 <h3>Ücretli mi?</h3>
@@ -466,13 +525,15 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 <h3>Çizdiğim Plan Başkası Tarafından Görülür mü?</h3>
 <p>Hayır. Tüm işlem tarayıcınızda gerçekleşir, kaydettiğiniz proje dosyası kendi bilgisayarınızda kalır.</p>
 
-<h2>Diğer Ücretsiz Araçlarım</h2>
+</details>
+<details class="blok"><summary>Diğer Ücretsiz Araçlarım</summary>
 <p>Gayrimenkul danışmanları için hazırladığım diğer ücretsiz araçlar:</p>
 <ul class="tools">
 <li><a href="https://www.parseltur.com" target="_blank" rel="noopener"><strong>ParselTur</strong></a> — TKGM'den indirdiğiniz parsel dosyasını üç boyutlu drone videosuna çevirir. Arsa ve arazi ilanlarınız için hazır tanıtım videosu üretir.</li>
 <li><a href="https://www.gunesalirmi.com" target="_blank" rel="noopener"><strong>Güneş Alır mı?</strong></a> — Bir dairenin hangi odasının hangi saatlerde güneş aldığını gösterir. Cephe yönünü girersiniz, gün boyu ışık durumunu görürsünüz.</li>
 <li><a href="https://ilanfotosu.com" target="_blank" rel="noopener"><strong>İlan Fotoğrafı</strong></a> — İlan fotoğraflarını portal ölçüsüne getirir, plaka ve yüzleri kapatır, fotoğrafın içindeki konum bilgisini siler.</li>
 </ul>
+</details>
 </article>
 
 <footer class="site">
@@ -804,7 +865,7 @@ c2.addEventListener("pointerdown",function(e){
     placeArmed=false; armUI();
     var ok=document.getElementById("okMsg");
     if(ok){ok.style.display="block";
-      ok.textContent=byKey(kk).l+" yerleştirildi. Sürükleyerek taşıyabilir, \u002245° döndür\u0022 ile çevirebilirsin.";}
+      ok.textContent=byKey(kk).l+" yerleştirildi. Sürükleyerek taşıyabilir, \u002245° döndür\u0022 ile çevirebilirsiniz.";}
     renderLists();build3d();fit2d();return;}
   var rs2=R();
   for(var m=rs2.length-1;m>=0;m--)if(inPoly(w,rs2[m].p)){
@@ -1313,7 +1374,7 @@ document.getElementById("rectBtn").onclick=function(){
   err("");
   var ok=document.getElementById("okMsg");
   if(ok){ok.style.display="block";
-    ok.textContent='"'+n+'" eklendi ('+w.toFixed(2)+' × '+d.toFixed(2)+' m). Planda içine basılı tutup sürükleyerek yerine taşı.';}
+    ok.textContent='"'+n+'" eklendi ('+w.toFixed(2)+' × '+d.toFixed(2)+' m). Düzenle moduna geçildi — planda içine basılı tutup sürükleyerek yerine taşıyın.';}
   renderLists();build3d();fit2d();
 };
 document.getElementById("rotBtn").onclick=function(){
@@ -1693,9 +1754,9 @@ var TOUR=[
  {s:"#topBtn",t:"Görünümü değiştir",
   d:"Üstten görünümde kamera tam tepeye geçer, odalar gerçek oranlarında görünür. İndirdiğin görsel hangi görünümdeysen ona göre çıkar."},
  {s:"#pngBtn",t:"İlan görseli",
-  d:"Yatay, tam ekran, sadece plan. Marka, telefon ve site adresi yoktur — ilan portalları bunları istemiyor. Sahibinden ve Hepsiemlak için bunu kullan."},
+  d:"1600 × 1200 yatay, tam ekran, sadece plan. Marka, telefon ve site adresi yoktur — ilan portalları bunları istemiyor. Sahibinden ve Hepsiemlak için bunu kullan."},
  {s:"#pngBrandBtn",t:"Paylaşım görseli",
-  d:"Dikey format, oda listesi ve künyenle birlikte. WhatsApp, Instagram ve basılı broşür için."},
+  d:"1080 × 1350 dikey, oda listesi ve künyenle birlikte. WhatsApp, Instagram ve basılı broşür için."},
  {s:"#saveBtn",t:"Projeyi kaydet",
   d:"Çalışmanı .json olarak indirir. Sonra \u0022Proje aç\u0022 ile geri yükleyip devam edersin. Tarayıcı kapanınca çalışman kaybolur, tek yedek bu."}
 ];
