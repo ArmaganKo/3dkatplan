@@ -319,6 +319,15 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
   <p class="err" id="err"></p>
   <p class="ok-box" id="okMsg" style="display:none"></p>
 
+  <h2 class="sp">Plan görünümü</h2>
+  <label class="chk" style="display:flex;margin-bottom:8px">
+    <input type="checkbox" id="areaChk" checked> Metrekareleri planda göster</label>
+  <label class="chk" style="display:flex">
+    <input type="checkbox" id="multiColorChk"> Her oda farklı renk</label>
+  <div class="bar" style="margin-top:8px">
+    <button class="mini" id="cycleColorBtn">Seçili odanın rengini değiştir</button>
+  </div>
+
   <h2 class="sp">Odalar — <span id="floorName"></span></h2>
   <ul id="rlist"></ul>
   <p class="warn-box" id="overlapWarn" style="display:none"></p>
@@ -410,12 +419,14 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 </details>
 <details class="blok"><summary>Nasıl Kullanılır</summary>
 <ol>
-<li>Portföy adını yazın. İndireceğiniz dosyalar bu adı taşır.</li>
-<li>Oda adını, tipini, enini ve boyunu yazıp "Ölçüyle oda ekle" deyin. Oda dikdörtgen olarak eklenir. L şeklinde salonlar ve çıkmalar için "Köşe köşe çiz" bölümünü kullanabilirsiniz.</li>
-<li>"Düzenle" moduna geçin. Odanın içine basılı tutup sürükleyerek yerine taşıyın, köşedeki noktaları sürükleyerek ölçüsünü değiştirin. Metrekare anında güncellenir.</li>
-<li>"Eşya" modunda mobilyaları yerleştirin. Hızlı yol için odayı seçip "Seçili odayı döşe" deyin.</li>
-<li>Dubleks daire çiziyorsanız "Kat ekle" ile üst katı açın. Alt kat soluk çizgiyle rehber olarak görünür.</li>
-<li>"İlan görseli indir" ile 1600 × 1200 yatay görseli alın; ilan portallarına bu sürüm yüklenir. Sosyal medya için "Paylaşım görseli indir" 1080 × 1350 dikey görsel üretir.</li>
+<li><b>Portföy adını yazın.</b> İndireceğiniz dosyalar bu adı taşır, on portföy sonra karıştırmazsınız.</li>
+<li><b>Odayı ekleyin.</b> Oda adını ve tipini seçin, en ve boy ölçüsünü yazın, "Ölçüyle oda ekle" deyin. Oda tam o ölçüde eklenir ve araç kendiliğinden "Düzenle" moduna geçer. L şeklinde salonlar için "Köşe köşe çiz" bölümünü, köşesinde balkon olan odalar için "Köşesinden parça çıkar" aracını kullanın.</li>
+<li><b>Yerine taşıyın.</b> Odanın içine basılı tutup sürükleyin. Komşu bir odanın kenarına yaklaştığınızda kendiliğinden yapışır, aralarında boşluk kalmaz. Ölçüsünü değiştirmek isterseniz köşedeki noktayı sürükleyin. Odayı çevirmek için "Odayı 90° çevir" düğmesini kullanın.</li>
+<li><b>Kapı ve pencereleri koyun.</b> "Eşya" moduna geçin, listeden kapıyı seçin, "Plana yerleştir" deyin ve duvarın üstüne tıklayın. Her seferinde bir tane eklenir. Kapı duvarda gerçek boşluk açar; "45° döndür" ile açılım yönünü ayarlarsınız.</li>
+<li><b>Mobilyaları yerleştirin.</b> Aynı modda tek tek ekleyebilir, ya da odayı seçip "Seçili odayı döşe" diyerek oda tipine uygun standart eşyaların otomatik yerleşmesini sağlayabilirsiniz.</li>
+<li><b>Dubleks ise üst katı açın.</b> "Kat ekle" deyin. Üst kattayken alt kat soluk çizgiyle rehber olarak görünür, hizalamayı ona göre yaparsınız.</li>
+<li><b>Görünümü ayarlayın.</b> Ölçüleriniz tam tutmuyorsa "Metrekareleri planda göster" seçeneğini kapatın; planda yalnızca oda isimleri kalır. Plan tekdüze göründüyse "Her oda farklı renk" seçeneğini işaretleyin.</li>
+<li><b>Görseli indirin.</b> "İlan görseli indir" 1600 × 1200 yatay görsel üretir; marka, telefon ve site adresi içermez, ilan portallarına bu sürüm yüklenir. "Paylaşım görseli indir" 1080 × 1350 dikey görsel üretir; oda listesi ve isteğe bağlı künyenizle birlikte, sosyal medya ve WhatsApp için.</li>
 </ol>
 
 </details>
@@ -473,6 +484,8 @@ footer.site .legal{margin-top:14px;padding-top:12px;border-top:1px solid var(--l
 
 <h3>Listeler ve ölçüler</h3>
 <dl>
+<dt>Metrekareleri planda göster</dt><dd>Kapatırsanız planın üstünde yalnızca oda isimleri görünür, metrekare yazılmaz. Ölçüleriniz tam tutmuyorsa bu seçeneği kapatmak daha doğrudur: yanlış bir sayı yazmaktansa hiç yazmamak yeğdir. Metrekareler yandaki listede ve toplamda görünmeye devam eder.</dd>
+<dt>Her oda farklı renk</dt><dd>Varsayılanda odalar tipine göre renklenir; iki yatak odası aynı renk olur. Bu seçenekle her odaya ayrı renk verilir, plan daha okunur hale gelir. "Seçili odanın rengini değiştir" ile bir odanın rengini beğenene kadar değiştirebilirsiniz.</dd>
 <dt>Odalar listesi</dt><dd>Bu kattaki odalar ve metrekareleri. Bir odaya tıklayınca seçilir.</dd>
 <dt>Kalem simgesi</dt><dd>Odanın adını değiştirir. Yanlış yazdıysan odayı silmene gerek yok.</dd>
 <dt>Çarpı simgesi</dt><dd>Odayı veya eşyayı siler.</dd>
@@ -621,6 +634,16 @@ var FONT_UI="'IBM Plex Sans', system-ui, sans-serif";
 var FONT_MONO="'IBM Plex Mono', ui-monospace, monospace";
 var MODEL_DIR="models/", WALL_H=1.05, TH=0.1, SNAP=0.1, FLOOR_H=3.0;
 
+var PALETTE=["#E2D6BE","#C9DCCE","#D6CFE6","#E8D3C8","#C8D9E8",
+  "#E0DCC2","#DCC9D6","#C6E0D8","#EADAC2","#D2DCC4","#D8CFC0","#C4D6DE"];
+function hex2int(h){return parseInt(h.slice(1),16);}
+var colorMode="tip";
+function roomHex(rm,i){
+  if(colorMode==="tip")return TYPES[rm.t].h;
+  var ci=(rm.c!=null?rm.c:i);
+  return PALETTE[((ci%PALETTE.length)+PALETTE.length)%PALETTE.length];
+}
+var showArea=true;
 var TYPE_ORDER=["salon","oturma","yatak","ebeveyn","cocuk","calisma","giyinme",
   "mutfak","banyo","camasir","hol","kiler","balkon","teras","bahce"];
 var curType="salon";
@@ -739,7 +762,7 @@ function draw2d(){
   var bad=findOverlaps();
   R().forEach(function(rm,i){
     polyPath(rm.p);
-    g2.fillStyle=TYPES[rm.t].h;g2.fill();
+    g2.fillStyle=roomHex(rm,i);g2.fill();
     if(bad[i]){
       g2.fillStyle="rgba(176,42,32,0.16)";g2.fill();
       g2.strokeStyle="#B02A20";g2.lineWidth=3;g2.setLineDash([7,4]);g2.stroke();
@@ -806,7 +829,7 @@ function draw2d(){
     var nw=g2.measureText(rm.n).width;
     var as=fs-1, at=area(rm.p).toFixed(1)+" m²", aw=0;
     g2.font="400 "+as+"px "+FONT_MONO;
-    var showA=(spot.r*2*V.s>54)&&fs>=11&&g2.measureText(at).width<=avail;
+    var showA=showArea&&(spot.r*2*V.s>54)&&fs>=11&&g2.measureText(at).width<=avail;
     if(showA)aw=g2.measureText(at).width;
 
     var bw=Math.max(nw,aw)+14;
@@ -989,14 +1012,14 @@ window.addEventListener("pointerup",function(){d3=false;});
 wrap.addEventListener("wheel",function(e){rad=Math.max(5,Math.min(120,rad+e.deltaY*0.02));e.preventDefault();},{passive:false});
 
 var labelMode="no";
-function nameMarker(nm,ar,sizeM){
+function nameMarker(nm,ar,sizeM,withArea){
   var W=1024,H=320,c=document.createElement("canvas");c.width=W;c.height=H;
   var g=c.getContext("2d");
   var big=Math.max(68,Math.min(118,sizeM*25)), small=big*0.70;
   g.font="600 "+big+"px "+FONT_UI; var w1=g.measureText(nm).width;
-  var at=ar.toFixed(1)+" m²";
-  g.font="500 "+small+"px "+FONT_MONO; var w2=g.measureText(at).width;
-  var bw=Math.min(W-12,Math.max(w1,w2)+64), bh=big+small+52;
+  var at=withArea?(ar.toFixed(1)+" m²"):"";
+  g.font="500 "+small+"px "+FONT_MONO; var w2=at?g.measureText(at).width:0;
+  var bw=Math.min(W-12,Math.max(w1,w2)+64), bh=at?(big+small+52):(big+40);
   var bx=(W-bw)/2, by=(H-bh)/2;
   g.fillStyle="rgba(250,248,244,0.93)";
   if(g.roundRect){g.beginPath();g.roundRect(bx,by,bw,bh,16);g.fill();
@@ -1004,9 +1027,9 @@ function nameMarker(nm,ar,sizeM){
   else g.fillRect(bx,by,bw,bh);
   g.textAlign="center";g.textBaseline="top";
   g.fillStyle="#1B1A17";g.font="600 "+big+"px "+FONT_UI;
-  g.fillText(nm,W/2,by+18);
-  g.fillStyle="#55524B";g.font="500 "+small+"px "+FONT_MONO;
-  g.fillText(at,W/2,by+big+26);
+  g.fillText(nm,W/2,at?by+18:by+18);
+  if(at){g.fillStyle="#55524B";g.font="500 "+small+"px "+FONT_MONO;
+    g.fillText(at,W/2,by+big+26);}
   var tx=new THREE.CanvasTexture(c);tx.anisotropy=8;
   var sc=Math.max(2.8,Math.min(6.6,sizeM*1.3));
   var m=new THREE.Mesh(new THREE.PlaneGeometry(sc,sc*(H/W)),
@@ -1126,12 +1149,14 @@ function build3d(){
   floors.forEach(function(f,idx){
     if(!showAll&&idx!==fi)return;
     var yb=idx*FLOOR_H, wallSeen={};
-    f.rooms.forEach(function(rm){
+    f.rooms.forEach(function(rm,ri){
       var sh=new THREE.Shape();
       rm.p.forEach(function(q,i){i?sh.lineTo(q.x-cx,q.y-cy):sh.moveTo(q.x-cx,q.y-cy);});
       var geo=new THREE.ExtrudeGeometry(sh,{depth:0.08,bevelEnabled:false});geo.rotateX(Math.PI/2);
       var fl=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({
-        map:mkTex(TEXOF[rm.t]||"wood"),color:0xFFFFFF,side:THREE.DoubleSide}));
+        map:mkTex(TEXOF[rm.t]||"wood"),
+        color:(colorMode==="tip"?0xFFFFFF:hex2int(roomHex(rm,ri))),
+        side:THREE.DoubleSide}));
       fl.position.y=yb;grp.add(fl);
       if(rm.t!=="bahce")for(var i=0;i<rm.p.length;i++){
         var a=rm.p[i],c2=rm.p[(i+1)%rm.p.length];
@@ -1165,7 +1190,7 @@ function build3d(){
       lno++;legendData.push({no:lno,n:rm.n,a:area(rm.p),f:f.n,t:rm.t});
       var sp0=labelSpot(rm.p),ct=sp0?sp0.p:centroid(rm.p);
       var sp=(labelMode==="name")
-        ? nameMarker(rm.n,area(rm.p),sp0?sp0.r*2:Math.sqrt(area(rm.p)))
+        ? nameMarker(rm.n,area(rm.p),sp0?sp0.r*2:Math.sqrt(area(rm.p)),showArea)
         : numberMarker(lno);
       sp.position.set(ct.x-cx,yb+0.14,ct.y-cy);grp.add(sp);
     });
@@ -1243,7 +1268,7 @@ function renderLists(){
   R().forEach(function(rm,i){
     var li=document.createElement("li");if(selKind==="room"&&sel===i)li.className="on";
     if(bad2[i])li.classList.add("bad");
-    li.innerHTML='<span class="sw" style="background:'+TYPES[rm.t].h+'"></span>'+
+    li.innerHTML='<span class="sw" style="background:'+roomHex(rm,i)+'"></span>'+
       '<span class="nm">'+rm.n+'</span><span class="dm">'+area(rm.p).toFixed(1)+' m²</span>';
     var e=document.createElement("button");e.textContent="✎";e.title="Adını değiştir";
     e.setAttribute("aria-label",rm.n+" odasının adını değiştir");
@@ -1465,6 +1490,20 @@ document.getElementById("notchBtn").onclick=function(){
     ok.textContent=rm.n+" artık L şeklinde. Yeni alan "+area(P).toFixed(1)+" m². Çıkan boşluğa balkonu ayrı oda olarak ekleyebilirsin.";}
   renderLists();build3d();fit2d();
 };
+document.getElementById("areaChk").onchange=function(){
+  showArea=this.checked; draw2d(); build3d();
+};
+document.getElementById("multiColorChk").onchange=function(){
+  colorMode=this.checked?"oda":"tip";
+  err(""); renderLists(); draw2d(); build3d();
+};
+document.getElementById("cycleColorBtn").onclick=function(){
+  if(colorMode!=="oda"){err('Önce "Her oda farklı renk" seçeneğini işaretle.');return;}
+  if(selKind!=="room"||sel==null){err("Önce bir oda seç.");return;}
+  var rm=R()[sel];
+  rm.c=((rm.c!=null?rm.c:sel)+1)%PALETTE.length;
+  err(""); renderLists(); draw2d(); build3d();
+};
 document.getElementById("allChk").onchange=function(){build3d();};
 document.getElementById("topBtn").onclick=function(){
   topView=!topView;
@@ -1496,7 +1535,7 @@ CATALOG.forEach(function(it){var o=document.createElement("option");o.value=it.k
 fs.onchange=function(){placeArmed=true;err("");armUI();};
 
 document.getElementById("saveBtn").onclick=function(){
-  var blob=new Blob([JSON.stringify({v:4,name:val("projName"),floors:floors},null,1)],{type:"application/json"});
+  var blob=new Blob([JSON.stringify({v:5,name:val("projName"),colorMode:colorMode,showArea:showArea,floors:floors},null,1)],{type:"application/json"});
   var a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download=fileBase()+".json";a.click();};
 document.getElementById("loadBtn").onclick=function(){document.getElementById("fileIn").click();};
@@ -1509,6 +1548,10 @@ document.getElementById("fileIn").onchange=function(e){
       if(!d.floors||!d.floors.length)throw 0;
       floors=d.floors;fi=0;draft=[];sel=null;selKind=null;err("");
       document.getElementById("projName").value=d.name||"";
+      colorMode=d.colorMode||"tip";
+      showArea=(d.showArea!==false);
+      document.getElementById("multiColorChk").checked=(colorMode==="oda");
+      document.getElementById("areaChk").checked=showArea;
       renderTabs();renderLists();build3d();fit2d();
     }catch(x){err("Dosya okunamadı. Bu araçtan kaydedilmiş bir proje dosyası seç.");}
   };
